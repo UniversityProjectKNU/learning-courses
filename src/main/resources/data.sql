@@ -2,11 +2,11 @@
 ##############################
 DELETE FROM `roles`;
 
-INSERT INTO `roles` (`id`, `name`)
+INSERT INTO `roles` (`id`, `type`)
 VALUES
     (1, 'ADMIN'),
     (2, 'INSTRUCTOR'),
-    (3, 'USER');
+    (3, 'STUDENT');
 ##############################
 ##############################
 DELETE FROM `users`;
