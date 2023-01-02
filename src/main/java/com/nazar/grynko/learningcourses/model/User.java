@@ -1,9 +1,10 @@
 package com.nazar.grynko.learningcourses.model;
 
-import com.sun.xml.bind.v2.TODO;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.aspectj.apache.bcel.classfile.Unknown;
 
 import javax.persistence.*;
 import java.util.Calendar;
@@ -22,22 +23,26 @@ public class User {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String login;
-    @Column(name = "password")
+    @Column(nullable = false)
     private String password;
-    @Column(name = "first_name")
+    @Column(nullable = false)
     private String firstName;
-    @Column(name = "last_name")
+    @Column(nullable = false)
     private String lastName;
     // TODO [42S22] Unknown column 'user0_.dateOfBirth' in 'field list' when execute [select entity from User entity]
+    @Column(nullable = false)
     @Temporal(TemporalType.DATE)
     private Calendar dateOfBirth;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_to_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id")
+            inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"),
+            uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "role_id"})
     )
     private Set<Role> roles = new HashSet<>();
 
