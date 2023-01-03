@@ -34,7 +34,7 @@ CREATE TABLE `learning_courses`.`chapters_templates` (
                                                          `number` INT NOT NULL,
 
                                                          PRIMARY KEY (`id`),
-                                                         CONSTRAINT `fk_chapters_courses_template_id`
+                                                         CONSTRAINT `fk_chapters_course_template_id`
                                                              FOREIGN KEY (`course_template_id`)
                                                                  REFERENCES `learning_courses`.`courses_templates`(`id`)
                                                                  ON DELETE CASCADE
@@ -50,7 +50,7 @@ CREATE TABLE `learning_courses`.`lessons_templates` (
 
                                                         PRIMARY KEY (`id`),
 
-                                                        CONSTRAINT `fk_lessons_courses_template_id`
+                                                        CONSTRAINT `fk_lessons_chapter_template_id`
                                                             FOREIGN KEY (`chapter_template_id`)
                                                                 REFERENCES `chapters_templates`(`id`)
                                                                 ON DELETE CASCADE
@@ -80,7 +80,7 @@ CREATE TABLE `learning_courses`.`chapters` (
 
                                                PRIMARY KEY (`id`),
 
-                                               CONSTRAINT `fr_courses_course_id`
+                                               CONSTRAINT `fk_chapters_course_id`
                                                    FOREIGN KEY (`course_id`)
                                                        REFERENCES `courses`(`id`)
                                                        ON DELETE CASCADE

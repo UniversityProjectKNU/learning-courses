@@ -32,7 +32,8 @@ public class LessonTemplate {
     @ManyToOne
     @JoinColumn(
             name = "chapter_template_id",
-            nullable = false
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_lessons_chapter_template_id")
     )
     @JsonIgnore
     private ChapterTemplate chapterTemplate;

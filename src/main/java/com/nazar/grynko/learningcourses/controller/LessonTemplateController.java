@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Set;
 
 @RestController
-@RequestMapping("courses-templates/{courseTemplate{Id}/chapters-templates/{chapterTemplateId}/lessons-templates")
+@RequestMapping("courses-templates/{courseTemplateId}/chapters-templates/{chapterTemplateId}/lessons-templates")
 public class LessonTemplateController {
 
     private final LessonTemplateService lessonTemplateService;

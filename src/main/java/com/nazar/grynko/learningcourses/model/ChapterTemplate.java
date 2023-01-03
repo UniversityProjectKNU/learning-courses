@@ -34,7 +34,8 @@ public class ChapterTemplate {
     @ManyToOne
     @JoinColumn(
             name = "course_template_id",
-            nullable = false
+            nullable = false,
+            foreignKey = @ForeignKey(name = "fk_chapters_course_template_id")
     )
     @JsonIgnore
     private CourseTemplate courseTemplate;
@@ -45,7 +46,6 @@ public class ChapterTemplate {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @JsonIgnore
     private Set<LessonTemplate> lessonTemplates = new HashSet<>();
 
 }

@@ -35,7 +35,6 @@ public class CourseTemplate {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    @JsonIgnore
     private Set<ChapterTemplate> chapterTemplates = new HashSet<>();
 
 }
