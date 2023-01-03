@@ -41,13 +41,13 @@ public class ChapterTemplateController {
     }
 
     @PostMapping
-    ChapterTemplate save(@RequestBody ChapterTemplate lessonTemplate) {
-        return chapterTemplateService.save(lessonTemplate);
+    ChapterTemplate save(@RequestBody ChapterTemplate chapterTemplate) {
+        return chapterTemplateService.save(chapterTemplate);
     }
 
     @PutMapping("/{id}")
-    void update(@RequestBody ChapterTemplate lessonTemplate) {
-        chapterTemplateService.update(lessonTemplate);
+    void update(@RequestBody ChapterTemplate chapterTemplate) {
+        chapterTemplateService.update(chapterTemplate);
     }
 
 }

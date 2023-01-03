@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.service;
 
+import com.nazar.grynko.learningcourses.model.Role;
 import com.nazar.grynko.learningcourses.model.User;
 import com.nazar.grynko.learningcourses.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class UserService {
@@ -34,7 +36,16 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public void update(User user) {
-        userRepository.update(user.getId(), user.getFirstName(), user.getLastName(), user.getDateOfBirth());
+    public void updatePublicInformation(User user) {
+        userRepository.updatePublicInformation(user.getId(), user.getFirstName(), user.getLastName(), user.getDateOfBirth());
     }
+
+    public void updateCredentials(User user) {
+        userRepository.updateCredentials(user.getId(), user.getLogin(), user.getPassword());
+    }
+
+    public void updateRoles(User user, Set<Role> roles) {
+        userRepository.updateRoles(user.getId(), roles);
+    }
+
 }

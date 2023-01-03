@@ -1,10 +1,13 @@
 package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
+import com.nazar.grynko.learningcourses.json.JsonArg;
+import com.nazar.grynko.learningcourses.model.Role;
 import com.nazar.grynko.learningcourses.model.User;
 import com.nazar.grynko.learningcourses.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.List;
 
 @RestController
@@ -39,8 +42,13 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    void update(@RequestBody User user) {
-        userService.update(user);
+    void updatePublicInformation(@RequestBody User user) {
+        userService.updatePublicInformation(user);
+    }
+
+    @PutMapping("/{id}/roles")
+    void updateRoles(@JsonArg("user") User user, @JsonArg("roles") HashSet<Role> roles) {
+        userService.updateRoles(user, new HashSet<>(roles));
     }
 
 }

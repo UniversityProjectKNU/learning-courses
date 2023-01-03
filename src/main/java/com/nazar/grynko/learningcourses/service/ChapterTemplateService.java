@@ -31,7 +31,7 @@ public class ChapterTemplateService {
 
     public void update(ChapterTemplate chapterTemplate) {
         chapterTemplateRepository.update(chapterTemplate.getId(), chapterTemplate.getNumber(), chapterTemplate.getTitle(),
-                chapterTemplate.getDescription(), chapterTemplate.getCourseTemplate().getId());
+                chapterTemplate.getDescription(), chapterTemplate.getCourseTemplate());
     }
 
 }

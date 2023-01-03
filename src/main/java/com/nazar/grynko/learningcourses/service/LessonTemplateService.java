@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.service;
 
+import com.nazar.grynko.learningcourses.model.ChapterTemplate;
 import com.nazar.grynko.learningcourses.model.LessonTemplate;
 import com.nazar.grynko.learningcourses.repository.LessonTemplateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +35,13 @@ public class LessonTemplateService {
         return lessonTemplateRepository.save(lessonTemplate);
     }
 
-    public void update(LessonTemplate lessonTemplate) {
-        lessonTemplateRepository.update(lessonTemplate.getId(), lessonTemplate.getNumber(), lessonTemplate.getTitle(),
-                lessonTemplate.getDescription(), lessonTemplate.getChapterTemplate().getId());
+    public void updatePublicInformation(LessonTemplate lessonTemplate) {
+        lessonTemplateRepository.updatePublicInformation(lessonTemplate.getId(), lessonTemplate.getNumber(),
+                lessonTemplate.getTitle(), lessonTemplate.getDescription());
+    }
+
+    public void updatePublicInformation(LessonTemplate lessonTemplate, ChapterTemplate chapterTemplate) {
+        lessonTemplateRepository.updateChapterTemplate(lessonTemplate.getId(), chapterTemplate);
     }
 
 }

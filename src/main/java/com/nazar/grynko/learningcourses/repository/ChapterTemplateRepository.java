@@ -1,6 +1,7 @@
 package com.nazar.grynko.learningcourses.repository;
 
 import com.nazar.grynko.learningcourses.model.ChapterTemplate;
+import com.nazar.grynko.learningcourses.model.CourseTemplate;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -14,6 +15,6 @@ public interface ChapterTemplateRepository extends JpaRepository<ChapterTemplate
     @Transactional
     @Modifying(clearAutomatically = true)
     @Query("UPDATE ChapterTemplate chapterTemplate SET chapterTemplate.number = :number, chapterTemplate.title = :title, chapterTemplate.description = :description, chapterTemplate.courseTemplate = :courseTemplate WHERE chapterTemplate.id = :id")
-    void update(@Param("id") Long id, @Param("number") Integer number, @Param("title") String title, @Param("description") String description, @Param("courseTemplate") Long courseTemplate);
+    void update(@Param("id") Long id, @Param("number") Integer number, @Param("title") String title, @Param("description") String description, @Param("courseTemplate") CourseTemplate courseTemplate);
 
 }

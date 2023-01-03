@@ -49,8 +49,8 @@ public class LessonTemplateController {
     }
 
     @PutMapping("/{id}")
-    void update(@RequestBody LessonTemplate lessonTemplate) {
-        lessonTemplateService.update(lessonTemplate);
+    void updatePublicInformation(@RequestBody LessonTemplate lessonTemplate) {
+        lessonTemplateService.updatePublicInformation(lessonTemplate);
     }
 
 }
