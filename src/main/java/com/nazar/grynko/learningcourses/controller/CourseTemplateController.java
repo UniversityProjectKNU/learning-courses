@@ -43,8 +43,9 @@ public class CourseTemplateController {
     }
 
     @PutMapping("/{id}")
-    void update(@RequestBody CourseTemplate courseTemplate) {
-        courseTemplateService.update(courseTemplate);
+    CourseTemplate update(@RequestBody CourseTemplate courseTemplate, @PathVariable Long id) {
+        courseTemplateService.validateAndSetId(courseTemplate, id);
+        return courseTemplateService.update(courseTemplate);
     }
     
 }

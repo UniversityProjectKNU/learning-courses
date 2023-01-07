@@ -1,7 +1,6 @@
 package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
-import com.nazar.grynko.learningcourses.model.ChapterTemplate;
 import com.nazar.grynko.learningcourses.model.LessonTemplate;
 import com.nazar.grynko.learningcourses.service.ChapterTemplateService;
 import com.nazar.grynko.learningcourses.service.LessonTemplateService;
@@ -32,10 +31,7 @@ public class LessonTemplateController {
 
     @GetMapping
     Set<LessonTemplate> allInChapter(@PathVariable Long chapterTemplateId) {
-        ChapterTemplate chapterTemplate = chapterTemplateService.get(chapterTemplateId)
-                .orElseThrow(InvalidPathException::new);
-
-        return chapterTemplate.getLessonTemplates();
+        return chapterTemplateService.getAllLessonsInChapterTemplate(chapterTemplateId);
     }
 
     @DeleteMapping("/{id}")
@@ -49,8 +45,9 @@ public class LessonTemplateController {
     }
 
     @PutMapping("/{id}")
-    void update(@RequestBody LessonTemplate lessonTemplate) {
-        lessonTemplateService.update(lessonTemplate);
+    LessonTemplate update(@RequestBody LessonTemplate lessonTemplate, @PathVariable Long id) {
+        lessonTemplateService.validateAndSetId(lessonTemplate, id);
+        return lessonTemplateService.update(lessonTemplate);
     }
 
 }

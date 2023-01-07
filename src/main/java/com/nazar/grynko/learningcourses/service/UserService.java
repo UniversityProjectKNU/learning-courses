@@ -27,7 +27,8 @@ public class UserService {
     }
 
     public void delete(Long id) {
-        User dbUser = userRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        User dbUser = userRepository.findById(id)
+                .orElseThrow(IllegalArgumentException::new);
         userRepository.delete(dbUser);
     }
 
@@ -36,7 +37,8 @@ public class UserService {
     }
 
     public User update(User user) {
-        User dbUser = userRepository.findById(user.getId()).orElseThrow(IllegalArgumentException::new);
+        User dbUser = userRepository.findById(user.getId())
+                .orElseThrow(IllegalArgumentException::new);
         setNullFields(dbUser, user);
         return userRepository.save(user);
     }

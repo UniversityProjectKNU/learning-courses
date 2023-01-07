@@ -8,8 +8,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -39,13 +37,5 @@ public class ChapterTemplate {
     )
     @JsonIgnore
     private CourseTemplate courseTemplate;
-
-    @OneToMany(
-            mappedBy = "chapterTemplate",
-            fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private Set<LessonTemplate> lessonTemplates = new HashSet<>();
 
 }

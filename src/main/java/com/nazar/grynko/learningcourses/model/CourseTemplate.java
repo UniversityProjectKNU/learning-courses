@@ -1,6 +1,5 @@
 package com.nazar.grynko.learningcourses.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,8 +7,6 @@ import lombok.Setter;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -28,13 +25,5 @@ public class CourseTemplate {
     private String title;
     @Column(nullable = false)
     private String description;
-
-    @OneToMany(
-            mappedBy = "courseTemplate",
-            fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private Set<ChapterTemplate> chapterTemplates = new HashSet<>();
 
 }

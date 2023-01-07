@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.service;
 
+import com.nazar.grynko.learningcourses.model.ChapterTemplate;
 import com.nazar.grynko.learningcourses.model.CourseTemplate;
 import com.nazar.grynko.learningcourses.repository.CourseTemplateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class CourseTemplateService {
@@ -27,15 +29,37 @@ public class CourseTemplateService {
     }
 
     public void delete(Long id) {
-        courseTemplateRepository.deleteById(id);
+        CourseTemplate courseTemplate = courseTemplateRepository.findById(id)
+                        .orElseThrow(IllegalArgumentException::new);
+        courseTemplateRepository.delete(courseTemplate);
     }
 
     public CourseTemplate save(CourseTemplate courseTemplate) {
         return courseTemplateRepository.save(courseTemplate);
     }
 
-    public void update(CourseTemplate courseTemplate) {
-        courseTemplateRepository.update(courseTemplate.getId(), courseTemplate.getTitle(), courseTemplate.getDescription());
+    public CourseTemplate update(CourseTemplate courseTemplate) {
+        CourseTemplate dbCourseTemplate = courseTemplateRepository.findById(courseTemplate.getId())
+                .orElseThrow(IllegalArgumentException::new);
+        setNullFields(dbCourseTemplate, courseTemplate);
+        return courseTemplateRepository.save(courseTemplate);
+    }
+
+    public Set<ChapterTemplate> getAllChaptersInCourseTemplate(Long courseTemplateId) {
+        get(courseTemplateId).orElseThrow(IllegalArgumentException::new);
+        return courseTemplateRepository.getAllChaptersInCourseTemplate(courseTemplateId);
+    }
+
+    public void validateAndSetId(CourseTemplate courseTemplate, Long id) {
+        if(courseTemplate.getId() != null && !courseTemplate.getId().equals(id))
+            throw new IllegalStateException();
+        courseTemplate.setId(id);
+    }
+
+    public void setNullFields(CourseTemplate source, CourseTemplate destination) {
+        if(destination.getId() == null) destination.setId(source.getId());
+        if(destination.getTitle() == null) destination.setTitle(source.getTitle());
+        if(destination.getDescription() == null) destination.setDescription(source.getDescription());
     }
     
 }

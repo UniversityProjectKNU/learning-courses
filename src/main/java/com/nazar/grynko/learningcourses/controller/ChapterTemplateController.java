@@ -2,7 +2,6 @@ package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.model.ChapterTemplate;
-import com.nazar.grynko.learningcourses.model.CourseTemplate;
 import com.nazar.grynko.learningcourses.service.ChapterTemplateService;
 import com.nazar.grynko.learningcourses.service.CourseTemplateService;
 import org.springframework.web.bind.annotation.*;
@@ -29,10 +28,7 @@ public class ChapterTemplateController {
 
     @GetMapping
     Set<ChapterTemplate> allInCourse(@PathVariable Long courseTemplateId) {
-        CourseTemplate courseTemplate = courseTemplateService.get(courseTemplateId)
-                .orElseThrow(InvalidPathException::new);
-
-        return courseTemplate.getChapterTemplates();
+        return courseTemplateService.getAllChaptersInCourseTemplate(courseTemplateId);
     }
 
     @DeleteMapping("/{id}")
@@ -41,13 +37,14 @@ public class ChapterTemplateController {
     }
 
     @PostMapping
-    ChapterTemplate save(@RequestBody ChapterTemplate lessonTemplate) {
-        return chapterTemplateService.save(lessonTemplate);
+    ChapterTemplate save(@RequestBody ChapterTemplate chapterTemplate) {
+        return chapterTemplateService.save(chapterTemplate);
     }
 
     @PutMapping("/{id}")
-    void update(@RequestBody ChapterTemplate lessonTemplate) {
-        chapterTemplateService.update(lessonTemplate);
+    ChapterTemplate update(@RequestBody ChapterTemplate chapterTemplate, @PathVariable Long id) {
+        chapterTemplateService.validateAndSetId(chapterTemplate, id);
+        return chapterTemplateService.update(chapterTemplate);
     }
 
 }

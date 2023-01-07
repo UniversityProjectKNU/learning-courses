@@ -5,7 +5,6 @@ import com.nazar.grynko.learningcourses.repository.LessonTemplateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,10 +21,6 @@ public class LessonTemplateService {
         return lessonTemplateRepository.findById(id);
     }
 
-    public List<LessonTemplate> getAll() {
-        return lessonTemplateRepository.findAll();
-    }
-
     public void delete(Long id) {
         lessonTemplateRepository.deleteById(id);
     }
@@ -34,9 +29,25 @@ public class LessonTemplateService {
         return lessonTemplateRepository.save(lessonTemplate);
     }
 
-    public void update(LessonTemplate lessonTemplate) {
-        lessonTemplateRepository.update(lessonTemplate.getId(), lessonTemplate.getNumber(), lessonTemplate.getTitle(),
-                lessonTemplate.getDescription(), lessonTemplate.getChapterTemplate().getId());
+    public LessonTemplate update(LessonTemplate lessonTemplate) {
+        LessonTemplate dbLessonTemplate = lessonTemplateRepository.findById(lessonTemplate.getId())
+                .orElseThrow(IllegalArgumentException::new);
+        setNullFields(dbLessonTemplate, lessonTemplate);
+        return lessonTemplateRepository.save(lessonTemplate);
+    }
+
+    public void validateAndSetId(LessonTemplate lessonTemplate, Long id) {
+        if(lessonTemplate.getId() != null && !lessonTemplate.getId().equals(id))
+            throw new IllegalStateException();
+        lessonTemplate.setId(id);
+    }
+
+    public void setNullFields(LessonTemplate source, LessonTemplate destination) {
+        if(destination.getId() == null) destination.setId(source.getId());
+        if(destination.getTitle() == null) destination.setTitle(source.getTitle());
+        if(destination.getDescription() == null) destination.setDescription(source.getDescription());
+        if(destination.getNumber() == null) destination.setNumber(source.getNumber());
+        if(destination.getChapterTemplate() == null) destination.setChapterTemplate(source.getChapterTemplate());
     }
 
 }
