@@ -27,14 +27,35 @@ public class UserService {
     }
 
     public void delete(Long id) {
-        userRepository.deleteById(id);
+        User dbUser = userRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        userRepository.delete(dbUser);
     }
 
     public User save(User user) {
         return userRepository.save(user);
     }
 
-    public void update(User user) {
-        userRepository.update(user.getId(), user.getFirstName(), user.getLastName(), user.getDateOfBirth());
+    public User update(User user) {
+        User dbUser = userRepository.findById(user.getId()).orElseThrow(IllegalArgumentException::new);
+        setNullFields(dbUser, user);
+        return userRepository.save(user);
     }
+
+
+    public void validateAndSetId(User user, Long id) {
+        if(user.getId() != null && !user.getId().equals(id))
+            throw new IllegalStateException();
+        user.setId(id);
+    }
+
+    public void setNullFields(User source, User destination) {
+        if(destination.getId() == null) destination.setId(source.getId());
+        if(destination.getLogin() == null) destination.setLogin(source.getLogin());
+        if(destination.getPassword() == null) destination.setPassword(source.getPassword());
+        if(destination.getFirstName() == null) destination.setFirstName(source.getFirstName());
+        if(destination.getLastName() == null) destination.setLastName(source.getLastName());
+        if(destination.getDateOfBirth() == null) destination.setDateOfBirth(source.getDateOfBirth());
+        if(destination.getRoles() == null) destination.setRoles(source.getRoles());
+    }
+
 }

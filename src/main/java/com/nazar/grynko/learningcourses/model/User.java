@@ -37,7 +37,7 @@ public class User {
     @Temporal(TemporalType.DATE)
     private Calendar dateOfBirth;
 
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "users_to_roles",
             joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),

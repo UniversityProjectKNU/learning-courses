@@ -39,8 +39,9 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    void update(@RequestBody User user) {
-        userService.update(user);
+    User update(@RequestBody User user, @PathVariable Long id) {
+        userService.validateAndSetId(user, id);
+        return userService.update(user);
     }
 
 }
