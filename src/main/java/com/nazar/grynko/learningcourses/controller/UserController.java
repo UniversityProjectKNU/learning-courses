@@ -1,8 +1,8 @@
 package com.nazar.grynko.learningcourses.controller;
 
+import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
-import com.nazar.grynko.learningcourses.model.User;
-import com.nazar.grynko.learningcourses.service.UserService;
+import com.nazar.grynko.learningcourses.wrapper.UserServiceWrapper;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -11,37 +11,31 @@ import java.util.List;
 @RequestMapping("users")
 public class UserController {
 
-    private final UserService userService;
+    private final UserServiceWrapper serviceWrapper;
 
-    public UserController(UserService userService) {
-        this.userService = userService;
+    public UserController(UserServiceWrapper serviceWrapper) {
+        this.serviceWrapper = serviceWrapper;
     }
 
     @GetMapping("/{id}")
-    User one(@PathVariable Long id) {
-        return userService.get(id)
+    UserDto one(@PathVariable Long id) {
+        return serviceWrapper.get(id)
                 .orElseThrow(InvalidPathException::new);
     }
 
     @GetMapping
-    List<User> all() {
-        return userService.getAll();
+    List<UserDto> all() {
+        return serviceWrapper.getAll();
     }
 
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id) {
-        userService.delete(id);
-    }
-
-    @PostMapping
-    User save(@RequestBody User user) {
-        return userService.save(user);
+        serviceWrapper.delete(id);
     }
 
     @PutMapping("/{id}")
-    User update(@RequestBody User user, @PathVariable Long id) {
-        userService.validateAndSetId(user, id);
-        return userService.update(user);
+    UserDto update(@RequestBody UserDto userDto, @PathVariable Long id) {
+        return serviceWrapper.update(userDto, id);
     }
 
 }
