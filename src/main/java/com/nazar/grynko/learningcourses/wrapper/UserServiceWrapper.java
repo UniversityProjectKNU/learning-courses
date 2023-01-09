@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.wrapper;
 
+import com.nazar.grynko.learningcourses.dto.role.RoleDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.model.Role;
 import com.nazar.grynko.learningcourses.model.RoleType;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
@@ -20,12 +22,15 @@ public class UserServiceWrapper {
 
     private final UserService userService;
     private final RoleService roleService;
+    private final RoleServiceWrapper roleServiceWrapper;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public UserServiceWrapper(UserService userService, RoleService roleService, ModelMapper modelMapper) {
+    public UserServiceWrapper(UserService userService, RoleService roleService,
+                              RoleServiceWrapper roleServiceWrapper, ModelMapper modelMapper) {
         this.userService = userService;
         this.roleService = roleService;
+        this.roleServiceWrapper = roleServiceWrapper;
         this.modelMapper = modelMapper;
     }
 
@@ -46,14 +51,26 @@ public class UserServiceWrapper {
     public UserDto update(UserDto userDto, Long id) {
         User user = fromDto(userDto).setId(id);
 
-        if(user.getRoles() != null) {
-            List<RoleType> types = user.getRoles().stream().map(Role::getType).collect(Collectors.toList());
-            List<Role> roles = roleService.getAllByTypeIn(types);
-            user.setRoles(new HashSet<>(roles));
-        }
-
-        userService.update(user);
+        user = userService.update(user);
         return toDto(user);
+    }
+
+    public Set<RoleDto> updateRoles(Set<RoleDto> rolesDto, Long userId) {
+        List<RoleType> types = rolesDto.stream().map(RoleDto::getType).collect(Collectors.toList());
+        Set<Role> roles = new HashSet<>(roleService.getAllByTypeIn(types));
+
+        roles = userService.updateRoles(roles, userId);
+
+        return roles.stream()
+                .map(roleServiceWrapper::toDto)
+                .collect(Collectors.toSet());
+    }
+
+    public Set<RoleDto> getUsersRoles(Long id) {
+        return userService.getUsersRoles(id)
+                .stream()
+                .map(roleServiceWrapper::toDto)
+                .collect(Collectors.toSet());
     }
 
     public UserDto toDto(User user) {

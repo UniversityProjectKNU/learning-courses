@@ -1,11 +1,13 @@
 package com.nazar.grynko.learningcourses.controller;
 
+import com.nazar.grynko.learningcourses.dto.role.RoleDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.wrapper.UserServiceWrapper;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("users")
@@ -36,6 +38,16 @@ public class UserController {
     @PutMapping("/{id}")
     UserDto update(@RequestBody UserDto userDto, @PathVariable Long id) {
         return serviceWrapper.update(userDto, id);
+    }
+
+    @GetMapping("/{id}/roles")
+    Set<RoleDto> getUsersRoles(@PathVariable Long id) {
+        return serviceWrapper.getUsersRoles(id);
+    }
+
+    @PutMapping("/{id}/roles")
+    Set<RoleDto> updateRoles(@RequestBody Set<RoleDto> roles, @PathVariable Long id) {
+        return serviceWrapper.updateRoles(roles, id);
     }
 
 }
