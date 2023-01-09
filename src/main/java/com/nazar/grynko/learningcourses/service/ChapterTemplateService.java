@@ -1,7 +1,6 @@
 package com.nazar.grynko.learningcourses.service;
 
 import com.nazar.grynko.learningcourses.model.ChapterTemplate;
-import com.nazar.grynko.learningcourses.model.LessonTemplate;
 import com.nazar.grynko.learningcourses.repository.ChapterTemplateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -40,18 +39,12 @@ public class ChapterTemplateService {
         return chapterTemplateRepository.save(dbChapterTemplate);
     }
 
-    public Set<LessonTemplate> getAllLessonsInChapterTemplate(Long chapterTemplateId) {
-        get(chapterTemplateId).orElseThrow(IllegalArgumentException::new);
-        return chapterTemplateRepository.getAllLessonsInChapterTemplate(chapterTemplateId);
+    public Set<ChapterTemplate> getAllInCourseTemplate(Long courseTemplateId) {
+        get(courseTemplateId).orElseThrow(IllegalArgumentException::new);
+        return chapterTemplateRepository.getChapterTemplatesByCourseTemplateId(courseTemplateId);
     }
 
-    public void validateAndSetId(ChapterTemplate chapterTemplate, Long id) {
-        if(chapterTemplate.getId() != null && !chapterTemplate.getId().equals(id))
-            throw new IllegalStateException();
-        chapterTemplate.setId(id);
-    }
-
-    public void setNullFields(ChapterTemplate source, ChapterTemplate destination) {
+    private void setNullFields(ChapterTemplate source, ChapterTemplate destination) {
         if(destination.getId() == null) destination.setId(source.getId());
         if(destination.getTitle() == null) destination.setTitle(source.getTitle());
         if(destination.getDescription() == null) destination.setDescription(source.getDescription());

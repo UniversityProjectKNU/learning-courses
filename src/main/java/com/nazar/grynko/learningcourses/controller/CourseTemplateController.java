@@ -1,8 +1,8 @@
 package com.nazar.grynko.learningcourses.controller;
 
+import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
-import com.nazar.grynko.learningcourses.model.CourseTemplate;
-import com.nazar.grynko.learningcourses.service.CourseTemplateService;
+import com.nazar.grynko.learningcourses.wrapper.CourseTemplateServiceWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,38 +14,37 @@ import java.util.List;
 })
 public class CourseTemplateController {
 
-    private final CourseTemplateService courseTemplateService;
+    private final CourseTemplateServiceWrapper serviceWrapper;
 
     @Autowired
-    public CourseTemplateController(CourseTemplateService courseTemplateService) {
-        this.courseTemplateService = courseTemplateService;
+    public CourseTemplateController(CourseTemplateServiceWrapper serviceWrapper) {
+        this.serviceWrapper = serviceWrapper;
     }
 
     @GetMapping("/{id}")
-    CourseTemplate one(@PathVariable Long id) {
-        return courseTemplateService.get(id)
+    CourseTemplateDto one(@PathVariable Long id) {
+        return serviceWrapper.get(id)
                 .orElseThrow(InvalidPathException::new);
     }
 
     @GetMapping
-    List<CourseTemplate> all() {
-        return courseTemplateService.getAll();
+    List<CourseTemplateDto> all() {
+        return serviceWrapper.getAll();
     }
 
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id) {
-        courseTemplateService.delete(id);
+        serviceWrapper.delete(id);
     }
 
     @PostMapping
-    CourseTemplate save(@RequestBody CourseTemplate courseTemplate) {
-        return courseTemplateService.save(courseTemplate);
+    CourseTemplateDto save(@RequestBody CourseTemplateDto courseTemplateDto) {
+        return serviceWrapper.save(courseTemplateDto);
     }
 
     @PutMapping("/{id}")
-    CourseTemplate update(@RequestBody CourseTemplate courseTemplate, @PathVariable Long id) {
-        courseTemplateService.validateAndSetId(courseTemplate, id);
-        return courseTemplateService.update(courseTemplate);
+    CourseTemplateDto update(@RequestBody CourseTemplateDto courseTemplateDto, @PathVariable Long id) {
+        return serviceWrapper.update(courseTemplateDto, id);
     }
     
 }

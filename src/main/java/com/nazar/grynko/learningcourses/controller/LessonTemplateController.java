@@ -1,9 +1,8 @@
 package com.nazar.grynko.learningcourses.controller;
 
+import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
-import com.nazar.grynko.learningcourses.model.LessonTemplate;
-import com.nazar.grynko.learningcourses.service.ChapterTemplateService;
-import com.nazar.grynko.learningcourses.service.LessonTemplateService;
+import com.nazar.grynko.learningcourses.wrapper.LessonTemplateServiceWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,41 +12,38 @@ import java.util.Set;
 @RequestMapping("courses-templates/{courseTemplateId}/chapters-templates/{chapterTemplateId}/lessons-templates")
 public class LessonTemplateController {
 
-    private final LessonTemplateService lessonTemplateService;
-    private final ChapterTemplateService chapterTemplateService;
+    private final LessonTemplateServiceWrapper serviceWrapper;
 
     @Autowired
-    public LessonTemplateController(LessonTemplateService lessonTemplateService, ChapterTemplateService chapterTemplateService) {
-        this.lessonTemplateService = lessonTemplateService;
-        this.chapterTemplateService = chapterTemplateService;
+    public LessonTemplateController(LessonTemplateServiceWrapper serviceWrapper) {
+        this.serviceWrapper = serviceWrapper;
     }
 
 
     @GetMapping("/{id}")
-    LessonTemplate one(@PathVariable Long id) {
-        return lessonTemplateService.get(id)
+    LessonTemplateDto one(@PathVariable Long id) {
+        return serviceWrapper.get(id)
                 .orElseThrow(InvalidPathException::new);
     }
 
     @GetMapping
-    Set<LessonTemplate> allInChapter(@PathVariable Long chapterTemplateId) {
-        return chapterTemplateService.getAllLessonsInChapterTemplate(chapterTemplateId);
+    Set<LessonTemplateDto> allInChapter(@PathVariable Long chapterTemplateId) {
+        return serviceWrapper.getAllInChapterTemplate(chapterTemplateId);
     }
 
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id) {
-        lessonTemplateService.delete(id);
+        serviceWrapper.delete(id);
     }
 
     @PostMapping
-    LessonTemplate save(@RequestBody LessonTemplate lessonTemplate) {
-        return lessonTemplateService.save(lessonTemplate);
+    LessonTemplateDto save(@RequestBody LessonTemplateDto lessonTemplateDto, @PathVariable Long chapterTemplateId) {
+        return serviceWrapper.save(lessonTemplateDto, chapterTemplateId);
     }
 
     @PutMapping("/{id}")
-    LessonTemplate update(@RequestBody LessonTemplate lessonTemplate, @PathVariable Long id) {
-        lessonTemplateService.validateAndSetId(lessonTemplate, id);
-        return lessonTemplateService.update(lessonTemplate);
+    LessonTemplateDto update(@RequestBody LessonTemplateDto lessonTemplateDto, @PathVariable Long id) {
+        return serviceWrapper.update(lessonTemplateDto, id);
     }
 
 }

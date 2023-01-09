@@ -1,7 +1,6 @@
 package com.nazar.grynko.learningcourses.repository;
 
 import com.nazar.grynko.learningcourses.model.ChapterTemplate;
-import com.nazar.grynko.learningcourses.model.LessonTemplate;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,7 +11,10 @@ import java.util.Set;
 @Repository
 public interface ChapterTemplateRepository extends JpaRepository<ChapterTemplate, Long> {
 
-    @Query("SELECT lessonTemplate FROM LessonTemplate lessonTemplate WHERE lessonTemplate.chapterTemplate.id = :id")
-    Set<LessonTemplate> getAllLessonsInChapterTemplate(@Param("id") Long id);
+    @Query("SELECT chapterTemplate FROM ChapterTemplate chapterTemplate WHERE chapterTemplate.courseTemplate.id = :courseId")
+    Set<ChapterTemplate> getAllChaptersInCourseTemplate(@Param("courseId") Long courseId);
+
+    Set<ChapterTemplate> getChapterTemplatesByCourseTemplateId(@Param("courseTemplateId") Long courseTemplateId);
+
 
 }

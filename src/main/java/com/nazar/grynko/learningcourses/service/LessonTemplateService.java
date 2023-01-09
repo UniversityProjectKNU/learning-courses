@@ -6,15 +6,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 public class LessonTemplateService {
 
     private final LessonTemplateRepository lessonTemplateRepository;
+    private final ChapterTemplateService chapterTemplateService;
 
     @Autowired
-    public LessonTemplateService(LessonTemplateRepository lessonTemplateRepository) {
+    public LessonTemplateService(LessonTemplateRepository lessonTemplateRepository, ChapterTemplateService chapterTemplateService) {
         this.lessonTemplateRepository = lessonTemplateRepository;
+        this.chapterTemplateService = chapterTemplateService;
     }
 
     public Optional<LessonTemplate> get(Long id) {
@@ -36,13 +39,13 @@ public class LessonTemplateService {
         return lessonTemplateRepository.save(lessonTemplate);
     }
 
-    public void validateAndSetId(LessonTemplate lessonTemplate, Long id) {
-        if(lessonTemplate.getId() != null && !lessonTemplate.getId().equals(id))
-            throw new IllegalStateException();
-        lessonTemplate.setId(id);
+    public Set<LessonTemplate> getAllInChapterTemplate(Long chapterTemplateId) {
+        chapterTemplateService.get(chapterTemplateId)
+                .orElseThrow(IllegalArgumentException::new);
+        return lessonTemplateRepository.getLessonTemplatesByChapterTemplateId(chapterTemplateId);
     }
 
-    public void setNullFields(LessonTemplate source, LessonTemplate destination) {
+    private void setNullFields(LessonTemplate source, LessonTemplate destination) {
         if(destination.getId() == null) destination.setId(source.getId());
         if(destination.getTitle() == null) destination.setTitle(source.getTitle());
         if(destination.getDescription() == null) destination.setDescription(source.getDescription());

@@ -11,8 +11,4 @@ import java.util.Set;
 
 @Repository
 public interface CourseTemplateRepository extends JpaRepository<CourseTemplate, Long> {
-
-    @Query("SELECT chapterTemplate FROM ChapterTemplate chapterTemplate WHERE chapterTemplate.courseTemplate.id = :id")
-    Set<ChapterTemplate> getAllChaptersInCourseTemplate(@Param("id") Long id);
-    
 }
