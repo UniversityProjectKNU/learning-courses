@@ -32,7 +32,6 @@ public class User {
     private String firstName;
     @Column(nullable = false)
     private String lastName;
-    // TODO [42S22] Unknown column 'user0_.dateOfBirth' in 'field list' when execute [select entity from User entity]
     @Column(nullable = false)
     @Temporal(TemporalType.DATE)
     private Calendar dateOfBirth;
