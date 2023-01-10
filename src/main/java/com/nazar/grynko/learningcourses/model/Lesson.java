@@ -27,7 +27,7 @@ public class Lesson {
     @Column(nullable = false)
     private String description;
     @Column(nullable = false)
-    private String number;
+    private Integer number;
     @Column(nullable = false)
     private boolean isFinished;
     @Column(nullable = false)

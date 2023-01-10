@@ -27,7 +27,7 @@ public class Chapter {
     @Column(nullable = false)
     private String description;
     @Column(nullable = false)
-    private String number;
+    private Integer number;
     @Column(nullable = false)
     private boolean isFinished;
     private String finalFeedback;

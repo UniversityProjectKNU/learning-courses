@@ -94,8 +94,8 @@ CREATE TABLE `learning_courses`.`lessons` (
                                               `description` VARCHAR(256) NOT NULL,
                                               `number` INT NOT NULL,
                                               `is_finished` BOOLEAN NOT NULL DEFAULT FALSE,
-                                              `max_mark` INT NOT NULL,
-                                              `success_mark` INT NOT NULL,
+                                              `max_mark` INT NOT NULL DEFAULT 1,
+                                              `success_mark` INT NOT NULL DEFAULT 1,
 
                                               PRIMARY KEY (`id`),
 
