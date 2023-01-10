@@ -1,7 +1,9 @@
 package com.nazar.grynko.learningcourses.controller;
 
+import com.nazar.grynko.learningcourses.dto.course.CourseDto;
 import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
+import com.nazar.grynko.learningcourses.wrapper.CourseServiceWrapper;
 import com.nazar.grynko.learningcourses.wrapper.CourseTemplateServiceWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +17,13 @@ import java.util.List;
 public class CourseTemplateController {
 
     private final CourseTemplateServiceWrapper serviceWrapper;
+    private final CourseServiceWrapper courseServiceWrapper;
 
     @Autowired
-    public CourseTemplateController(CourseTemplateServiceWrapper serviceWrapper) {
+    public CourseTemplateController(CourseTemplateServiceWrapper serviceWrapper,
+                                    CourseServiceWrapper courseServiceWrapper) {
         this.serviceWrapper = serviceWrapper;
+        this.courseServiceWrapper = courseServiceWrapper;
     }
 
     @GetMapping("/{id}")
@@ -45,6 +50,11 @@ public class CourseTemplateController {
     @PutMapping("/{id}")
     CourseTemplateDto update(@RequestBody CourseTemplateDto courseTemplateDto, @PathVariable Long id) {
         return serviceWrapper.update(courseTemplateDto, id);
+    }
+
+    @PostMapping("/{id}/create")
+    CourseDto create(@PathVariable Long id) {
+        return courseServiceWrapper.create(id);
     }
     
 }
