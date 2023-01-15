@@ -29,7 +29,7 @@ public class Lesson {
     @Column(nullable = false)
     private Integer number;
     @Column(nullable = false)
-    private boolean isFinished;
+    private Boolean isFinished;
     @Column(nullable = false)
     private Integer maxMark;
     @Column(nullable = false)

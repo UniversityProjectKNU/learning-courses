@@ -29,7 +29,7 @@ public class Chapter {
     @Column(nullable = false)
     private Integer number;
     @Column(nullable = false)
-    private boolean isFinished;
+    private Boolean isFinished;
     private String finalFeedback;
 
     @ManyToOne

@@ -42,6 +42,17 @@ public class CourseServiceWrapper {
         return toDto(course);
     }
 
+    public CourseDto save(CourseDto dto) {
+        Course entity = fromDto(dto);
+        return toDto(courseService.save(entity));
+    }
+
+    public CourseDto update(CourseDto dto, Long courseId) {
+        Course entity = fromDto(dto).setId(courseId);
+        entity = courseService.update(entity);
+        return toDto(entity);
+    }
+
     public CourseDto toDto(Course entity) {
         return modelMapper.map(entity, CourseDto.class);
     }

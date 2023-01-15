@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.dto.chapter;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 import lombok.experimental.Accessors;
 
@@ -15,6 +16,7 @@ public class ChapterDto implements Serializable {
     private String title;
     private String description;
     private String number;
+    @JsonProperty("isFinished")
     private boolean isFinished;
     private String finalFeedback;
 

@@ -8,9 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class ChapterService {
@@ -29,6 +27,23 @@ public class ChapterService {
         this.modelMapper = modelMapper;
     }
 
+    public Optional<Chapter> get(Long id) {
+        return chapterRepository.findById(id);
+    }
+
+    public Collection<Chapter> getAllInCourse(Long courseId) {
+        return chapterRepository.findAllByCourseId(courseId);
+    }
+
+    public void delete(Long id) {
+        Chapter entity = get(id).orElseThrow(IllegalArgumentException::new);
+        chapterRepository.delete(entity);
+    }
+
+    public Chapter save(Chapter entity) {
+        return chapterRepository.save(entity);
+    }
+
     public List<Chapter> create(Long courseTemplateId, Course course) {
         Set<ChapterTemplate> chapterTemplates = chapterTemplateService
                 .getAllInCourseTemplate(courseTemplateId);
@@ -42,9 +57,11 @@ public class ChapterService {
         return entities;
     }
 
-    private Chapter create(ChapterTemplate template, Course course) {
-        Chapter entity = fromTemplate(template);
+    public Chapter create(ChapterTemplate template, Course course) {
+        Chapter entity = fromTemplate(template).setId(null);
+        // change
         entity.setCourse(course);
+        defaultSetup(entity);
 
         entity = chapterRepository.save(entity);
 
@@ -53,8 +70,31 @@ public class ChapterService {
         return entity;
     }
 
+    public Chapter update(Chapter entity) {
+        Chapter dbChapter = chapterRepository.findById(entity.getId())
+                .orElseThrow(IllegalArgumentException::new);
+        setNullFields(dbChapter, entity);
+        return chapterRepository.save(entity);
+    }
+
+    private Chapter defaultSetup(Chapter entity) {
+        if(entity.getIsFinished() == null)
+            entity.setIsFinished(true);
+
+        return entity;
+    }
+
     private Chapter fromTemplate(ChapterTemplate template) {
         return modelMapper.map(template, Chapter.class);
+    }
+
+    private void setNullFields(Chapter source, Chapter destination) {
+        if(destination.getId() == null) destination.setId(source.getId());
+        if(destination.getTitle() == null) destination.setTitle(source.getTitle());
+        if(destination.getDescription() == null) destination.setDescription(source.getDescription());
+        if(destination.getNumber() == null) destination.setNumber(source.getNumber());
+        if(destination.getIsFinished() == null) destination.setIsFinished(source.getIsFinished());
+        if(destination.getFinalFeedback() == null) destination.setFinalFeedback(source.getFinalFeedback());
     }
 
 }

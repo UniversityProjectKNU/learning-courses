@@ -1,5 +1,7 @@
 package com.nazar.grynko.learningcourses.dto.course;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,6 +19,7 @@ public class CourseDto implements Serializable {
 
     private String title;
     private String description;
+    @JsonProperty("isFinished")
     private boolean isFinished;
     private String finalFeedback;
 

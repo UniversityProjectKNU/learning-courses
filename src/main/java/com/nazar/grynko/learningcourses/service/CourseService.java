@@ -6,6 +6,7 @@ import com.nazar.grynko.learningcourses.repository.CourseRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,10 +40,11 @@ public class CourseService {
         courseRepository.delete(course);
     }
 
+    @Transactional
     public Course create(Long courseTemplateId) {
         CourseTemplate template = courseTemplateService.get(courseTemplateId)
                 .orElseThrow(IllegalArgumentException::new);
-        Course entity = fromTemplate(template);
+        Course entity = fromTemplate(template).setId(null);
 
         entity = courseRepository.save(entity);
 
@@ -51,8 +53,27 @@ public class CourseService {
         return entity;
     }
 
+    public Course save(Course entity) {
+        return courseRepository.save(entity);
+    }
+
+    public Course update(Course course) {
+        Course dbCourse = courseRepository.findById(course.getId())
+                .orElseThrow(IllegalArgumentException::new);
+        setNullFields(dbCourse, course);
+        return courseRepository.save(course);
+    }
+
     private Course fromTemplate(CourseTemplate template) {
         return modelMapper.map(template, Course.class);
+    }
+
+    private void setNullFields(Course source, Course destination) {
+        if(destination.getId() == null) destination.setId(source.getId());
+        if(destination.getTitle() == null) destination.setTitle(source.getTitle());
+        if(destination.getDescription() == null) destination.setDescription(source.getDescription());
+        if(destination.isFinished() != source.isFinished()) destination.setFinished(source.isFinished());
+        if(destination.getFinalFeedback() == null) destination.setFinalFeedback(source.getFinalFeedback());
     }
 
 }

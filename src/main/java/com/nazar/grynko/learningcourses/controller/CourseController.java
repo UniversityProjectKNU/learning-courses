@@ -35,4 +35,14 @@ public class CourseController {
         serviceWrapper.delete(id);
     }
 
+    @PostMapping
+    CourseDto save(@RequestBody CourseDto courseDto) {
+        return serviceWrapper.save(courseDto);
+    }
+
+    @PutMapping("/{id}")
+    CourseDto update(@RequestBody CourseDto courseDto, @PathVariable Long id) {
+        return serviceWrapper.update(courseDto, id);
+    }
+
 }
