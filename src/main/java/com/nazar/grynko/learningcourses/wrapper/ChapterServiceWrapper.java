@@ -69,4 +69,7 @@ public class ChapterServiceWrapper {
         return modelMapper.map(dto, Chapter.class);
     }
 
+    public boolean hasWithCourse(Long id, Long courseId) {
+        return chapterService.hasWithCourse(id, courseId);
+    }
 }

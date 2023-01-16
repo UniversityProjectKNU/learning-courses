@@ -69,5 +69,7 @@ public class LessonServiceWrapper {
         return modelMapper.map(dto, Lesson.class);
     }
 
-
+    public boolean hasWithChapter(Long id, Long chapterId, Long courseId) {
+        return lessonService.hasWithChapter(id, chapterId, courseId);
+    }
 }

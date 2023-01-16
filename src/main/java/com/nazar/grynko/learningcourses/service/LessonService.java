@@ -100,4 +100,10 @@ public class LessonService {
         if(destination.getChapter() == null) destination.setChapter(source.getChapter());
     }
 
+    public boolean hasWithChapter(Long id, Long chapterId, Long courseId) {
+        Optional<Lesson> optional = lessonRepository
+                .getLessonByIdAndChapterIdAndChapterCourseId(id, chapterId, courseId);
+
+        return optional.isPresent();
+    }
 }
