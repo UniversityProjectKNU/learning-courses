@@ -2,6 +2,7 @@ package com.nazar.grynko.learningcourses.service;
 
 import com.nazar.grynko.learningcourses.model.Course;
 import com.nazar.grynko.learningcourses.model.CourseTemplate;
+import com.nazar.grynko.learningcourses.property.CourseProperties;
 import com.nazar.grynko.learningcourses.repository.CourseRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -16,13 +17,15 @@ public class CourseService {
     private final CourseRepository courseRepository;
     private final CourseTemplateService courseTemplateService;
     private final ChapterService chapterService;
+    private final CourseProperties courseProperties;
     private final ModelMapper modelMapper;
 
     public CourseService(CourseRepository courseRepository, CourseTemplateService courseTemplateService,
-                         ChapterService chapterService, ModelMapper modelMapper) {
+                         ChapterService chapterService, CourseProperties courseProperties, ModelMapper modelMapper) {
         this.courseRepository = courseRepository;
         this.courseTemplateService = courseTemplateService;
         this.chapterService = chapterService;
+        this.courseProperties = courseProperties;
         this.modelMapper = modelMapper;
     }
 
@@ -79,11 +82,9 @@ public class CourseService {
         if(destination.getFinalFeedback() == null) destination.setFinalFeedback(source.getFinalFeedback());
     }
 
-    private Course defaultSetup(Course entity) {
+    private void defaultSetup(Course entity) {
         if(entity.getIsFinished() == null)
-            entity.setIsFinished(true);
-
-        return entity;
+            entity.setIsFinished(courseProperties.getDefaultIsFinished());
     }
 
 }

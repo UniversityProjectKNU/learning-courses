@@ -14,5 +14,15 @@
       "name": "lesson.default.is.finished",
       "type": "java.lang.Boolean",
       "description": "Description for lesson.default.is.finished."
+    },
+    {
+      "name": "chapter.default.is.finished",
+      "type": "java.lang.Boolean",
+      "description": "Description for chapter.default.is.finished."
+    },
+    {
+      "name": "course.default.is.finished",
+      "type": "java.lang.Boolean",
+      "description": "Description for course.default.is.finished."
     }
   ] }

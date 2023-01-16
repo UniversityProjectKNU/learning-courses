@@ -76,17 +76,13 @@ public class LessonService {
         return lessonRepository.save(entity);
     }
 
-    private Lesson defaultSetup(Lesson lesson) {
+    private void defaultSetup(Lesson lesson) {
         if(lesson.getMaxMark() == null)
-            lesson.setMaxMark(1);
-//            lesson.setMaxMark(lessonProperties.getDefaultMaxMark());
+            lesson.setMaxMark(lessonProperties.getDefaultMaxMark());
         if(lesson.getSuccessMark() == null)
-            lesson.setSuccessMark(1);
-//            lesson.setSuccessMark(lessonProperties.getDefaultSuccessMark());
+            lesson.setSuccessMark(lessonProperties.getDefaultSuccessMark());
         if(lesson.getIsFinished() == null)
-            lesson.setIsFinished(false);
-
-        return lesson;
+            lesson.setIsFinished(lessonProperties.getDefaultIsFinished());
     }
 
     private Lesson fromTemplate(LessonTemplate template) {

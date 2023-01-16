@@ -3,6 +3,7 @@ package com.nazar.grynko.learningcourses.service;
 import com.nazar.grynko.learningcourses.model.Chapter;
 import com.nazar.grynko.learningcourses.model.ChapterTemplate;
 import com.nazar.grynko.learningcourses.model.Course;
+import com.nazar.grynko.learningcourses.property.ChapterProperties;
 import com.nazar.grynko.learningcourses.repository.ChapterRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +17,16 @@ public class ChapterService {
     private final ChapterRepository chapterRepository;
     private final ChapterTemplateService chapterTemplateService;
     private final LessonService lessonService;
+    private final ChapterProperties chapterProperties;
     private final ModelMapper modelMapper;
 
     @Autowired
     public ChapterService(ChapterRepository chapterRepository, ChapterTemplateService chapterTemplateService,
-                          LessonService lessonService, ModelMapper modelMapper) {
+                          LessonService lessonService, ChapterProperties chapterProperties, ModelMapper modelMapper) {
         this.chapterRepository = chapterRepository;
         this.chapterTemplateService = chapterTemplateService;
         this.lessonService = lessonService;
+        this.chapterProperties = chapterProperties;
         this.modelMapper = modelMapper;
     }
 
@@ -78,11 +81,9 @@ public class ChapterService {
         return chapterRepository.save(entity);
     }
 
-    private Chapter defaultSetup(Chapter entity) {
+    private void defaultSetup(Chapter entity) {
         if(entity.getIsFinished() == null)
-            entity.setIsFinished(true);
-
-        return entity;
+            entity.setIsFinished(chapterProperties.getDefaultIsFinished());
     }
 
     private Chapter fromTemplate(ChapterTemplate template) {
