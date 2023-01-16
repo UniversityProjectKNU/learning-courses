@@ -1,13 +1,14 @@
 package com.nazar.grynko.learningcourses.service;
 
+import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.model.ChapterTemplate;
 import com.nazar.grynko.learningcourses.model.LessonTemplate;
 import com.nazar.grynko.learningcourses.repository.LessonTemplateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class LessonTemplateService {
@@ -29,21 +30,32 @@ public class LessonTemplateService {
         lessonTemplateRepository.deleteById(id);
     }
 
-    public LessonTemplate save(LessonTemplate lessonTemplate) {
-        return lessonTemplateRepository.save(lessonTemplate);
+    public LessonTemplate save(LessonTemplate entity, Long chapterTemplateId) {
+        ChapterTemplate chapterTemplate = chapterTemplateService.get(chapterTemplateId)
+                .orElseThrow(InvalidPathException::new);
+        entity.setChapterTemplate(chapterTemplate);
+
+        return lessonTemplateRepository.save(entity);
     }
 
-    public LessonTemplate update(LessonTemplate lessonTemplate) {
-        LessonTemplate dbLessonTemplate = lessonTemplateRepository.findById(lessonTemplate.getId())
+    public LessonTemplate update(LessonTemplate entity) {
+        LessonTemplate dbLessonTemplate = lessonTemplateRepository.findById(entity.getId())
                 .orElseThrow(IllegalArgumentException::new);
-        setNullFields(dbLessonTemplate, lessonTemplate);
-        return lessonTemplateRepository.save(lessonTemplate);
+        setNullFields(dbLessonTemplate, entity);
+        return lessonTemplateRepository.save(entity);
     }
 
-    public Set<LessonTemplate> getAllInChapterTemplate(Long chapterTemplateId) {
+    public List<LessonTemplate> getAllInChapterTemplate(Long chapterTemplateId) {
         chapterTemplateService.get(chapterTemplateId)
                 .orElseThrow(IllegalArgumentException::new);
         return lessonTemplateRepository.getLessonTemplatesByChapterTemplateId(chapterTemplateId);
+    }
+
+    public boolean hasWithCourseTemplate(Long id, Long chapterTemplateId, Long courseTemplateId) {
+        Optional<LessonTemplate> optional = lessonTemplateRepository
+                .getLessonTemplateByIdAndChapterTemplateIdAndChapterTemplateCourseTemplateId(id, chapterTemplateId, courseTemplateId);
+
+        return optional.isPresent();
     }
 
     private void setNullFields(LessonTemplate source, LessonTemplate destination) {
@@ -54,10 +66,4 @@ public class LessonTemplateService {
         if(destination.getChapterTemplate() == null) destination.setChapterTemplate(source.getChapterTemplate());
     }
 
-    public boolean hasWithCourseTemplate(Long id, Long chapterTemplateId, Long courseTemplateId) {
-        Optional<LessonTemplate> optional = lessonTemplateRepository
-                .getLessonTemplateByIdAndChapterTemplateIdAndChapterTemplateCourseTemplateId(id, chapterTemplateId, courseTemplateId);
-
-        return optional.isPresent();
-    }
 }

@@ -49,7 +49,7 @@ public class ChapterService {
     }
 
     public List<Chapter> create(Long courseTemplateId, Course course) {
-        Set<ChapterTemplate> chapterTemplates = chapterTemplateService
+        List<ChapterTemplate> chapterTemplates = chapterTemplateService
                 .getAllInCourseTemplate(courseTemplateId);
 
         List<Chapter> entities = new ArrayList<>();

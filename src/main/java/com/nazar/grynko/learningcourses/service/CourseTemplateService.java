@@ -27,20 +27,20 @@ public class CourseTemplateService {
     }
 
     public void delete(Long id) {
-        CourseTemplate courseTemplate = courseTemplateRepository.findById(id)
+        CourseTemplate entity = courseTemplateRepository.findById(id)
                         .orElseThrow(IllegalArgumentException::new);
-        courseTemplateRepository.delete(courseTemplate);
+        courseTemplateRepository.delete(entity);
     }
 
-    public CourseTemplate save(CourseTemplate courseTemplate) {
-        return courseTemplateRepository.save(courseTemplate);
+    public CourseTemplate save(CourseTemplate entity) {
+        return courseTemplateRepository.save(entity);
     }
 
-    public CourseTemplate update(CourseTemplate courseTemplate) {
-        CourseTemplate dbCourseTemplate = courseTemplateRepository.findById(courseTemplate.getId())
+    public CourseTemplate update(CourseTemplate entity) {
+        CourseTemplate dbCourseTemplate = courseTemplateRepository.findById(entity.getId())
                 .orElseThrow(IllegalArgumentException::new);
-        setNullFields(dbCourseTemplate, courseTemplate);
-        return courseTemplateRepository.save(courseTemplate);
+        setNullFields(dbCourseTemplate, entity);
+        return courseTemplateRepository.save(entity);
     }
 
     private void setNullFields(CourseTemplate source, CourseTemplate destination) {

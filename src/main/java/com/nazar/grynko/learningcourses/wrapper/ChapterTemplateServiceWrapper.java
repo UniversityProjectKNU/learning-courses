@@ -1,29 +1,24 @@
 package com.nazar.grynko.learningcourses.wrapper;
 
 import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateDto;
-import com.nazar.grynko.learningcourses.exception.InvalidPathException;
+import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateSave;
 import com.nazar.grynko.learningcourses.model.ChapterTemplate;
-import com.nazar.grynko.learningcourses.model.CourseTemplate;
 import com.nazar.grynko.learningcourses.service.ChapterTemplateService;
-import com.nazar.grynko.learningcourses.service.CourseTemplateService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
 public class ChapterTemplateServiceWrapper {
 
     private final ChapterTemplateService chapterTemplateService;
-    private final CourseTemplateService courseTemplateService;
     private final ModelMapper modelMapper;
 
-    public ChapterTemplateServiceWrapper(ChapterTemplateService chapterTemplateService,
-                                         CourseTemplateService courseTemplateService, ModelMapper modelMapper) {
+    public ChapterTemplateServiceWrapper(ChapterTemplateService chapterTemplateService, ModelMapper modelMapper) {
         this.chapterTemplateService = chapterTemplateService;
-        this.courseTemplateService = courseTemplateService;
         this.modelMapper = modelMapper;
     }
 
@@ -36,26 +31,21 @@ public class ChapterTemplateServiceWrapper {
         chapterTemplateService.delete(id);
     }
 
-    public ChapterTemplateDto save(ChapterTemplateDto dto, Long courseTemplateId) {
+    public ChapterTemplateDto save(ChapterTemplateSave dto, Long courseTemplateId) {
         ChapterTemplate entity = fromDto(dto);
-
-        CourseTemplate courseTemplate = courseTemplateService.get(courseTemplateId)
-                .orElseThrow(InvalidPathException::new);
-        entity.setCourseTemplate(courseTemplate);
-
-        entity = chapterTemplateService.save(entity);
+        entity = chapterTemplateService.save(entity, courseTemplateId);
         return toDto(entity);
     }
 
-    public ChapterTemplateDto update(ChapterTemplateDto dto, Long id) {
-        ChapterTemplate chapterTemplate = fromDto(dto).setId(id);
+    public ChapterTemplateDto update(ChapterTemplateDto dto) {
+        ChapterTemplate chapterTemplate = fromDto(dto);
         chapterTemplate = chapterTemplateService.update(chapterTemplate);
         return toDto(chapterTemplate);
     }
 
-    public Set<ChapterTemplateDto> getAllInCourseTemplate(Long courseTemplateId) {
-        Set<ChapterTemplate> chapterTemplates = chapterTemplateService.getAllInCourseTemplate(courseTemplateId);
-        return chapterTemplates.stream().map(this::toDto).collect(Collectors.toSet());
+    public List<ChapterTemplateDto> getAllInCourseTemplate(Long courseTemplateId) {
+        List<ChapterTemplate> chapterTemplates = chapterTemplateService.getAllInCourseTemplate(courseTemplateId);
+        return chapterTemplates.stream().map(this::toDto).collect(Collectors.toList());
     }
 
     public boolean hasWithCourseTemplate(Long chapterTemplateId, Long courseTemplateId) {
@@ -67,6 +57,10 @@ public class ChapterTemplateServiceWrapper {
     }
 
     private ChapterTemplate fromDto(ChapterTemplateDto dto) {
+        return modelMapper.map(dto, ChapterTemplate.class);
+    }
+
+    private ChapterTemplate fromDto(ChapterTemplateSave dto) {
         return modelMapper.map(dto, ChapterTemplate.class);
     }
 

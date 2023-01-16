@@ -13,6 +13,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class LessonTemplateDto {
 
+    private Long id;
     private String title;
     private String description;
     private Integer number;

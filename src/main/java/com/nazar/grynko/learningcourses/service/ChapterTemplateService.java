@@ -1,12 +1,14 @@
 package com.nazar.grynko.learningcourses.service;
 
+import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.model.ChapterTemplate;
+import com.nazar.grynko.learningcourses.model.CourseTemplate;
 import com.nazar.grynko.learningcourses.repository.ChapterTemplateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class ChapterTemplateService {
@@ -25,23 +27,27 @@ public class ChapterTemplateService {
     }
 
     public void delete(Long id) {
-        ChapterTemplate chapterTemplate = chapterTemplateRepository.findById(id)
+        ChapterTemplate entity = chapterTemplateRepository.findById(id)
                 .orElseThrow(IllegalArgumentException::new);
-        chapterTemplateRepository.delete(chapterTemplate);
+        chapterTemplateRepository.delete(entity);
     }
 
-    public ChapterTemplate save(ChapterTemplate chapterTemplate) {
-        return chapterTemplateRepository.save(chapterTemplate);
+    public ChapterTemplate save(ChapterTemplate entity, Long courseTemplateId) {
+        CourseTemplate courseTemplate = courseTemplateService.get(courseTemplateId)
+                .orElseThrow(InvalidPathException::new);
+        entity.setCourseTemplate(courseTemplate);
+
+        return chapterTemplateRepository.save(entity);
     }
 
-    public ChapterTemplate update(ChapterTemplate chapterTemplate) {
-        ChapterTemplate dbChapterTemplate = chapterTemplateRepository.findById(chapterTemplate.getId())
+    public ChapterTemplate update(ChapterTemplate entity) {
+        ChapterTemplate dbChapterTemplate = chapterTemplateRepository.findById(entity.getId())
                 .orElseThrow(IllegalArgumentException::new);
-        setNullFields(dbChapterTemplate, chapterTemplate);
-        return chapterTemplateRepository.save(dbChapterTemplate);
+        setNullFields(dbChapterTemplate, entity);
+        return chapterTemplateRepository.save(entity);
     }
 
-    public Set<ChapterTemplate> getAllInCourseTemplate(Long courseTemplateId) {
+    public List<ChapterTemplate> getAllInCourseTemplate(Long courseTemplateId) {
         courseTemplateService.get(courseTemplateId).orElseThrow(IllegalArgumentException::new);
         return chapterTemplateRepository.getChapterTemplatesByCourseTemplateId(courseTemplateId);
     }

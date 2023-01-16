@@ -11,9 +11,8 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class CourseTemplateDto {
-
-    private Long id;
+public class CourseTemplateSave {
+    
     private String title;
     private String description;
 

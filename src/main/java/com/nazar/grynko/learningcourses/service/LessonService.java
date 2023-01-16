@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class LessonService {
@@ -48,7 +47,7 @@ public class LessonService {
     }
 
     public List<Lesson> create(Long chapterTemplateId, Chapter chapter) {
-        Set<LessonTemplate> lessonTemplates = lessonTemplateService
+        List<LessonTemplate> lessonTemplates = lessonTemplateService
                 .getAllInChapterTemplate(chapterTemplateId);
 
         List<Lesson> entities = new ArrayList<>();

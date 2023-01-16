@@ -1,6 +1,7 @@
 package com.nazar.grynko.learningcourses.wrapper;
 
 import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDto;
+import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateSave;
 import com.nazar.grynko.learningcourses.model.CourseTemplate;
 import com.nazar.grynko.learningcourses.service.CourseTemplateService;
 import org.modelmapper.ModelMapper;
@@ -37,19 +38,23 @@ public class CourseTemplateServiceWrapper {
         courseTemplateService.delete(id);
     }
     
-    public CourseTemplateDto save(CourseTemplateDto dto) {
+    public CourseTemplateDto save(CourseTemplateSave dto) {
         CourseTemplate entity = fromDto(dto);
         entity = courseTemplateService.save(entity);
         return toDto(entity);
     }
 
-    public CourseTemplateDto update(CourseTemplateDto dto, Long id) {
-        CourseTemplate entity = fromDto(dto).setId(id);
+    public CourseTemplateDto update(CourseTemplateDto dto) {
+        CourseTemplate entity = fromDto(dto);
         entity = courseTemplateService.update(entity);
         return toDto(entity);
     }
 
     private CourseTemplate fromDto(CourseTemplateDto dto) {
+        return modelMapper.map(dto, CourseTemplate.class);
+    }
+
+    private CourseTemplate fromDto(CourseTemplateSave dto) {
         return modelMapper.map(dto, CourseTemplate.class);
     }
 
