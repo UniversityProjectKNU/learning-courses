@@ -44,7 +44,9 @@ public class CourseService {
     public Course create(Long courseTemplateId) {
         CourseTemplate template = courseTemplateService.get(courseTemplateId)
                 .orElseThrow(IllegalArgumentException::new);
+
         Course entity = fromTemplate(template).setId(null);
+        defaultSetup(entity);
 
         entity = courseRepository.save(entity);
 
@@ -54,6 +56,7 @@ public class CourseService {
     }
 
     public Course save(Course entity) {
+        defaultSetup(entity);
         return courseRepository.save(entity);
     }
 
@@ -72,8 +75,15 @@ public class CourseService {
         if(destination.getId() == null) destination.setId(source.getId());
         if(destination.getTitle() == null) destination.setTitle(source.getTitle());
         if(destination.getDescription() == null) destination.setDescription(source.getDescription());
-        if(destination.isFinished() != source.isFinished()) destination.setFinished(source.isFinished());
+        if(destination.getIsFinished() == null) destination.setIsFinished(source.getIsFinished());
         if(destination.getFinalFeedback() == null) destination.setFinalFeedback(source.getFinalFeedback());
+    }
+
+    private Course defaultSetup(Course entity) {
+        if(entity.getIsFinished() == null)
+            entity.setIsFinished(true);
+
+        return entity;
     }
 
 }

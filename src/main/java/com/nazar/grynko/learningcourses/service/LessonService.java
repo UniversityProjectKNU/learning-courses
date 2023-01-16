@@ -43,6 +43,7 @@ public class LessonService {
     }
 
     public Lesson save(Lesson entity) {
+        defaultSetup(entity);
         return lessonRepository.save(entity);
     }
 
@@ -82,6 +83,8 @@ public class LessonService {
         if(lesson.getSuccessMark() == null)
             lesson.setSuccessMark(1);
 //            lesson.setSuccessMark(lessonProperties.getDefaultSuccessMark());
+        if(lesson.getIsFinished() == null)
+            lesson.setIsFinished(false);
 
         return lesson;
     }
@@ -98,6 +101,7 @@ public class LessonService {
         if(destination.getIsFinished() == null) destination.setIsFinished(source.getIsFinished());
         if(destination.getMaxMark() == null) destination.setMaxMark(source.getMaxMark());
         if(destination.getSuccessMark() == null) destination.setSuccessMark(source.getSuccessMark());
+        if(destination.getChapter() == null) destination.setChapter(source.getChapter());
     }
 
 }

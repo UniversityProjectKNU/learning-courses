@@ -20,7 +20,7 @@ public class CourseDto implements Serializable {
     private String title;
     private String description;
     @JsonProperty("isFinished")
-    private boolean isFinished;
+    private Boolean isFinished;
     private String finalFeedback;
 
 }

@@ -21,7 +21,7 @@ public class LessonDto implements Serializable {
     private String description;
     private String number;
     @JsonProperty("isFinished")
-    private boolean isFinished;
+    private Boolean isFinished;
     private Integer maxMark;
     private Integer successMark;
 

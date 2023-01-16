@@ -41,6 +41,7 @@ public class ChapterService {
     }
 
     public Chapter save(Chapter entity) {
+        defaultSetup(entity);
         return chapterRepository.save(entity);
     }
 
@@ -95,6 +96,7 @@ public class ChapterService {
         if(destination.getNumber() == null) destination.setNumber(source.getNumber());
         if(destination.getIsFinished() == null) destination.setIsFinished(source.getIsFinished());
         if(destination.getFinalFeedback() == null) destination.setFinalFeedback(source.getFinalFeedback());
+        if(destination.getCourse() == null) destination.setCourse(source.getCourse());
     }
 
 }

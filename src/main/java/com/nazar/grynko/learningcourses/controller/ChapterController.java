@@ -4,12 +4,11 @@ import com.nazar.grynko.learningcourses.dto.chapter.ChapterDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.wrapper.ChapterServiceWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequestMapping("courses/{courseId}/chapters")
 public class ChapterController {
 

@@ -27,7 +27,7 @@ public class Course {
     @Column(nullable = false)
     private String description;
     @Column(nullable = false)
-    private boolean isFinished;
+    private Boolean isFinished;
     private String finalFeedback;
 
 }
