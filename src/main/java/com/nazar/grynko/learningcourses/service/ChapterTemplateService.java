@@ -12,10 +12,12 @@ import java.util.Set;
 public class ChapterTemplateService {
     
     private final ChapterTemplateRepository chapterTemplateRepository;
+    private final CourseTemplateService courseTemplateService;
 
     @Autowired    
-    public ChapterTemplateService(ChapterTemplateRepository chapterTemplateRepository) {
+    public ChapterTemplateService(ChapterTemplateRepository chapterTemplateRepository, CourseTemplateService courseTemplateService) {
         this.chapterTemplateRepository = chapterTemplateRepository;
+        this.courseTemplateService = courseTemplateService;
     }
 
     public Optional<ChapterTemplate> get(Long id) {
@@ -40,8 +42,14 @@ public class ChapterTemplateService {
     }
 
     public Set<ChapterTemplate> getAllInCourseTemplate(Long courseTemplateId) {
-        get(courseTemplateId).orElseThrow(IllegalArgumentException::new);
+        courseTemplateService.get(courseTemplateId).orElseThrow(IllegalArgumentException::new);
         return chapterTemplateRepository.getChapterTemplatesByCourseTemplateId(courseTemplateId);
+    }
+
+    public boolean hasWithCourseTemplate(Long chapterTemplateId, Long courseTemplateId) {
+        Optional<ChapterTemplate> optional = chapterTemplateRepository
+                .getChapterTemplateByIdAndCourseTemplateId(chapterTemplateId, courseTemplateId);
+        return optional.isPresent();
     }
 
     private void setNullFields(ChapterTemplate source, ChapterTemplate destination) {

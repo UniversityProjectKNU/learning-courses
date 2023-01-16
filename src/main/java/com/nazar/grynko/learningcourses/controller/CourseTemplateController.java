@@ -11,9 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = {
-        "courses-templates",
-})
+@RequestMapping("courses-templates")
 public class CourseTemplateController {
 
     private final CourseTemplateServiceWrapper serviceWrapper;

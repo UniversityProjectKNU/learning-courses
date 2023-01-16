@@ -58,6 +58,10 @@ public class ChapterTemplateServiceWrapper {
         return chapterTemplates.stream().map(this::toDto).collect(Collectors.toSet());
     }
 
+    public boolean hasWithCourseTemplate(Long chapterTemplateId, Long courseTemplateId) {
+        return chapterTemplateService.hasWithCourseTemplate(chapterTemplateId, courseTemplateId);
+    }
+
     private ChapterTemplateDto toDto(ChapterTemplate entity) {
         return modelMapper.map(entity, ChapterTemplateDto.class);
     }

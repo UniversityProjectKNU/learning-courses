@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.service;
 
+import com.nazar.grynko.learningcourses.model.ChapterTemplate;
 import com.nazar.grynko.learningcourses.model.LessonTemplate;
 import com.nazar.grynko.learningcourses.repository.LessonTemplateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,4 +54,10 @@ public class LessonTemplateService {
         if(destination.getChapterTemplate() == null) destination.setChapterTemplate(source.getChapterTemplate());
     }
 
+    public boolean hasWithCourseTemplate(Long id, Long chapterTemplateId, Long courseTemplateId) {
+        Optional<LessonTemplate> optional = lessonTemplateRepository
+                .getLessonTemplateByIdAndChapterTemplateIdAndChapterTemplateCourseTemplateId(id, chapterTemplateId, courseTemplateId);
+
+        return optional.isPresent();
+    }
 }

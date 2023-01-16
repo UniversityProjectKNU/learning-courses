@@ -18,7 +18,10 @@ public class ChapterTemplateController {
     }
 
     @GetMapping("/{id}")
-    ChapterTemplateDto one(@PathVariable Long id) {
+    ChapterTemplateDto one(@PathVariable Long id, @PathVariable Long courseTemplateId) {
+        if(!serviceWrapper.hasWithCourseTemplate(id, courseTemplateId))
+            throw new InvalidPathException();
+
         return serviceWrapper.get(id)
                 .orElseThrow(InvalidPathException::new);
     }
@@ -29,7 +32,10 @@ public class ChapterTemplateController {
     }
 
     @DeleteMapping("/{id}")
-    void delete(@PathVariable Long id) {
+    void delete(@PathVariable Long id, @PathVariable Long courseTemplateId) {
+        if(!serviceWrapper.hasWithCourseTemplate(id, courseTemplateId))
+            throw new InvalidPathException();
+
         serviceWrapper.delete(id);
     }
 
@@ -39,7 +45,11 @@ public class ChapterTemplateController {
     }
 
     @PutMapping("/{id}")
-    ChapterTemplateDto update(@RequestBody ChapterTemplateDto chapterTemplateDto, @PathVariable Long id) {
+    ChapterTemplateDto update(@RequestBody ChapterTemplateDto chapterTemplateDto,
+                              @PathVariable Long id, @PathVariable Long courseTemplateId) {
+        if(!serviceWrapper.hasWithCourseTemplate(id, courseTemplateId))
+            throw new InvalidPathException();
+
         return serviceWrapper.update(chapterTemplateDto, id);
     }
 

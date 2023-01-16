@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.service;
 
+import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.model.Role;
 import com.nazar.grynko.learningcourses.model.User;
@@ -42,6 +43,8 @@ public class UserService {
         fillNullFields(dbUser, user);
         return userRepository.save(user);
     }
+
+
 
     public Set<Role> updateRoles(Set<Role> roles, Long userId) {
         if(roles == null || roles.size() == 0) throw new IllegalArgumentException();

@@ -68,4 +68,7 @@ public class LessonTemplateServiceWrapper {
         return modelMapper.map(entity, LessonTemplateDto.class);
     }
 
+    public boolean hasWithCourseTemplate(Long id, Long chapterTemplateId, Long courseTemplateId) {
+        return lessonTemplateService.hasWithCourseTemplate(id, chapterTemplateId, courseTemplateId);
+    }
 }
