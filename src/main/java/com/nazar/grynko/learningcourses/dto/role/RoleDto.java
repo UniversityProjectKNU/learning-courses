@@ -14,6 +14,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class RoleDto {
 
+    private Long id;
     private RoleType type;
 
 }

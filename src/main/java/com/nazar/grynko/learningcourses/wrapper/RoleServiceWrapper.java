@@ -2,18 +2,15 @@ package com.nazar.grynko.learningcourses.wrapper;
 
 import com.nazar.grynko.learningcourses.dto.role.RoleDto;
 import com.nazar.grynko.learningcourses.model.Role;
-import com.nazar.grynko.learningcourses.service.RoleService;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RoleServiceWrapper {
 
-    private final RoleService roleService;
     private final ModelMapper modelMapper;
 
-    public RoleServiceWrapper(RoleService roleService, ModelMapper modelMapper) {
-        this.roleService = roleService;
+    public RoleServiceWrapper(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
     }
 

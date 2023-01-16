@@ -37,7 +37,9 @@ public class UserController {
 
     @PutMapping("/{id}")
     UserDto update(@RequestBody UserDto userDto, @PathVariable Long id) {
-        return serviceWrapper.update(userDto, id);
+        if(!userDto.getId().equals(id)) throw new IllegalArgumentException();
+
+        return serviceWrapper.update(userDto);
     }
 
     @GetMapping("/{id}/roles")
@@ -47,6 +49,9 @@ public class UserController {
 
     @PutMapping("/{id}/roles")
     Set<RoleDto> updateRoles(@RequestBody Set<RoleDto> roles, @PathVariable Long id) {
+        if(roles == null || roles.isEmpty()) throw new IllegalArgumentException();
+        serviceWrapper.get(id).orElseThrow(InvalidPathException::new);
+
         return serviceWrapper.updateRoles(roles, id);
     }
 

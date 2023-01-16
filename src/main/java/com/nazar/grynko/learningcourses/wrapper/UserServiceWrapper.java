@@ -3,15 +3,12 @@ package com.nazar.grynko.learningcourses.wrapper;
 import com.nazar.grynko.learningcourses.dto.role.RoleDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.model.Role;
-import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.model.User;
-import com.nazar.grynko.learningcourses.service.RoleService;
 import com.nazar.grynko.learningcourses.service.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -21,15 +18,13 @@ import java.util.stream.Collectors;
 public class UserServiceWrapper {
 
     private final UserService userService;
-    private final RoleService roleService;
     private final RoleServiceWrapper roleServiceWrapper;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public UserServiceWrapper(UserService userService, RoleService roleService,
-                              RoleServiceWrapper roleServiceWrapper, ModelMapper modelMapper) {
+    public UserServiceWrapper(UserService userService, RoleServiceWrapper roleServiceWrapper,
+                              ModelMapper modelMapper) {
         this.userService = userService;
-        this.roleService = roleService;
         this.roleServiceWrapper = roleServiceWrapper;
         this.modelMapper = modelMapper;
     }
@@ -48,16 +43,14 @@ public class UserServiceWrapper {
         userService.delete(id);
     }
 
-    public UserDto update(UserDto userDto, Long id) {
-        User user = fromDto(userDto).setId(id);
-
+    public UserDto update(UserDto userDto) {
+        User user = fromDto(userDto);
         user = userService.update(user);
         return toDto(user);
     }
 
     public Set<RoleDto> updateRoles(Set<RoleDto> rolesDto, Long userId) {
-        List<RoleType> types = rolesDto.stream().map(RoleDto::getType).collect(Collectors.toList());
-        Set<Role> roles = new HashSet<>(roleService.getAllByTypeIn(types));
+        Set<Role> roles = rolesDto.stream().map(roleServiceWrapper::fromDto).collect(Collectors.toSet());
 
         roles = userService.updateRoles(roles, userId);
 

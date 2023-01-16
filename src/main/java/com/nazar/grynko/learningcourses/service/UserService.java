@@ -1,6 +1,5 @@
 package com.nazar.grynko.learningcourses.service;
 
-import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.model.Role;
 import com.nazar.grynko.learningcourses.model.User;
@@ -8,7 +7,6 @@ import com.nazar.grynko.learningcourses.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -44,13 +42,11 @@ public class UserService {
         return userRepository.save(user);
     }
 
-
-
     public Set<Role> updateRoles(Set<Role> roles, Long userId) {
         if(roles == null || roles.size() == 0) throw new IllegalArgumentException();
         User user = get(userId).orElseThrow(InvalidPathException::new);
 
-        user.setRoles(new HashSet<>(roles));
+        user.setRoles(roles);
         user = update(user);
 
         return user.getRoles();

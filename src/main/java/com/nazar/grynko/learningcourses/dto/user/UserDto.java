@@ -15,6 +15,7 @@ import java.util.Calendar;
 @Accessors(chain = true)
 public class UserDto {
 
+    private Long id;
     private String firstName;
     private String lastName;
     private Calendar dateOfBirth;
