@@ -1,70 +1,77 @@
 package com.nazar.grynko.learningcourses.service;
 
-import com.nazar.grynko.learningcourses.exception.InvalidPathException;
+import com.nazar.grynko.learningcourses.dto.role.RoleDto;
+import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.model.Role;
 import com.nazar.grynko.learningcourses.model.User;
-import com.nazar.grynko.learningcourses.repository.UserRepository;
+import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-@Service
+@Component
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UserInternalService userInternalService;
+    private final RoleService roleService;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserService(UserInternalService userInternalService, RoleService roleService,
+                       ModelMapper modelMapper) {
+        this.userInternalService = userInternalService;
+        this.roleService = roleService;
+        this.modelMapper = modelMapper;
     }
 
-    public Optional<User> get(Long id) {
-        return userRepository.findById(id);
+    public Optional<UserDto> get(Long id) {
+        return userInternalService.get(id)
+                .flatMap(val -> Optional.of(toDto(val)));
     }
 
-    public List<User> getAll() {
-        return userRepository.findAll();
+    public List<UserDto> getAll() {
+        return userInternalService.getAll()
+                .stream().map(this::toDto).collect(Collectors.toList());
     }
 
     public void delete(Long id) {
-        User dbUser = userRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new);
-        userRepository.delete(dbUser);
+        userInternalService.delete(id);
     }
 
-    public User update(User user) {
-        User dbUser = userRepository.findById(user.getId())
-                .orElseThrow(IllegalArgumentException::new);
-        fillNullFields(dbUser, user);
-        return userRepository.save(user);
+    public UserDto update(UserDto userDto) {
+        User user = fromDto(userDto);
+        user = userInternalService.update(user);
+        return toDto(user);
     }
 
-    public Set<Role> updateRoles(Set<Role> roles, Long userId) {
-        if(roles == null || roles.size() == 0) throw new IllegalArgumentException();
-        User user = get(userId).orElseThrow(InvalidPathException::new);
+    public Set<RoleDto> updateRoles(Set<RoleDto> rolesDto, Long userId) {
+        Set<Role> roles = rolesDto.stream().map(roleService::fromDto).collect(Collectors.toSet());
 
-        user.setRoles(roles);
-        user = update(user);
+        roles = userInternalService.updateRoles(roles, userId);
 
-        return user.getRoles();
+        return roles.stream()
+                .map(roleService::toDto)
+                .collect(Collectors.toSet());
     }
 
-    public Set<Role> getUsersRoles(Long id) {
-        User user = get(id).orElseThrow(InvalidPathException::new);
-        return user.getRoles();
+    public Set<RoleDto> getUsersRoles(Long id) {
+        return userInternalService.getUsersRoles(id)
+                .stream()
+                .map(roleService::toDto)
+                .collect(Collectors.toSet());
     }
 
-    public void fillNullFields(User source, User destination) {
-        if(destination.getId() == null) destination.setId(source.getId());
-        if(destination.getLogin() == null) destination.setLogin(source.getLogin());
-        if(destination.getPassword() == null) destination.setPassword(source.getPassword());
-        if(destination.getFirstName() == null) destination.setFirstName(source.getFirstName());
-        if(destination.getLastName() == null) destination.setLastName(source.getLastName());
-        if(destination.getDateOfBirth() == null) destination.setDateOfBirth(source.getDateOfBirth());
-        if(destination.getRoles() == null || destination.getRoles().size() == 0) destination.setRoles(source.getRoles());
+    public UserDto toDto(User user) {
+        return modelMapper.map(user, UserDto.class);
+    }
+
+    public User fromDto(UserDto userDto) {
+        return modelMapper.map(userDto, User.class);
     }
 
 }

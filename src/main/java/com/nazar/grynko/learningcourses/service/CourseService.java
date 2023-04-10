@@ -1,90 +1,64 @@
 package com.nazar.grynko.learningcourses.service;
 
+import com.nazar.grynko.learningcourses.dto.course.CourseDto;
 import com.nazar.grynko.learningcourses.model.Course;
-import com.nazar.grynko.learningcourses.model.CourseTemplate;
-import com.nazar.grynko.learningcourses.property.CourseProperties;
-import com.nazar.grynko.learningcourses.repository.CourseRepository;
+import com.nazar.grynko.learningcourses.service.internal.CourseInternalService;
 import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-@Service
+@Component
 public class CourseService {
 
-    private final CourseRepository courseRepository;
-    private final CourseTemplateService courseTemplateService;
-    private final ChapterService chapterService;
-    private final CourseProperties courseProperties;
+    private final CourseInternalService courseInternalService;
     private final ModelMapper modelMapper;
 
-    public CourseService(CourseRepository courseRepository, CourseTemplateService courseTemplateService,
-                         ChapterService chapterService, CourseProperties courseProperties, ModelMapper modelMapper) {
-        this.courseRepository = courseRepository;
-        this.courseTemplateService = courseTemplateService;
-        this.chapterService = chapterService;
-        this.courseProperties = courseProperties;
+    public CourseService(CourseInternalService courseInternalService, ModelMapper modelMapper) {
+        this.courseInternalService = courseInternalService;
         this.modelMapper = modelMapper;
     }
 
-    public Optional<Course> get(Long id) {
-        return courseRepository.findById(id);
+    public Optional<CourseDto> get(Long id) {
+        return courseInternalService.get(id)
+                .flatMap(val -> Optional.of(toDto(val)));
     }
 
-    public List<Course> getAll() {
-        return courseRepository.findAll();
+    public List<CourseDto> getAll() {
+        return courseInternalService.getAll()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     public void delete(Long id) {
-        Course course = courseRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new);
-        courseRepository.delete(course);
+        courseInternalService.delete(id);
     }
 
-    @Transactional
-    public Course create(Long courseTemplateId) {
-        CourseTemplate template = courseTemplateService.get(courseTemplateId)
-                .orElseThrow(IllegalArgumentException::new);
-
-        Course entity = fromTemplate(template).setId(null);
-        defaultSetup(entity);
-
-        entity = courseRepository.save(entity);
-
-        chapterService.create(template.getId(), entity);
-
-        return entity;
+    public CourseDto create(Long courseTemplateId) {
+        Course course = courseInternalService.create(courseTemplateId);
+        return toDto(course);
     }
 
-    public Course save(Course entity) {
-        defaultSetup(entity);
-        return courseRepository.save(entity);
+    public CourseDto save(CourseDto dto) {
+        Course entity = fromDto(dto);
+        return toDto(courseInternalService.save(entity));
     }
 
-    public Course update(Course course) {
-        Course dbCourse = courseRepository.findById(course.getId())
-                .orElseThrow(IllegalArgumentException::new);
-        setNullFields(dbCourse, course);
-        return courseRepository.save(course);
+    public CourseDto update(CourseDto dto, Long courseId) {
+        Course entity = fromDto(dto).setId(courseId);
+        entity = courseInternalService.update(entity);
+        return toDto(entity);
     }
 
-    private Course fromTemplate(CourseTemplate template) {
-        return modelMapper.map(template, Course.class);
+    public CourseDto toDto(Course entity) {
+        return modelMapper.map(entity, CourseDto.class);
     }
 
-    private void setNullFields(Course source, Course destination) {
-        if(destination.getId() == null) destination.setId(source.getId());
-        if(destination.getTitle() == null) destination.setTitle(source.getTitle());
-        if(destination.getDescription() == null) destination.setDescription(source.getDescription());
-        if(destination.getIsFinished() == null) destination.setIsFinished(source.getIsFinished());
-        if(destination.getFinalFeedback() == null) destination.setFinalFeedback(source.getFinalFeedback());
-    }
-
-    private void defaultSetup(Course entity) {
-        if(entity.getIsFinished() == null)
-            entity.setIsFinished(courseProperties.getDefaultIsFinished());
+    public Course fromDto(CourseDto dto) {
+        return modelMapper.map(dto, Course.class);
     }
 
 }

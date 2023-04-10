@@ -1,69 +1,69 @@
 package com.nazar.grynko.learningcourses.service;
 
-import com.nazar.grynko.learningcourses.exception.InvalidPathException;
-import com.nazar.grynko.learningcourses.model.ChapterTemplate;
+import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateDto;
+import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateSave;
 import com.nazar.grynko.learningcourses.model.LessonTemplate;
-import com.nazar.grynko.learningcourses.repository.LessonTemplateRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.nazar.grynko.learningcourses.service.internal.LessonTemplateInternalService;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-@Service
+@Component
 public class LessonTemplateService {
 
-    private final LessonTemplateRepository lessonTemplateRepository;
-    private final ChapterTemplateService chapterTemplateService;
+    private final LessonTemplateInternalService lessonTemplateInternalService;
+    private final ModelMapper modelMapper;
 
-    @Autowired
-    public LessonTemplateService(LessonTemplateRepository lessonTemplateRepository, ChapterTemplateService chapterTemplateService) {
-        this.lessonTemplateRepository = lessonTemplateRepository;
-        this.chapterTemplateService = chapterTemplateService;
+    public LessonTemplateService(LessonTemplateInternalService lessonTemplateInternalService, ModelMapper modelMapper) {
+        this.lessonTemplateInternalService = lessonTemplateInternalService;
+        this.modelMapper = modelMapper;
     }
 
-    public Optional<LessonTemplate> get(Long id) {
-        return lessonTemplateRepository.findById(id);
+    public Optional<LessonTemplateDto> get(Long id) {
+        return lessonTemplateInternalService.get(id)
+                .flatMap(val -> Optional.of(toDto(val)));
+    }
+
+    public LessonTemplateDto save(LessonTemplateSave dto, Long chapterTemplateId) {
+        LessonTemplate entity = fromDto(dto);
+        entity = lessonTemplateInternalService.save(entity, chapterTemplateId);
+        return toDto(entity);
     }
 
     public void delete(Long id) {
-        lessonTemplateRepository.deleteById(id);
+        lessonTemplateInternalService.delete(id);
     }
 
-    public LessonTemplate save(LessonTemplate entity, Long chapterTemplateId) {
-        ChapterTemplate chapterTemplate = chapterTemplateService.get(chapterTemplateId)
-                .orElseThrow(InvalidPathException::new);
-        entity.setChapterTemplate(chapterTemplate);
-
-        return lessonTemplateRepository.save(entity);
+    public LessonTemplateDto update(LessonTemplateDto dto) {
+        LessonTemplate entity = fromDto(dto);
+        entity = lessonTemplateInternalService.update(entity);
+        return toDto(entity);
     }
 
-    public LessonTemplate update(LessonTemplate entity) {
-        LessonTemplate dbLessonTemplate = lessonTemplateRepository.findById(entity.getId())
-                .orElseThrow(IllegalArgumentException::new);
-        setNullFields(dbLessonTemplate, entity);
-        return lessonTemplateRepository.save(entity);
-    }
-
-    public List<LessonTemplate> getAllInChapterTemplate(Long chapterTemplateId) {
-        chapterTemplateService.get(chapterTemplateId)
-                .orElseThrow(IllegalArgumentException::new);
-        return lessonTemplateRepository.getLessonTemplatesByChapterTemplateId(chapterTemplateId);
+    public List<LessonTemplateDto> getAllInChapterTemplate(Long chapterTemplateId) {
+        return lessonTemplateInternalService.getAllInChapterTemplate(chapterTemplateId)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     public boolean hasWithCourseTemplate(Long id, Long chapterTemplateId, Long courseTemplateId) {
-        Optional<LessonTemplate> optional = lessonTemplateRepository
-                .getLessonTemplateByIdAndChapterTemplateIdAndChapterTemplateCourseTemplateId(id, chapterTemplateId, courseTemplateId);
-
-        return optional.isPresent();
+        return lessonTemplateInternalService.hasWithCourseTemplate(id, chapterTemplateId, courseTemplateId);
     }
 
-    private void setNullFields(LessonTemplate source, LessonTemplate destination) {
-        if(destination.getId() == null) destination.setId(source.getId());
-        if(destination.getTitle() == null) destination.setTitle(source.getTitle());
-        if(destination.getDescription() == null) destination.setDescription(source.getDescription());
-        if(destination.getNumber() == null) destination.setNumber(source.getNumber());
-        if(destination.getChapterTemplate() == null) destination.setChapterTemplate(source.getChapterTemplate());
+    private LessonTemplate fromDto(LessonTemplateDto dto) {
+        return modelMapper.map(dto, LessonTemplate.class);
+    }
+
+    private LessonTemplate fromDto(LessonTemplateSave dto) {
+        return modelMapper.map(dto, LessonTemplate.class);
+    }
+
+    private LessonTemplateDto toDto(LessonTemplate entity) {
+        return modelMapper.map(entity, LessonTemplateDto.class);
     }
 
 }

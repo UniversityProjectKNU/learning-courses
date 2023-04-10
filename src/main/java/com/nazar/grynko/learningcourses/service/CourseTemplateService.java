@@ -1,52 +1,65 @@
 package com.nazar.grynko.learningcourses.service;
 
+import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDto;
+import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateSave;
 import com.nazar.grynko.learningcourses.model.CourseTemplate;
-import com.nazar.grynko.learningcourses.repository.CourseTemplateRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.nazar.grynko.learningcourses.service.internal.CourseTemplateInternalService;
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-@Service
+@Component
 public class CourseTemplateService {
+    
+    private final CourseTemplateInternalService courseTemplateInternalService;
+    private final ModelMapper modelMapper;
 
-    private final CourseTemplateRepository courseTemplateRepository;
-
-    @Autowired
-    public CourseTemplateService(CourseTemplateRepository courseTemplateRepository) {
-        this.courseTemplateRepository = courseTemplateRepository;
+    public CourseTemplateService(CourseTemplateInternalService courseTemplateInternalService, ModelMapper modelMapper) {
+        this.courseTemplateInternalService = courseTemplateInternalService;
+        this.modelMapper = modelMapper;
     }
 
-    public Optional<CourseTemplate> get(Long id) {
-        return courseTemplateRepository.findById(id);
-    }
-
-    public List<CourseTemplate> getAll() {
-        return courseTemplateRepository.findAll();
-    }
-
-    public void delete(Long id) {
-        CourseTemplate entity = courseTemplateRepository.findById(id)
-                        .orElseThrow(IllegalArgumentException::new);
-        courseTemplateRepository.delete(entity);
-    }
-
-    public CourseTemplate save(CourseTemplate entity) {
-        return courseTemplateRepository.save(entity);
-    }
-
-    public CourseTemplate update(CourseTemplate entity) {
-        CourseTemplate dbCourseTemplate = courseTemplateRepository.findById(entity.getId())
-                .orElseThrow(IllegalArgumentException::new);
-        setNullFields(dbCourseTemplate, entity);
-        return courseTemplateRepository.save(entity);
-    }
-
-    private void setNullFields(CourseTemplate source, CourseTemplate destination) {
-        if(destination.getId() == null) destination.setId(source.getId());
-        if(destination.getTitle() == null) destination.setTitle(source.getTitle());
-        if(destination.getDescription() == null) destination.setDescription(source.getDescription());
+    public Optional<CourseTemplateDto> get(Long id) {
+        return courseTemplateInternalService.get(id)
+                .flatMap(val -> Optional.of(toDto(val)));
     }
     
+    public List<CourseTemplateDto> getAll() {
+        return courseTemplateInternalService.getAll()
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
+    }
+    
+    public void delete(Long id) {
+        courseTemplateInternalService.delete(id);
+    }
+    
+    public CourseTemplateDto save(CourseTemplateSave dto) {
+        CourseTemplate entity = fromDto(dto);
+        entity = courseTemplateInternalService.save(entity);
+        return toDto(entity);
+    }
+
+    public CourseTemplateDto update(CourseTemplateDto dto) {
+        CourseTemplate entity = fromDto(dto);
+        entity = courseTemplateInternalService.update(entity);
+        return toDto(entity);
+    }
+
+    private CourseTemplate fromDto(CourseTemplateDto dto) {
+        return modelMapper.map(dto, CourseTemplate.class);
+    }
+
+    private CourseTemplate fromDto(CourseTemplateSave dto) {
+        return modelMapper.map(dto, CourseTemplate.class);
+    }
+
+    private CourseTemplateDto toDto(CourseTemplate entity) {
+        return modelMapper.map(entity, CourseTemplateDto.class);
+    }
+
 }

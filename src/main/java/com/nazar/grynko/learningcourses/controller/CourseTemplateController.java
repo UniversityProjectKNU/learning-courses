@@ -4,8 +4,8 @@ import com.nazar.grynko.learningcourses.dto.course.CourseDto;
 import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDto;
 import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateSave;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
-import com.nazar.grynko.learningcourses.wrapper.CourseServiceWrapper;
-import com.nazar.grynko.learningcourses.wrapper.CourseTemplateServiceWrapper;
+import com.nazar.grynko.learningcourses.service.CourseService;
+import com.nazar.grynko.learningcourses.service.CourseTemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,35 +15,35 @@ import java.util.List;
 @RequestMapping("courses-templates")
 public class CourseTemplateController {
 
-    private final CourseTemplateServiceWrapper serviceWrapper;
-    private final CourseServiceWrapper courseServiceWrapper;
+    private final CourseTemplateService courseTemplateService;
+    private final CourseService courseService;
 
     @Autowired
-    public CourseTemplateController(CourseTemplateServiceWrapper serviceWrapper,
-                                    CourseServiceWrapper courseServiceWrapper) {
-        this.serviceWrapper = serviceWrapper;
-        this.courseServiceWrapper = courseServiceWrapper;
+    public CourseTemplateController(CourseTemplateService courseTemplateService,
+                                    CourseService courseService) {
+        this.courseTemplateService = courseTemplateService;
+        this.courseService = courseService;
     }
 
     @GetMapping("/{id}")
     CourseTemplateDto one(@PathVariable Long id) {
-        return serviceWrapper.get(id)
+        return courseTemplateService.get(id)
                 .orElseThrow(InvalidPathException::new);
     }
 
     @GetMapping
     List<CourseTemplateDto> all() {
-        return serviceWrapper.getAll();
+        return courseTemplateService.getAll();
     }
 
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id) {
-        serviceWrapper.delete(id);
+        courseTemplateService.delete(id);
     }
 
     @PostMapping
     CourseTemplateDto save(@RequestBody CourseTemplateSave courseTemplateSave) {
-        return serviceWrapper.save(courseTemplateSave);
+        return courseTemplateService.save(courseTemplateSave);
     }
 
     @PutMapping("/{id}")
@@ -51,12 +51,12 @@ public class CourseTemplateController {
         if(!courseTemplateDto.getId().equals(id))
             throw new IllegalArgumentException();
 
-        return serviceWrapper.update(courseTemplateDto);
+        return courseTemplateService.update(courseTemplateDto);
     }
 
     @PostMapping("/{id}/create")
     CourseDto create(@PathVariable Long id) {
-        return courseServiceWrapper.create(id);
+        return courseService.create(id);
     }
     
 }

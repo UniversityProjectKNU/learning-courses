@@ -1,108 +1,75 @@
 package com.nazar.grynko.learningcourses.service;
 
+import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
 import com.nazar.grynko.learningcourses.model.Chapter;
 import com.nazar.grynko.learningcourses.model.Lesson;
-import com.nazar.grynko.learningcourses.model.LessonTemplate;
-import com.nazar.grynko.learningcourses.property.LessonProperties;
-import com.nazar.grynko.learningcourses.repository.LessonRepository;
+import com.nazar.grynko.learningcourses.service.internal.ChapterInternalService;
+import com.nazar.grynko.learningcourses.service.internal.LessonInternalService;
 import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-@Service
+@Component
 public class LessonService {
 
-    private final LessonRepository lessonRepository;
-    private final LessonTemplateService lessonTemplateService;
-    private final LessonProperties lessonProperties;
+    private final LessonInternalService lessonInternalService;
+    private final ChapterInternalService chapterInternalService;
     private final ModelMapper modelMapper;
 
-    public LessonService(LessonRepository lessonRepository, LessonTemplateService lessonTemplateService,
-                         LessonProperties lessonProperties, ModelMapper modelMapper) {
-        this.lessonRepository = lessonRepository;
-        this.lessonTemplateService = lessonTemplateService;
-        this.lessonProperties = lessonProperties;
+    @Autowired
+    public LessonService(LessonInternalService lessonInternalService, ChapterInternalService chapterInternalService,
+                         ModelMapper modelMapper) {
+        this.lessonInternalService = lessonInternalService;
+        this.chapterInternalService = chapterInternalService;
         this.modelMapper = modelMapper;
     }
 
-    public Optional<Lesson> get(Long id) {
-        return lessonRepository.findById(id);
+    public Optional<LessonDto> get(Long id) {
+        return lessonInternalService.get(id)
+                .flatMap(val -> Optional.of(toDto(val)));
     }
 
-    public List<Lesson> getAllInChapter(Long chapterId) {
-        return lessonRepository.getAllByChapterId(chapterId);
+    public List<LessonDto> getAllInChapter(Long chapterId) {
+        return lessonInternalService.getAllInChapter(chapterId)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     public void delete(Long id) {
-        Lesson entity = get(id).orElseThrow(IllegalArgumentException::new);
-        lessonRepository.delete(entity);
+        lessonInternalService.delete(id);
     }
 
-    public Lesson save(Lesson entity) {
-        defaultSetup(entity);
-        return lessonRepository.save(entity);
-    }
+    public LessonDto save(LessonDto dto, Long chapterId) {
+        Lesson entity = fromDto(dto);
 
-    public List<Lesson> create(Long chapterTemplateId, Chapter chapter) {
-        List<LessonTemplate> lessonTemplates = lessonTemplateService
-                .getAllInChapterTemplate(chapterTemplateId);
-
-        List<Lesson> entities = new ArrayList<>();
-        for(LessonTemplate template: lessonTemplates) {
-            Lesson entity = create(template, chapter);
-            entities.add(entity);
-        }
-
-        return entities;
-    }
-
-    public Lesson create(LessonTemplate template, Chapter chapter) {
-        Lesson entity = fromTemplate(template).setId(null);
+        Chapter chapter = chapterInternalService.get(chapterId)
+                .orElseThrow(IllegalArgumentException::new);
         entity.setChapter(chapter);
 
-        defaultSetup(entity);
-
-        return lessonRepository.save(entity);
+        entity = lessonInternalService.save(entity);
+        return toDto(entity);
     }
 
-    public Lesson update(Lesson entity) {
-        Lesson dbLesson = lessonRepository.findById(entity.getId())
-                .orElseThrow(IllegalArgumentException::new);
-        setNullFields(dbLesson, entity);
-        return lessonRepository.save(entity);
+    public LessonDto update(LessonDto dto, Long id) {
+        Lesson entity = fromDto(dto).setId(id);
+        entity = lessonInternalService.update(entity);
+        return toDto(entity);
     }
 
-    private void defaultSetup(Lesson lesson) {
-        if(lesson.getMaxMark() == null)
-            lesson.setMaxMark(lessonProperties.getDefaultMaxMark());
-        if(lesson.getSuccessMark() == null)
-            lesson.setSuccessMark(lessonProperties.getDefaultSuccessMark());
-        if(lesson.getIsFinished() == null)
-            lesson.setIsFinished(lessonProperties.getDefaultIsFinished());
+    public LessonDto toDto(Lesson entity) {
+        return modelMapper.map(entity, LessonDto.class);
     }
 
-    private Lesson fromTemplate(LessonTemplate template) {
-        return modelMapper.map(template, Lesson.class);
-    }
-
-    private void setNullFields(Lesson source, Lesson destination) {
-        if(destination.getId() == null) destination.setId(source.getId());
-        if(destination.getTitle() == null) destination.setTitle(source.getTitle());
-        if(destination.getDescription() == null) destination.setDescription(source.getDescription());
-        if(destination.getNumber() == null) destination.setNumber(source.getNumber());
-        if(destination.getIsFinished() == null) destination.setIsFinished(source.getIsFinished());
-        if(destination.getMaxMark() == null) destination.setMaxMark(source.getMaxMark());
-        if(destination.getSuccessMark() == null) destination.setSuccessMark(source.getSuccessMark());
-        if(destination.getChapter() == null) destination.setChapter(source.getChapter());
+    public Lesson fromDto(LessonDto dto) {
+        return modelMapper.map(dto, Lesson.class);
     }
 
     public boolean hasWithChapter(Long id, Long chapterId, Long courseId) {
-        Optional<Lesson> optional = lessonRepository
-                .getLessonByIdAndChapterIdAndChapterCourseId(id, chapterId, courseId);
-
-        return optional.isPresent();
+        return lessonInternalService.hasWithChapter(id, chapterId, courseId);
     }
 }

@@ -3,7 +3,7 @@ package com.nazar.grynko.learningcourses.controller;
 import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateDto;
 import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateSave;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
-import com.nazar.grynko.learningcourses.wrapper.ChapterTemplateServiceWrapper;
+import com.nazar.grynko.learningcourses.service.ChapterTemplateService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,37 +12,37 @@ import java.util.List;
 @RequestMapping("courses-templates/{courseTemplateId}/chapters-templates/")
 public class ChapterTemplateController {
 
-    private final ChapterTemplateServiceWrapper serviceWrapper;
+    private final ChapterTemplateService chapterTemplateService;
 
-    public ChapterTemplateController(ChapterTemplateServiceWrapper serviceWrapper) {
-        this.serviceWrapper = serviceWrapper;
+    public ChapterTemplateController(ChapterTemplateService chapterTemplateService) {
+        this.chapterTemplateService = chapterTemplateService;
     }
 
     @GetMapping("/{id}")
     ChapterTemplateDto one(@PathVariable Long id, @PathVariable Long courseTemplateId) {
-        if(!serviceWrapper.hasWithCourseTemplate(id, courseTemplateId))
+        if(!chapterTemplateService.hasWithCourseTemplate(id, courseTemplateId))
             throw new InvalidPathException();
 
-        return serviceWrapper.get(id)
+        return chapterTemplateService.get(id)
                 .orElseThrow(InvalidPathException::new);
     }
 
     @GetMapping
     List<ChapterTemplateDto> allInCourse(@PathVariable Long courseTemplateId) {
-        return serviceWrapper.getAllInCourseTemplate(courseTemplateId);
+        return chapterTemplateService.getAllInCourseTemplate(courseTemplateId);
     }
 
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id, @PathVariable Long courseTemplateId) {
-        if(!serviceWrapper.hasWithCourseTemplate(id, courseTemplateId))
+        if(!chapterTemplateService.hasWithCourseTemplate(id, courseTemplateId))
             throw new InvalidPathException();
 
-        serviceWrapper.delete(id);
+        chapterTemplateService.delete(id);
     }
 
     @PostMapping
     ChapterTemplateDto save(@RequestBody ChapterTemplateSave chapterTemplateSave, @PathVariable Long courseTemplateId) {
-        return serviceWrapper.save(chapterTemplateSave, courseTemplateId);
+        return chapterTemplateService.save(chapterTemplateSave, courseTemplateId);
     }
 
     @PutMapping("/{id}")
@@ -50,10 +50,10 @@ public class ChapterTemplateController {
                               @PathVariable Long id, @PathVariable Long courseTemplateId) {
         if(!chapterTemplateDto.getId().equals(id))
             throw new IllegalArgumentException();
-        if(!serviceWrapper.hasWithCourseTemplate(id, courseTemplateId))
+        if(!chapterTemplateService.hasWithCourseTemplate(id, courseTemplateId))
             throw new InvalidPathException();
 
-        return serviceWrapper.update(chapterTemplateDto);
+        return chapterTemplateService.update(chapterTemplateDto);
     }
 
 }

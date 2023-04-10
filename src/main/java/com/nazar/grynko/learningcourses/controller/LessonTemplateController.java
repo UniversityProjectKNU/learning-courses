@@ -3,8 +3,8 @@ package com.nazar.grynko.learningcourses.controller;
 import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateDto;
 import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateSave;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
-import com.nazar.grynko.learningcourses.wrapper.ChapterTemplateServiceWrapper;
-import com.nazar.grynko.learningcourses.wrapper.LessonTemplateServiceWrapper;
+import com.nazar.grynko.learningcourses.service.ChapterTemplateService;
+import com.nazar.grynko.learningcourses.service.LessonTemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,49 +14,49 @@ import java.util.List;
 @RequestMapping("courses-templates/{courseTemplateId}/chapters-templates/{chapterTemplateId}/lessons-templates")
 public class LessonTemplateController {
 
-    private final LessonTemplateServiceWrapper serviceWrapper;
-    private final ChapterTemplateServiceWrapper chapterTemplateServiceWrapper;
+    private final LessonTemplateService lessonTemplateService;
+    private final ChapterTemplateService chapterTemplateService;
 
     @Autowired
-    public LessonTemplateController(LessonTemplateServiceWrapper serviceWrapper, ChapterTemplateServiceWrapper chapterTemplateServiceWrapper) {
-        this.serviceWrapper = serviceWrapper;
-        this.chapterTemplateServiceWrapper = chapterTemplateServiceWrapper;
+    public LessonTemplateController(LessonTemplateService lessonTemplateService, ChapterTemplateService chapterTemplateService) {
+        this.lessonTemplateService = lessonTemplateService;
+        this.chapterTemplateService = chapterTemplateService;
     }
 
 
     @GetMapping("/{id}")
     LessonTemplateDto one(@PathVariable Long id, @PathVariable Long chapterTemplateId,
                           @PathVariable Long courseTemplateId) {
-        if(!serviceWrapper.hasWithCourseTemplate(id, chapterTemplateId, courseTemplateId))
+        if(!lessonTemplateService.hasWithCourseTemplate(id, chapterTemplateId, courseTemplateId))
             throw new InvalidPathException();
 
-        return serviceWrapper.get(id)
+        return lessonTemplateService.get(id)
                 .orElseThrow(InvalidPathException::new);
     }
 
     @GetMapping
     List<LessonTemplateDto> allInChapter(@PathVariable Long chapterTemplateId, @PathVariable Long courseTemplateId) {
-        if(!chapterTemplateServiceWrapper.hasWithCourseTemplate(chapterTemplateId, courseTemplateId))
+        if(!chapterTemplateService.hasWithCourseTemplate(chapterTemplateId, courseTemplateId))
             throw new InvalidPathException();
 
-        return serviceWrapper.getAllInChapterTemplate(chapterTemplateId);
+        return lessonTemplateService.getAllInChapterTemplate(chapterTemplateId);
     }
 
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id, @PathVariable Long chapterTemplateId, @PathVariable Long courseTemplateId) {
-        if(!serviceWrapper.hasWithCourseTemplate(id, chapterTemplateId, courseTemplateId))
+        if(!lessonTemplateService.hasWithCourseTemplate(id, chapterTemplateId, courseTemplateId))
             throw new InvalidPathException();
 
-        serviceWrapper.delete(id);
+        lessonTemplateService.delete(id);
     }
 
     @PostMapping
     LessonTemplateDto save(@RequestBody LessonTemplateSave lessonTemplateSave, @PathVariable Long chapterTemplateId,
                            @PathVariable Long courseTemplateId) {
-        if(!chapterTemplateServiceWrapper.hasWithCourseTemplate(chapterTemplateId, courseTemplateId))
+        if(!chapterTemplateService.hasWithCourseTemplate(chapterTemplateId, courseTemplateId))
             throw new InvalidPathException();
 
-        return serviceWrapper.save(lessonTemplateSave, chapterTemplateId);
+        return lessonTemplateService.save(lessonTemplateSave, chapterTemplateId);
     }
 
     @PutMapping("/{id}")
@@ -64,10 +64,10 @@ public class LessonTemplateController {
                              @PathVariable Long chapterTemplateId, @PathVariable Long courseTemplateId) {
         if(!lessonTemplateDto.getId().equals(id))
             throw new InvalidPathException();
-        if(!serviceWrapper.hasWithCourseTemplate(id, chapterTemplateId, courseTemplateId))
+        if(!lessonTemplateService.hasWithCourseTemplate(id, chapterTemplateId, courseTemplateId))
             throw new InvalidPathException();
 
-        return serviceWrapper.update(lessonTemplateDto);
+        return lessonTemplateService.update(lessonTemplateDto);
     }
 
 }

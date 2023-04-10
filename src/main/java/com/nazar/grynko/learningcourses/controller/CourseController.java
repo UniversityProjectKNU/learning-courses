@@ -2,7 +2,7 @@ package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.dto.course.CourseDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
-import com.nazar.grynko.learningcourses.wrapper.CourseServiceWrapper;
+import com.nazar.grynko.learningcourses.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,37 +12,37 @@ import java.util.List;
 @RequestMapping("courses")
 public class CourseController {
 
-    private final CourseServiceWrapper serviceWrapper;
+    private final CourseService courseService;
 
     @Autowired
-    public CourseController(CourseServiceWrapper serviceWrapper) {
-        this.serviceWrapper = serviceWrapper;
+    public CourseController(CourseService courseService) {
+        this.courseService = courseService;
     }
 
     @GetMapping("/{id}")
     CourseDto one(@PathVariable Long id) {
-        return serviceWrapper.get(id)
+        return courseService.get(id)
                 .orElseThrow(InvalidPathException::new);
     }
 
     @GetMapping
     List<CourseDto> all() {
-        return serviceWrapper.getAll();
+        return courseService.getAll();
     }
 
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id) {
-        serviceWrapper.delete(id);
+        courseService.delete(id);
     }
 
     @PostMapping
     CourseDto save(@RequestBody CourseDto courseDto) {
-        return serviceWrapper.save(courseDto);
+        return courseService.save(courseDto);
     }
 
     @PutMapping("/{id}")
     CourseDto update(@RequestBody CourseDto courseDto, @PathVariable Long id) {
-        return serviceWrapper.update(courseDto, id);
+        return courseService.update(courseDto, id);
     }
 
 }

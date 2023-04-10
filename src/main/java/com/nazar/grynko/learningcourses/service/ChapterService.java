@@ -1,109 +1,75 @@
 package com.nazar.grynko.learningcourses.service;
 
+import com.nazar.grynko.learningcourses.dto.chapter.ChapterDto;
 import com.nazar.grynko.learningcourses.model.Chapter;
-import com.nazar.grynko.learningcourses.model.ChapterTemplate;
 import com.nazar.grynko.learningcourses.model.Course;
-import com.nazar.grynko.learningcourses.property.ChapterProperties;
-import com.nazar.grynko.learningcourses.repository.ChapterRepository;
+import com.nazar.grynko.learningcourses.service.internal.ChapterInternalService;
+import com.nazar.grynko.learningcourses.service.internal.CourseInternalService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
-@Service
+@Component
 public class ChapterService {
 
-    private final ChapterRepository chapterRepository;
-    private final ChapterTemplateService chapterTemplateService;
-    private final LessonService lessonService;
-    private final ChapterProperties chapterProperties;
+    private final ChapterInternalService chapterInternalService;
+    private final CourseInternalService courseInternalService;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public ChapterService(ChapterRepository chapterRepository, ChapterTemplateService chapterTemplateService,
-                          LessonService lessonService, ChapterProperties chapterProperties, ModelMapper modelMapper) {
-        this.chapterRepository = chapterRepository;
-        this.chapterTemplateService = chapterTemplateService;
-        this.lessonService = lessonService;
-        this.chapterProperties = chapterProperties;
+    public ChapterService(ChapterInternalService chapterInternalService, CourseInternalService courseInternalService,
+                          ModelMapper modelMapper) {
+        this.chapterInternalService = chapterInternalService;
+        this.courseInternalService = courseInternalService;
         this.modelMapper = modelMapper;
     }
 
-    public Optional<Chapter> get(Long id) {
-        return chapterRepository.findById(id);
+    public Optional<ChapterDto> get(Long id) {
+        return chapterInternalService.get(id)
+                .flatMap(val -> Optional.of(toDto(val)));
     }
 
-    public Collection<Chapter> getAllInCourse(Long courseId) {
-        return chapterRepository.findAllByCourseId(courseId);
+    public List<ChapterDto> getAllInCourse(Long courseId) {
+        return chapterInternalService.getAllInCourse(courseId)
+                .stream()
+                .map(this::toDto)
+                .collect(Collectors.toList());
     }
 
     public void delete(Long id) {
-        Chapter entity = get(id).orElseThrow(IllegalArgumentException::new);
-        chapterRepository.delete(entity);
+        chapterInternalService.delete(id);
     }
 
-    public Chapter save(Chapter entity) {
-        defaultSetup(entity);
-        return chapterRepository.save(entity);
-    }
+    public ChapterDto save(ChapterDto dto, Long courseId) {
+        Chapter entity = fromDto(dto);
 
-    public List<Chapter> create(Long courseTemplateId, Course course) {
-        List<ChapterTemplate> chapterTemplates = chapterTemplateService
-                .getAllInCourseTemplate(courseTemplateId);
-
-        List<Chapter> entities = new ArrayList<>();
-        for(ChapterTemplate template: chapterTemplates) {
-            Chapter entity = create(template, course);
-            entities.add(entity);
-        }
-
-        return entities;
-    }
-
-    public Chapter create(ChapterTemplate template, Course course) {
-        Chapter entity = fromTemplate(template).setId(null);
-        // change
-        entity.setCourse(course);
-        defaultSetup(entity);
-
-        entity = chapterRepository.save(entity);
-
-        lessonService.create(template.getId(), entity);
-
-        return entity;
-    }
-
-    public Chapter update(Chapter entity) {
-        Chapter dbChapter = chapterRepository.findById(entity.getId())
+        Course course = courseInternalService.get(courseId)
                 .orElseThrow(IllegalArgumentException::new);
-        setNullFields(dbChapter, entity);
-        return chapterRepository.save(entity);
+        entity.setCourse(course);
+
+        entity = chapterInternalService.save(entity);
+        return toDto(entity);
     }
 
-    private void defaultSetup(Chapter entity) {
-        if(entity.getIsFinished() == null)
-            entity.setIsFinished(chapterProperties.getDefaultIsFinished());
+    public ChapterDto update(ChapterDto dto, Long id) {
+        Chapter entity = fromDto(dto).setId(id);
+        entity = chapterInternalService.update(entity);
+        return toDto(entity);
     }
 
-    private Chapter fromTemplate(ChapterTemplate template) {
-        return modelMapper.map(template, Chapter.class);
+    public ChapterDto toDto(Chapter entity) {
+        return modelMapper.map(entity, ChapterDto.class);
     }
 
-    private void setNullFields(Chapter source, Chapter destination) {
-        if(destination.getId() == null) destination.setId(source.getId());
-        if(destination.getTitle() == null) destination.setTitle(source.getTitle());
-        if(destination.getDescription() == null) destination.setDescription(source.getDescription());
-        if(destination.getNumber() == null) destination.setNumber(source.getNumber());
-        if(destination.getIsFinished() == null) destination.setIsFinished(source.getIsFinished());
-        if(destination.getFinalFeedback() == null) destination.setFinalFeedback(source.getFinalFeedback());
-        if(destination.getCourse() == null) destination.setCourse(source.getCourse());
+    public Chapter fromDto(ChapterDto dto) {
+        return modelMapper.map(dto, Chapter.class);
     }
 
-    public boolean hasWithCourse(Long chapterId, Long courseId) {
-        Optional<Chapter> optional = chapterRepository
-                .getChapterByIdAndCourseId(chapterId, courseId);
-
-        return optional.isPresent();
+    public boolean hasWithCourse(Long id, Long courseId) {
+        return chapterInternalService.hasWithCourse(id, courseId);
     }
 }

@@ -1,4 +1,4 @@
-package com.nazar.grynko.learningcourses.wrapper;
+package com.nazar.grynko.learningcourses.service;
 
 import com.nazar.grynko.learningcourses.dto.role.RoleDto;
 import com.nazar.grynko.learningcourses.model.Role;
@@ -6,11 +6,11 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 @Component
-public class RoleServiceWrapper {
+public class RoleService {
 
     private final ModelMapper modelMapper;
 
-    public RoleServiceWrapper(ModelMapper modelMapper) {
+    public RoleService(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
     }
 
