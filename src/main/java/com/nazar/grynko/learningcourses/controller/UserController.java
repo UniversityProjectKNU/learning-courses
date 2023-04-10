@@ -3,6 +3,7 @@ package com.nazar.grynko.learningcourses.controller;
 import com.nazar.grynko.learningcourses.dto.role.RoleDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
+import com.nazar.grynko.learningcourses.service.RoleService;
 import com.nazar.grynko.learningcourses.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,9 +15,11 @@ import java.util.Set;
 public class UserController {
 
     private final UserService userService;
+    private final RoleService roleService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RoleService roleService) {
         this.userService = userService;
+        this.roleService = roleService;
     }
 
     @GetMapping("/{id}")
@@ -44,7 +47,7 @@ public class UserController {
 
     @GetMapping("/{id}/roles")
     Set<RoleDto> getUsersRoles(@PathVariable Long id) {
-        return userService.getUsersRoles(id);
+        return roleService.getUsersRoles(id);
     }
 
     @PutMapping("/{id}/roles")
@@ -52,7 +55,7 @@ public class UserController {
         if(roles == null || roles.isEmpty()) throw new IllegalArgumentException();
         userService.get(id).orElseThrow(InvalidPathException::new);
 
-        return userService.updateRoles(roles, id);
+        return roleService.updateRoles(roles, id);
     }
 
 }

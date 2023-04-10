@@ -1,25 +1,41 @@
 package com.nazar.grynko.learningcourses.service;
 
 import com.nazar.grynko.learningcourses.dto.role.RoleDto;
+import com.nazar.grynko.learningcourses.mapper.RoleMapper;
 import com.nazar.grynko.learningcourses.model.Role;
-import org.modelmapper.ModelMapper;
+import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
 import org.springframework.stereotype.Component;
+
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 public class RoleService {
 
-    private final ModelMapper modelMapper;
+    private final RoleMapper roleMapper;
+    private final UserInternalService userInternalService;
 
-    public RoleService(ModelMapper modelMapper) {
-        this.modelMapper = modelMapper;
+    public RoleService(RoleMapper roleMapper, UserInternalService userInternalService) {
+        this.roleMapper = roleMapper;
+        this.userInternalService = userInternalService;
     }
 
-    public RoleDto toDto(Role entity) {
-        return modelMapper.map(entity, RoleDto.class);
+
+    public Set<RoleDto> updateRoles(Set<RoleDto> rolesDto, Long userId) {
+        Set<Role> roles = rolesDto.stream().map(roleMapper::fromDto).collect(Collectors.toSet());
+
+        roles = userInternalService.updateRoles(roles, userId);
+
+        return roles.stream()
+                .map(roleMapper::toDto)
+                .collect(Collectors.toSet());
     }
 
-    public Role fromDto(RoleDto dto) {
-        return modelMapper.map(dto, Role.class);
+    public Set<RoleDto> getUsersRoles(Long id) {
+        return userInternalService.getUsersRoles(id)
+                .stream()
+                .map(roleMapper::toDto)
+                .collect(Collectors.toSet());
     }
 
 }

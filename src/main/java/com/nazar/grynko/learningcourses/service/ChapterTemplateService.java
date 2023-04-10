@@ -2,9 +2,9 @@ package com.nazar.grynko.learningcourses.service;
 
 import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateDto;
 import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateSave;
+import com.nazar.grynko.learningcourses.mapper.ChapterTemplateMapper;
 import com.nazar.grynko.learningcourses.model.ChapterTemplate;
 import com.nazar.grynko.learningcourses.service.internal.ChapterTemplateInternalService;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -15,16 +15,16 @@ import java.util.stream.Collectors;
 public class ChapterTemplateService {
 
     private final ChapterTemplateInternalService chapterTemplateInternalService;
-    private final ModelMapper modelMapper;
+    private final ChapterTemplateMapper chapterTemplateMapper;
 
-    public ChapterTemplateService(ChapterTemplateInternalService chapterTemplateInternalService, ModelMapper modelMapper) {
+    public ChapterTemplateService(ChapterTemplateInternalService chapterTemplateInternalService, ChapterTemplateMapper chapterTemplateMapper) {
         this.chapterTemplateInternalService = chapterTemplateInternalService;
-        this.modelMapper = modelMapper;
+        this.chapterTemplateMapper = chapterTemplateMapper;
     }
 
     public Optional<ChapterTemplateDto> get(Long id) {
         return chapterTemplateInternalService.get(id)
-                .flatMap(val -> Optional.of(toDto(val)));
+                .flatMap(val -> Optional.of(chapterTemplateMapper.toDto(val)));
     }
 
     public void delete(Long id) {
@@ -32,36 +32,24 @@ public class ChapterTemplateService {
     }
 
     public ChapterTemplateDto save(ChapterTemplateSave dto, Long courseTemplateId) {
-        ChapterTemplate entity = fromDto(dto);
+        ChapterTemplate entity = chapterTemplateMapper.fromDto(dto);
         entity = chapterTemplateInternalService.save(entity, courseTemplateId);
-        return toDto(entity);
+        return chapterTemplateMapper.toDto(entity);
     }
 
     public ChapterTemplateDto update(ChapterTemplateDto dto) {
-        ChapterTemplate chapterTemplate = fromDto(dto);
+        ChapterTemplate chapterTemplate = chapterTemplateMapper.fromDto(dto);
         chapterTemplate = chapterTemplateInternalService.update(chapterTemplate);
-        return toDto(chapterTemplate);
+        return chapterTemplateMapper.toDto(chapterTemplate);
     }
 
     public List<ChapterTemplateDto> getAllInCourseTemplate(Long courseTemplateId) {
         List<ChapterTemplate> chapterTemplates = chapterTemplateInternalService.getAllInCourseTemplate(courseTemplateId);
-        return chapterTemplates.stream().map(this::toDto).collect(Collectors.toList());
+        return chapterTemplates.stream().map(chapterTemplateMapper::toDto).collect(Collectors.toList());
     }
 
     public boolean hasWithCourseTemplate(Long chapterTemplateId, Long courseTemplateId) {
         return chapterTemplateInternalService.hasWithCourseTemplate(chapterTemplateId, courseTemplateId);
-    }
-
-    private ChapterTemplateDto toDto(ChapterTemplate entity) {
-        return modelMapper.map(entity, ChapterTemplateDto.class);
-    }
-
-    private ChapterTemplate fromDto(ChapterTemplateDto dto) {
-        return modelMapper.map(dto, ChapterTemplate.class);
-    }
-
-    private ChapterTemplate fromDto(ChapterTemplateSave dto) {
-        return modelMapper.map(dto, ChapterTemplate.class);
     }
 
 }

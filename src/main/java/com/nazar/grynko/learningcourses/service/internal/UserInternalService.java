@@ -43,7 +43,7 @@ public class UserInternalService {
     }
 
     public Set<Role> updateRoles(Set<Role> roles, Long userId) {
-        if(roles == null || roles.size() == 0) throw new IllegalArgumentException();
+        if (roles == null || roles.size() == 0) throw new IllegalArgumentException();
         User user = get(userId).orElseThrow(InvalidPathException::new);
 
         user.setRoles(roles);
@@ -57,14 +57,15 @@ public class UserInternalService {
         return user.getRoles();
     }
 
-    public void fillNullFields(User source, User destination) {
-        if(destination.getId() == null) destination.setId(source.getId());
-        if(destination.getLogin() == null) destination.setLogin(source.getLogin());
-        if(destination.getPassword() == null) destination.setPassword(source.getPassword());
-        if(destination.getFirstName() == null) destination.setFirstName(source.getFirstName());
-        if(destination.getLastName() == null) destination.setLastName(source.getLastName());
-        if(destination.getDateOfBirth() == null) destination.setDateOfBirth(source.getDateOfBirth());
-        if(destination.getRoles() == null || destination.getRoles().size() == 0) destination.setRoles(source.getRoles());
+    private void fillNullFields(User source, User destination) {
+        if (destination.getId() == null) destination.setId(source.getId());
+        if (destination.getLogin() == null) destination.setLogin(source.getLogin());
+        if (destination.getPassword() == null) destination.setPassword(source.getPassword());
+        if (destination.getFirstName() == null) destination.setFirstName(source.getFirstName());
+        if (destination.getLastName() == null) destination.setLastName(source.getLastName());
+        if (destination.getDateOfBirth() == null) destination.setDateOfBirth(source.getDateOfBirth());
+        if (destination.getRoles() == null || destination.getRoles().size() == 0)
+            destination.setRoles(source.getRoles());
     }
 
 }
