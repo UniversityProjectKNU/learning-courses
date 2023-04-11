@@ -1,12 +1,14 @@
 package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.dto.chapter.ChapterDto;
+import com.nazar.grynko.learningcourses.dto.chapter.ChapterDtoSave;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.ChapterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("courses/{courseId}/chapters")
@@ -21,7 +23,7 @@ public class ChapterController {
 
     @GetMapping("/{id}")
     ChapterDto one(@PathVariable Long id, @PathVariable Long courseId) {
-        if(!chapterService.hasWithCourse(id, courseId))
+        if (!chapterService.hasWithCourse(id, courseId))
             throw new InvalidPathException();
 
         return chapterService.get(id)
@@ -35,20 +37,20 @@ public class ChapterController {
 
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id, @PathVariable Long courseId) {
-        if(!chapterService.hasWithCourse(id, courseId))
+        if (!chapterService.hasWithCourse(id, courseId))
             throw new InvalidPathException();
 
         chapterService.delete(id);
     }
 
     @PostMapping
-    ChapterDto save(@RequestBody ChapterDto chapterDto, @PathVariable Long courseId) {
+    ChapterDto save(@RequestBody ChapterDtoSave chapterDto, @PathVariable Long courseId) {
         return chapterService.save(chapterDto, courseId);
     }
 
     @PutMapping("/{id}")
     ChapterDto update(@RequestBody ChapterDto chapterDto, @PathVariable Long id, @PathVariable Long courseId) {
-        if(!chapterService.hasWithCourse(id, courseId))
+        if (!chapterService.hasWithCourse(id, courseId) || !Objects.equals(chapterDto.getId(), id))
             throw new InvalidPathException();
 
         return chapterService.update(chapterDto, id);
