@@ -3,7 +3,6 @@ package com.nazar.grynko.learningcourses.service.internal;
 import com.nazar.grynko.learningcourses.mapper.CourseMapper;
 import com.nazar.grynko.learningcourses.model.Course;
 import com.nazar.grynko.learningcourses.model.CourseTemplate;
-import com.nazar.grynko.learningcourses.property.CourseProperties;
 import com.nazar.grynko.learningcourses.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,15 +16,13 @@ public class CourseInternalService {
     private final CourseRepository courseRepository;
     private final CourseTemplateInternalService courseTemplateInternalService;
     private final ChapterInternalService chapterInternalService;
-    private final CourseProperties courseProperties;
     private final CourseMapper courseMapper;
 
     public CourseInternalService(CourseRepository courseRepository, CourseTemplateInternalService courseTemplateInternalService,
-                                 ChapterInternalService chapterInternalService, CourseProperties courseProperties, CourseMapper courseMapper) {
+                                 ChapterInternalService chapterInternalService, CourseMapper courseMapper) {
         this.courseRepository = courseRepository;
         this.courseTemplateInternalService = courseTemplateInternalService;
         this.chapterInternalService = chapterInternalService;
-        this.courseProperties = courseProperties;
         this.courseMapper = courseMapper;
     }
 
@@ -49,7 +46,7 @@ public class CourseInternalService {
                 .orElseThrow(IllegalArgumentException::new);
 
         Course entity = courseMapper.fromTemplate(template).setId(null);
-        defaultSetup(entity);
+        entity.setIsFinished(false);
 
         entity = courseRepository.save(entity);
 
@@ -59,7 +56,6 @@ public class CourseInternalService {
     }
 
     public Course save(Course entity) {
-        defaultSetup(entity);
         return courseRepository.save(entity);
     }
 
@@ -76,11 +72,6 @@ public class CourseInternalService {
         if (destination.getDescription() == null) destination.setDescription(source.getDescription());
         if (destination.getIsFinished() == null) destination.setIsFinished(source.getIsFinished());
         if (destination.getFinalFeedback() == null) destination.setFinalFeedback(source.getFinalFeedback());
-    }
-
-    private void defaultSetup(Course entity) {
-        if (entity.getIsFinished() == null)
-            entity.setIsFinished(courseProperties.getDefaultIsFinished());
     }
 
 }

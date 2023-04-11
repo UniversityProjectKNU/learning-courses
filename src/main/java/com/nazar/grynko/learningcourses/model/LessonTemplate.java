@@ -28,6 +28,10 @@ public class LessonTemplate {
     private String description;
     @Column(nullable = false)
     private Integer number;
+    @Column(nullable = false)
+    private Integer maxMark;
+    @Column(nullable = false)
+    private Integer successMark;
 
     @ManyToOne
     @JoinColumn(

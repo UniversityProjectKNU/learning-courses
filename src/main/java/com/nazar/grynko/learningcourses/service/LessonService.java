@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+
 @Component
 public class LessonService {
 
@@ -45,6 +47,10 @@ public class LessonService {
     }
 
     public LessonDto save(LessonDto dto, Long chapterId) {
+        if (isNull(dto.getIsFinished()) || !dto.getIsFinished()) {
+            throw new IllegalStateException();
+        }
+
         Lesson entity = lessonMapper.fromDto(dto);
 
         Chapter chapter = chapterInternalService.get(chapterId)

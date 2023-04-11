@@ -4,6 +4,8 @@ CREATE TABLE `learning_courses`.`lessons_templates` (
                                                         `title` VARCHAR(256) NOT NULL,
                                                         `description` VARCHAR(256) NOT NULL,
                                                         `number` INT NOT NULL,
+                                                        `max_mark` INT NOT NULL DEFAULT 1,
+                                                        `success_mark` INT NOT NULL DEFAULT 1,
 
                                                         PRIMARY KEY (`id`),
 

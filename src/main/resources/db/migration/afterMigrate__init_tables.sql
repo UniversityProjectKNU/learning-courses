@@ -60,26 +60,26 @@ VALUES
 ##############################
 DELETE FROM `lessons_templates`;
 
-INSERT INTO `lessons_templates` (`id`, `chapter_template_id`, `number`, `title`, `description`)
+INSERT INTO `lessons_templates` (`id`, `chapter_template_id`, `number`, `title`, `description`, `max_mark`, `success_mark`)
 VALUES
-    (1, 1, 1, 'Numerical Bases.', 'Since we were kids, we have all used decimals to express quantities. This nomenclature that seems so logical to us may not seem so to an inhabitant of Classical Rome.'),
-    (2, 1, 2, 'Ascii Codes.', 'It is a very well-known fact that computers can manage internally only 0s (zeros) and 1s (ones).'),
-    (3, 2, 1, 'Basic concepts.', 'This section provides definitions for the specific terminology and the concepts used when describing the C programming language.'),
-    (4, 2, 2, 'C++ keywords.', 'This is a list of reserved keywords in C. Since they are used by the language, these keywords are not available for re-definition.'),
-    (5, 3, 1, 'Headers.', 'Each element of the C++ standard library is declared or defined (as appropriate) in a header . A header is not necessarily a source file'),
-    (6, 4, 1, 'Getting to know JavaRush.', 'Hi. If you are reading these lines, we confirm that these are Java lessons. Our training course is packed with practice (1500+ practice problems) and designed for an adult audience.'),
-    (7, 4, 2, 'Commands and first program.', 'A program is a set (list) of commands. First the first command is executed, then the second, then the third, and so on. When all commands are executed, the program is terminated.'),
-    (8, 4, 3, 'Screen output.', 'The body of a method consists of commands. You could even say that a method is commands combined into a group that has been given a name (method name). Both are true.'),
-    (9, 4, 4, 'Variables.', 'Variables are special things for storing data. Any data. All data in Java is stored with variables. A variable most of all resembles a box: the most common box.'),
-    (10, 5, 1, 'The future is here.', 'The attributes of the 20th century were a vacuum cleaner, a washing machine, a television set, and a car.'),
-    (11, 5, 2, 'Java course at JavaRush.', 'A unique feature of JavaRush compared to other training projects is that only Java programming is taught here. We are constantly working to make the training more effective, engaging, and accessible.'),
-    (12, 5, 3, 'Type int - integer numbers.', 'If you want to store integers in variables, you need to use the int type. The int is an abbreviation for Integer (whole from English), which kind of hints that this type allows you to store integers.'),
-    (13, 6, 1, 'LEARN 6 DevOps Tools.', 'Learn what Docker and Kubernetes are and why you might want to use them.'),
-    (14, 6, 2, 'Your First Docker Usecase - Deploy a Spring Boot Application.', 'Create Docker images for 8 Java Spring Boot Projects.'),
-    (15, 7, 1, 'Docker Concepts - Registry, Repository, Tag, Image & Containers.', 'Use Dockerfile to Automate Building of your Docker Image.'),
-    (16, 7, 2, 'Playing with Docker Images and Containers.', 'Learn Docker Commands and Docker Architecture.'),
-    (17, 8, 1, 'Understanding Docker Architecture - Docker Client, Docker Engine.', 'Create Docker Java Images with maven plugins - Dockerfile Spotify Plugin, JIB Plugin and Fabric8 Docker Maven Plugin.'),
-    (18, 8, 2, 'Why is Docker Popular?', 'You will Containerize CCS, CES Microservices, Eureka Naming Server and Zuul API Gateway with Docker and Run them using Docker Compose.');
+    (1, 1, 1, 'Numerical Bases.', 'Since we were kids, we have all used decimals to express quantities. This nomenclature that seems so logical to us may not seem so to an inhabitant of Classical Rome.', 10, 5),
+    (2, 1, 2, 'Ascii Codes.', 'It is a very well-known fact that computers can manage internally only 0s (zeros) and 1s (ones).', 10, 7),
+    (3, 2, 1, 'Basic concepts.', 'This section provides definitions for the specific terminology and the concepts used when describing the C programming language.', 10, 5),
+    (4, 2, 2, 'C++ keywords.', 'This is a list of reserved keywords in C. Since they are used by the language, these keywords are not available for re-definition.', 12, 9),
+    (5, 3, 1, 'Headers.', 'Each element of the C++ standard library is declared or defined (as appropriate) in a header . A header is not necessarily a source file', 10, 5),
+    (6, 4, 1, 'Getting to know JavaRush.', 'Hi. If you are reading these lines, we confirm that these are Java lessons. Our training course is packed with practice (1500+ practice problems) and designed for an adult audience.', 10, 5),
+    (7, 4, 2, 'Commands and first program.', 'A program is a set (list) of commands. First the first command is executed, then the second, then the third, and so on. When all commands are executed, the program is terminated.', 10, 5),
+    (8, 4, 3, 'Screen output.', 'The body of a method consists of commands. You could even say that a method is commands combined into a group that has been given a name (method name). Both are true.', 10, 5),
+    (9, 4, 4, 'Variables.', 'Variables are special things for storing data. Any data. All data in Java is stored with variables. A variable most of all resembles a box: the most common box.', 10, 5),
+    (10, 5, 1, 'The future is here.', 'The attributes of the 20th century were a vacuum cleaner, a washing machine, a television set, and a car.', 8, 4),
+    (11, 5, 2, 'Java course at JavaRush.', 'A unique feature of JavaRush compared to other training projects is that only Java programming is taught here. We are constantly working to make the training more effective, engaging, and accessible.', 10, 5),
+    (12, 5, 3, 'Type int - integer numbers.', 'If you want to store integers in variables, you need to use the int type. The int is an abbreviation for Integer (whole from English), which kind of hints that this type allows you to store integers.', 10, 5),
+    (13, 6, 1, 'LEARN 6 DevOps Tools.', 'Learn what Docker and Kubernetes are and why you might want to use them.', 10, 5),
+    (14, 6, 2, 'Your First Docker Usecase - Deploy a Spring Boot Application.', 'Create Docker images for 8 Java Spring Boot Projects.', 10, 5),
+    (15, 7, 1, 'Docker Concepts - Registry, Repository, Tag, Image & Containers.', 'Use Dockerfile to Automate Building of your Docker Image.', 10, 5),
+    (16, 7, 2, 'Playing with Docker Images and Containers.', 'Learn Docker Commands and Docker Architecture.', 10, 5),
+    (17, 8, 1, 'Understanding Docker Architecture - Docker Client, Docker Engine.', 'Create Docker Java Images with maven plugins - Dockerfile Spotify Plugin, JIB Plugin and Fabric8 Docker Maven Plugin.', 10, 5),
+    (18, 8, 2, 'Why is Docker Popular?', 'You will Containerize CCS, CES Microservices, Eureka Naming Server and Zuul API Gateway with Docker and Run them using Docker Compose.', 10, 5);
 ##############################
 ##############################
 ##############################

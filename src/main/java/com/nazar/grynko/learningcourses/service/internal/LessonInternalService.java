@@ -42,7 +42,6 @@ public class LessonInternalService {
     }
 
     public Lesson save(Lesson entity) {
-        defaultSetup(entity);
         return lessonRepository.save(entity);
     }
 
@@ -61,9 +60,9 @@ public class LessonInternalService {
 
     public Lesson create(LessonTemplate template, Chapter chapter) {
         Lesson entity = lessonMapper.fromTemplate(template).setId(null);
-        entity.setChapter(chapter);
 
-        defaultSetup(entity);
+        entity.setChapter(chapter);
+        entity.setIsFinished(false);
 
         return lessonRepository.save(entity);
     }
@@ -73,15 +72,6 @@ public class LessonInternalService {
                 .orElseThrow(IllegalArgumentException::new);
         setNullFields(dbLesson, entity);
         return lessonRepository.save(entity);
-    }
-
-    private void defaultSetup(Lesson lesson) {
-        if (lesson.getMaxMark() == null)
-            lesson.setMaxMark(lessonProperties.getDefaultMaxMark());
-        if (lesson.getSuccessMark() == null)
-            lesson.setSuccessMark(lessonProperties.getDefaultSuccessMark());
-        if (lesson.getIsFinished() == null)
-            lesson.setIsFinished(lessonProperties.getDefaultIsFinished());
     }
 
     private void setNullFields(Lesson source, Lesson destination) {

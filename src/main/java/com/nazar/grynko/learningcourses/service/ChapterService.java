@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+
 @Component
 public class ChapterService {
 
@@ -45,10 +47,14 @@ public class ChapterService {
     }
 
     public ChapterDto save(ChapterDto dto, Long courseId) {
-        Chapter entity = chapterMapper.fromDto(dto);
+        if (isNull(dto.getIsFinished()) || !dto.getIsFinished()) {
+            throw new IllegalStateException();
+        }
 
         Course course = courseInternalService.get(courseId)
                 .orElseThrow(IllegalArgumentException::new);
+
+        Chapter entity = chapterMapper.fromDto(dto);
         entity.setCourse(course);
 
         entity = chapterInternalService.save(entity);

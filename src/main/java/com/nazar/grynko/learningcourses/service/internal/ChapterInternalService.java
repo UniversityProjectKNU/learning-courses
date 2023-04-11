@@ -47,7 +47,6 @@ public class ChapterInternalService {
     }
 
     public Chapter save(Chapter entity) {
-        defaultSetup(entity);
         return chapterRepository.save(entity);
     }
 
@@ -66,9 +65,9 @@ public class ChapterInternalService {
 
     public Chapter create(ChapterTemplate template, Course course) {
         Chapter entity = chapterMapper.fromTemplate(template).setId(null);
-        // change
+
         entity.setCourse(course);
-        defaultSetup(entity);
+        entity.setIsFinished(false);
 
         entity = chapterRepository.save(entity);
 
@@ -82,11 +81,6 @@ public class ChapterInternalService {
                 .orElseThrow(IllegalArgumentException::new);
         setNullFields(dbChapter, entity);
         return chapterRepository.save(entity);
-    }
-
-    private void defaultSetup(Chapter entity) {
-        if (entity.getIsFinished() == null)
-            entity.setIsFinished(chapterProperties.getDefaultIsFinished());
     }
 
     private void setNullFields(Chapter source, Chapter destination) {

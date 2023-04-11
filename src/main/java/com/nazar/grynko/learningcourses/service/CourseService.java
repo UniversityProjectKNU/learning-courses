@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+
 @Component
 public class CourseService {
 
@@ -43,6 +45,10 @@ public class CourseService {
     }
 
     public CourseDto save(CourseDto dto) {
+        if (isNull(dto.getIsFinished()) || !dto.getIsFinished()) {
+            throw new IllegalStateException();
+        }
+
         Course entity = courseMapper.fromDto(dto);
         return courseMapper.toDto(courseInternalService.save(entity));
     }
