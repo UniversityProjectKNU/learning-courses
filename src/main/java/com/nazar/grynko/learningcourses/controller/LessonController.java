@@ -1,12 +1,14 @@
 package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
+import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoSave;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.ChapterService;
 import com.nazar.grynko.learningcourses.service.LessonService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("courses/{courseId}/chapters/{chapterId}/lessons")
@@ -22,7 +24,7 @@ public class LessonController {
 
     @GetMapping("/{id}")
     LessonDto one(@PathVariable Long id, @PathVariable Long chapterId, @PathVariable Long courseId) {
-        if(!lessonService.hasWithChapter(id, chapterId, courseId))
+        if (!lessonService.hasWithChapter(id, chapterId, courseId))
             throw new InvalidPathException();
 
 
@@ -32,7 +34,7 @@ public class LessonController {
 
     @GetMapping
     List<LessonDto> allInChapter(@PathVariable Long chapterId, @PathVariable Long courseId) {
-        if(!chapterService.hasWithCourse(chapterId, courseId))
+        if (!chapterService.hasWithCourse(chapterId, courseId))
             throw new InvalidPathException();
 
         return lessonService.getAllInChapter(chapterId);
@@ -40,15 +42,15 @@ public class LessonController {
 
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id, @PathVariable Long chapterId, @PathVariable Long courseId) {
-        if(!lessonService.hasWithChapter(id, chapterId, courseId))
+        if (!lessonService.hasWithChapter(id, chapterId, courseId))
             throw new InvalidPathException();
 
         lessonService.delete(id);
     }
 
     @PostMapping
-    LessonDto save(@RequestBody LessonDto lessonDto, @PathVariable Long chapterId, @PathVariable Long courseId) {
-        if(!chapterService.hasWithCourse(chapterId, courseId))
+    LessonDto save(@RequestBody LessonDtoSave lessonDto, @PathVariable Long chapterId, @PathVariable Long courseId) {
+        if (!chapterService.hasWithCourse(chapterId, courseId))
             throw new InvalidPathException();
 
         return lessonService.save(lessonDto, chapterId);
@@ -57,7 +59,7 @@ public class LessonController {
     @PutMapping("/{id}")
     LessonDto update(@RequestBody LessonDto lessonDto, @PathVariable Long id,
                      @PathVariable Long chapterId, @PathVariable Long courseId) {
-        if(!lessonService.hasWithChapter(id, chapterId, courseId))
+        if (!lessonService.hasWithChapter(id, chapterId, courseId) || !Objects.equals(lessonDto.getId(), id))
             throw new InvalidPathException();
 
         return lessonService.update(lessonDto, id);

@@ -1,6 +1,7 @@
 package com.nazar.grynko.learningcourses.service;
 
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
+import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoSave;
 import com.nazar.grynko.learningcourses.mapper.LessonMapper;
 import com.nazar.grynko.learningcourses.model.Chapter;
 import com.nazar.grynko.learningcourses.model.Lesson;
@@ -12,8 +13,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static java.util.Objects.isNull;
 
 @Component
 public class LessonService {
@@ -46,16 +45,13 @@ public class LessonService {
         lessonInternalService.delete(id);
     }
 
-    public LessonDto save(LessonDto dto, Long chapterId) {
-        if (isNull(dto.getIsFinished()) || !dto.getIsFinished()) {
-            throw new IllegalStateException();
-        }
-
-        Lesson entity = lessonMapper.fromDto(dto);
+    public LessonDto save(LessonDtoSave dto, Long chapterId) {
+        Lesson entity = lessonMapper.fromDtoSave(dto);
 
         Chapter chapter = chapterInternalService.get(chapterId)
                 .orElseThrow(IllegalArgumentException::new);
         entity.setChapter(chapter);
+        entity.setIsFinished(false);
 
         entity = lessonInternalService.save(entity);
         return lessonMapper.toDto(entity);

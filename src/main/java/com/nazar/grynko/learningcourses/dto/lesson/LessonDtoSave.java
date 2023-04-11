@@ -1,6 +1,5 @@
 package com.nazar.grynko.learningcourses.dto.lesson;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,14 +14,11 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class LessonDto implements Serializable {
+public class LessonDtoSave implements Serializable {
 
-    private Long id;
     private String title;
     private String description;
     private String number;
-    @JsonProperty("isFinished")
-    private Boolean isFinished;
     private Integer maxMark;
     private Integer successMark;
 
