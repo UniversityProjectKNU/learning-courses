@@ -4,7 +4,6 @@ import com.nazar.grynko.learningcourses.mapper.ChapterMapper;
 import com.nazar.grynko.learningcourses.model.Chapter;
 import com.nazar.grynko.learningcourses.model.ChapterTemplate;
 import com.nazar.grynko.learningcourses.model.Course;
-import com.nazar.grynko.learningcourses.property.ChapterProperties;
 import com.nazar.grynko.learningcourses.repository.ChapterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,16 +19,14 @@ public class ChapterInternalService {
     private final ChapterRepository chapterRepository;
     private final ChapterTemplateInternalService chapterTemplateInternalService;
     private final LessonInternalService lessonInternalService;
-    private final ChapterProperties chapterProperties;
     private final ChapterMapper chapterMapper;
 
     @Autowired
     public ChapterInternalService(ChapterRepository chapterRepository, ChapterTemplateInternalService chapterTemplateInternalService,
-                                  LessonInternalService lessonInternalService, ChapterProperties chapterProperties, ChapterMapper chapterMapper) {
+                                  LessonInternalService lessonInternalService, ChapterMapper chapterMapper) {
         this.chapterRepository = chapterRepository;
         this.chapterTemplateInternalService = chapterTemplateInternalService;
         this.lessonInternalService = lessonInternalService;
-        this.chapterProperties = chapterProperties;
         this.chapterMapper = chapterMapper;
     }
 

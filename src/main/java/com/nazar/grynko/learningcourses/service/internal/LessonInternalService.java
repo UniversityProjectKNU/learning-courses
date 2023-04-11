@@ -4,7 +4,6 @@ import com.nazar.grynko.learningcourses.mapper.LessonMapper;
 import com.nazar.grynko.learningcourses.model.Chapter;
 import com.nazar.grynko.learningcourses.model.Lesson;
 import com.nazar.grynko.learningcourses.model.LessonTemplate;
-import com.nazar.grynko.learningcourses.property.LessonProperties;
 import com.nazar.grynko.learningcourses.repository.LessonRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,14 +16,12 @@ public class LessonInternalService {
 
     private final LessonRepository lessonRepository;
     private final LessonTemplateInternalService lessonTemplateInternalService;
-    private final LessonProperties lessonProperties;
     private final LessonMapper lessonMapper;
 
     public LessonInternalService(LessonRepository lessonRepository, LessonTemplateInternalService lessonTemplateInternalService,
-                                 LessonProperties lessonProperties, LessonMapper lessonMapper) {
+                                 LessonMapper lessonMapper) {
         this.lessonRepository = lessonRepository;
         this.lessonTemplateInternalService = lessonTemplateInternalService;
-        this.lessonProperties = lessonProperties;
         this.lessonMapper = lessonMapper;
     }
 
