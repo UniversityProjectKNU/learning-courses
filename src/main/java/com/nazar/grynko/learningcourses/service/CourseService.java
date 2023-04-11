@@ -1,6 +1,7 @@
 package com.nazar.grynko.learningcourses.service;
 
 import com.nazar.grynko.learningcourses.dto.course.CourseDto;
+import com.nazar.grynko.learningcourses.dto.course.CourseDtoSave;
 import com.nazar.grynko.learningcourses.mapper.CourseMapper;
 import com.nazar.grynko.learningcourses.model.Course;
 import com.nazar.grynko.learningcourses.service.internal.CourseInternalService;
@@ -9,8 +10,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static java.util.Objects.isNull;
 
 @Component
 public class CourseService {
@@ -44,12 +43,10 @@ public class CourseService {
         return courseMapper.toDto(course);
     }
 
-    public CourseDto save(CourseDto dto) {
-        if (isNull(dto.getIsFinished()) || !dto.getIsFinished()) {
-            throw new IllegalStateException();
-        }
+    public CourseDto save(CourseDtoSave dto) {
+        Course entity = courseMapper.fromDtoSave(dto);
+        entity.setIsFinished(false);
 
-        Course entity = courseMapper.fromDto(dto);
         return courseMapper.toDto(courseInternalService.save(entity));
     }
 
