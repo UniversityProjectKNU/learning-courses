@@ -17,11 +17,11 @@ import java.util.Set;
 @AllArgsConstructor
 @Accessors(chain = true)
 @Entity
-@Table(name="users")
+@Table(name = "users")
 public class User {
 
     @Id
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true)
@@ -32,7 +32,7 @@ public class User {
     private String firstName;
     @Column(nullable = false)
     private String lastName;
-    @Column(nullable = false)
+    @Column
     @Temporal(TemporalType.DATE)
     private Calendar dateOfBirth;
 

@@ -1,4 +1,4 @@
-package com.nazar.grynko.learningcourses.dto.chaptertemplate;
+package com.nazar.grynko.learningcourses.dto.coursetemplate;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,10 +11,9 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class ChapterTemplateSave {
+public class CourseTemplateDtoSave {
 
     private String title;
     private String description;
-    private Integer number;
 
 }

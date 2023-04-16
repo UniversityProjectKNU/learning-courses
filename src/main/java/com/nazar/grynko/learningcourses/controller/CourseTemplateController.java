@@ -2,7 +2,7 @@ package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.dto.course.CourseDto;
 import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDto;
-import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateSave;
+import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDtoSave;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.CourseService;
 import com.nazar.grynko.learningcourses.service.CourseTemplateService;
@@ -42,13 +42,13 @@ public class CourseTemplateController {
     }
 
     @PostMapping
-    CourseTemplateDto save(@RequestBody CourseTemplateSave courseTemplateSave) {
-        return courseTemplateService.save(courseTemplateSave);
+    CourseTemplateDto save(@RequestBody CourseTemplateDtoSave courseTemplateDtoSave) {
+        return courseTemplateService.save(courseTemplateDtoSave);
     }
 
     @PutMapping("/{id}")
     CourseTemplateDto update(@RequestBody CourseTemplateDto courseTemplateDto, @PathVariable Long id) {
-        if(!courseTemplateDto.getId().equals(id))
+        if (!courseTemplateDto.getId().equals(id))
             throw new IllegalArgumentException();
 
         return courseTemplateService.update(courseTemplateDto);
@@ -58,5 +58,5 @@ public class CourseTemplateController {
     CourseDto create(@PathVariable Long id) {
         return courseService.create(id);
     }
-    
+
 }

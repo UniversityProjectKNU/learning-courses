@@ -1,7 +1,7 @@
 package com.nazar.grynko.learningcourses.service;
 
 import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateDto;
-import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateSave;
+import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateDtoSave;
 import com.nazar.grynko.learningcourses.mapper.ChapterTemplateMapper;
 import com.nazar.grynko.learningcourses.model.ChapterTemplate;
 import com.nazar.grynko.learningcourses.service.internal.ChapterTemplateInternalService;
@@ -31,7 +31,7 @@ public class ChapterTemplateService {
         chapterTemplateInternalService.delete(id);
     }
 
-    public ChapterTemplateDto save(ChapterTemplateSave dto, Long courseTemplateId) {
+    public ChapterTemplateDto save(ChapterTemplateDtoSave dto, Long courseTemplateId) {
         ChapterTemplate entity = chapterTemplateMapper.fromDto(dto);
         entity = chapterTemplateInternalService.save(entity, courseTemplateId);
         return chapterTemplateMapper.toDto(entity);

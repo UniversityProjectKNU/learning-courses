@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.mapper;
 
+import com.nazar.grynko.learningcourses.dto.security.SignUpDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.model.User;
 import org.modelmapper.ModelMapper;
@@ -22,4 +23,7 @@ public class UserMapper {
         return modelMapper.map(userDto, User.class);
     }
 
+    public User fromDtoSave(SignUpDto dto) {
+        return modelMapper.map(dto, User.class);
+    }
 }

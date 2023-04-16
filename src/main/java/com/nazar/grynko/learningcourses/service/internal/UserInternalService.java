@@ -57,6 +57,11 @@ public class UserInternalService {
         return user.getRoles();
     }
 
+    public boolean existsUser(String login) {
+        return userRepository.existsUserByLogin(login);
+    }
+
+    //TODO: remove dateOfBirth
     private void fillNullFields(User source, User destination) {
         if (destination.getId() == null) destination.setId(source.getId());
         if (destination.getLogin() == null) destination.setLogin(source.getLogin());
@@ -68,4 +73,7 @@ public class UserInternalService {
             destination.setRoles(source.getRoles());
     }
 
+    public User save(User entity) {
+        return userRepository.save(entity);
+    }
 }

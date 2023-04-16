@@ -1,7 +1,7 @@
 package com.nazar.grynko.learningcourses.mapper;
 
 import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateDto;
-import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateSave;
+import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateDtoSave;
 import com.nazar.grynko.learningcourses.model.ChapterTemplate;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -23,7 +23,7 @@ public class ChapterTemplateMapper {
         return modelMapper.map(dto, ChapterTemplate.class);
     }
 
-    public ChapterTemplate fromDto(ChapterTemplateSave dto) {
+    public ChapterTemplate fromDto(ChapterTemplateDtoSave dto) {
         return modelMapper.map(dto, ChapterTemplate.class);
     }
 

@@ -1,7 +1,7 @@
 package com.nazar.grynko.learningcourses.service;
 
 import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDto;
-import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateSave;
+import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDtoSave;
 import com.nazar.grynko.learningcourses.mapper.CourseTemplateMapper;
 import com.nazar.grynko.learningcourses.model.CourseTemplate;
 import com.nazar.grynko.learningcourses.service.internal.CourseTemplateInternalService;
@@ -40,7 +40,7 @@ public class CourseTemplateService {
         courseTemplateInternalService.delete(id);
     }
 
-    public CourseTemplateDto save(CourseTemplateSave dto) {
+    public CourseTemplateDto save(CourseTemplateDtoSave dto) {
         CourseTemplate entity = courseTemplateMapper.fromDto(dto);
         entity = courseTemplateInternalService.save(entity);
         return courseTemplateMapper.toDto(entity);

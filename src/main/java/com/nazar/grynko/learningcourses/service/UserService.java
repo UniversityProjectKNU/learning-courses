@@ -37,10 +37,20 @@ public class UserService {
         userInternalService.delete(id);
     }
 
-    public UserDto update(UserDto userDto) {
-        User user = userMapper.fromDto(userDto);
+    //TODO: create new dto for update without login and dateOfBirth
+    public UserDto update(UserDto dto) {
+        var user = userMapper.fromDto(dto);
         user = userInternalService.update(user);
         return userMapper.toDto(user);
+    }
+
+    public UserDto save(User user) {
+        user = userInternalService.save(user);
+        return userMapper.toDto(user);
+    }
+
+    public boolean userExists(String login) {
+        return userInternalService.existsUser(login);
     }
 
 }

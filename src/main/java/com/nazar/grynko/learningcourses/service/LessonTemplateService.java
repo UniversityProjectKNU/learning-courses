@@ -1,7 +1,7 @@
 package com.nazar.grynko.learningcourses.service;
 
 import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateDto;
-import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateSave;
+import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateDtoSave;
 import com.nazar.grynko.learningcourses.mapper.LessonTemplateMapper;
 import com.nazar.grynko.learningcourses.model.LessonTemplate;
 import com.nazar.grynko.learningcourses.service.internal.LessonTemplateInternalService;
@@ -28,7 +28,7 @@ public class LessonTemplateService {
                 .flatMap(val -> Optional.of(lessonTemplateMapper.toDto(val)));
     }
 
-    public LessonTemplateDto save(LessonTemplateSave dto, Long chapterTemplateId) {
+    public LessonTemplateDto save(LessonTemplateDtoSave dto, Long chapterTemplateId) {
         LessonTemplate entity = lessonTemplateMapper.fromDto(dto);
         entity = lessonTemplateInternalService.save(entity, chapterTemplateId);
         return lessonTemplateMapper.toDto(entity);
