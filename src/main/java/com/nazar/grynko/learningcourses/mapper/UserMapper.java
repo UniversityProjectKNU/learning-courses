@@ -2,6 +2,7 @@ package com.nazar.grynko.learningcourses.mapper;
 
 import com.nazar.grynko.learningcourses.dto.security.SignUpDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
+import com.nazar.grynko.learningcourses.dto.user.UserDtoUpdate;
 import com.nazar.grynko.learningcourses.model.User;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -19,8 +20,12 @@ public class UserMapper {
         return modelMapper.map(user, UserDto.class);
     }
 
-    public User fromDto(UserDto userDto) {
-        return modelMapper.map(userDto, User.class);
+    public User fromDto(UserDto dto) {
+        return modelMapper.map(dto, User.class);
+    }
+
+    public User fromDtoUpdate(UserDtoUpdate dto) {
+        return modelMapper.map(dto, User.class);
     }
 
     public User fromDtoSave(SignUpDto dto) {

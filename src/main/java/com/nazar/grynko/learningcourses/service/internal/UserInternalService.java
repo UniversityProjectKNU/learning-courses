@@ -61,14 +61,12 @@ public class UserInternalService {
         return userRepository.existsUserByLogin(login);
     }
 
-    //TODO: remove dateOfBirth
     private void fillNullFields(User source, User destination) {
         if (destination.getId() == null) destination.setId(source.getId());
         if (destination.getLogin() == null) destination.setLogin(source.getLogin());
         if (destination.getPassword() == null) destination.setPassword(source.getPassword());
         if (destination.getFirstName() == null) destination.setFirstName(source.getFirstName());
         if (destination.getLastName() == null) destination.setLastName(source.getLastName());
-        if (destination.getDateOfBirth() == null) destination.setDateOfBirth(source.getDateOfBirth());
         if (destination.getRoles() == null || destination.getRoles().size() == 0)
             destination.setRoles(source.getRoles());
     }

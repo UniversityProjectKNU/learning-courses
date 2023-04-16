@@ -11,7 +11,7 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class UserDto {
+public class UserDtoUpdate {
 
     private Long id;
     private String login;

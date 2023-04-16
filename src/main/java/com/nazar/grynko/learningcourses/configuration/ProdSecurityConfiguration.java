@@ -52,6 +52,7 @@ public class ProdSecurityConfiguration {
                 "/learning-courses/api/v1/courses/*",
                 "/learning-courses/api/v1/chapters/*",
                 "/learning-courses/api/v1/lessons/*",
+                "/learning-courses/api/v1/users/*",
         };
     }
 

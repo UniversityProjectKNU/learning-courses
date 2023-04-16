@@ -32,9 +32,6 @@ public class User {
     private String firstName;
     @Column(nullable = false)
     private String lastName;
-    @Column
-    @Temporal(TemporalType.DATE)
-    private Calendar dateOfBirth;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.MERGE)
     @JoinTable(

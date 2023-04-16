@@ -2,6 +2,7 @@ package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.dto.role.RoleDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
+import com.nazar.grynko.learningcourses.dto.user.UserDtoUpdate;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.RoleService;
 import com.nazar.grynko.learningcourses.service.UserService;
@@ -39,10 +40,10 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    UserDto update(@RequestBody UserDto userDto, @PathVariable Long id) {
-        if(!userDto.getId().equals(id)) throw new IllegalArgumentException();
+    UserDto update(@RequestBody UserDtoUpdate dtoUpdate, @PathVariable Long id) {
+        if(!dtoUpdate.getId().equals(id)) throw new IllegalArgumentException();
 
-        return userService.update(userDto);
+        return userService.update(dtoUpdate);
     }
 
     @GetMapping("/{id}/roles")

@@ -11,14 +11,14 @@ VALUES
 ##############################
 DELETE FROM `users`;
 
-INSERT INTO `users` (`id`, `login`, `password`, `first_name`, `last_name`, `date_of_birth`)
+INSERT INTO `users` (`id`, `login`, `password`, `first_name`, `last_name`)
 VALUES
-    (1, 'admin1@gmail.com', 'password', 'Nazar', 'Grynko', DATE('1998-12-12')),
-    (2, 'instructor1@gmail.com', 'password', 'Maxim', 'Veres', DATE('1991-10-12')),
-    (3, 'instructor2@gmail.com', 'password', 'Konstantin', 'Zhereb', DATE('1980-10-09')),
-    (4, 'user1@gmail.com', 'password', 'Alex', 'Bilokrynytskyi', DATE('2001-12-11')),
-    (5, 'user2@gmail.com', 'password', 'Pavlo', 'Kilko', DATE('2002-02-11')),
-    (6, 'user3@gmail.com', 'password', 'Maria', 'Kukharchuk', DATE('2003-05-23'));
+    (1, 'admin1@gmail.com', 'password', 'Nazar', 'Grynko'),
+    (2, 'instructor1@gmail.com', 'password', 'Maxim', 'Veres'),
+    (3, 'instructor2@gmail.com', 'password', 'Konstantin', 'Zhereb'),
+    (4, 'user1@gmail.com', 'password', 'Alex', 'Bilokrynytskyi'),
+    (5, 'user2@gmail.com', 'password', 'Pavlo', 'Kilko'),
+    (6, 'user3@gmail.com', 'password', 'Maria', 'Kukharchuk');
 ##############################
 ##############################
 DELETE FROM `users_to_roles`;

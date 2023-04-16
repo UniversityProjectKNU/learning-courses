@@ -1,6 +1,7 @@
 package com.nazar.grynko.learningcourses.service;
 
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
+import com.nazar.grynko.learningcourses.dto.user.UserDtoUpdate;
 import com.nazar.grynko.learningcourses.mapper.UserMapper;
 import com.nazar.grynko.learningcourses.model.User;
 import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
@@ -37,9 +38,8 @@ public class UserService {
         userInternalService.delete(id);
     }
 
-    //TODO: create new dto for update without login and dateOfBirth
-    public UserDto update(UserDto dto) {
-        var user = userMapper.fromDto(dto);
+    public UserDto update(UserDtoUpdate dto) {
+        var user = userMapper.fromDtoUpdate(dto);
         user = userInternalService.update(user);
         return userMapper.toDto(user);
     }
