@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("courses/{courseId}/chapters")
+@RequestMapping("learning-courses/api/v1/courses/{courseId}/chapters")
 public class ChapterController {
 
     private final ChapterService chapterService;

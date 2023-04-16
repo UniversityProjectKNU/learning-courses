@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 @RestController
-@RequestMapping("users")
+@RequestMapping("learning-courses/api/v1/users")
 public class UserController {
 
     private final UserService userService;

@@ -37,23 +37,21 @@ public class ProdSecurityConfiguration {
                 .build();
     }
 
-    //TODO add /learning-courses/api/v1/ to all endpoints
     private String[] permittedEndpoints() {
         return new String[]{
-                "/sign-in",
-                "/sign-up"
+                "/learning-courses/api/v1/sign-in",
+                "/learning-courses/api/v1/sign-up"
         };
     }
 
-    //TODO add /learning-courses/api/v1/ to all endpoints
     private String[] authorizedEndpoints() {
         return new String[]{
-                "/courses-templates/*",
-                "/chapters-templates/*",
-                "/lessons-templates/*",
-                "/courses/*",
-                "/chapters/*",
-                "/lessons/*",
+                "/learning-courses/api/v1/courses-templates/*",
+                "/learning-courses/api/v1/chapters-templates/*",
+                "/learning-courses/api/v1/lessons-templates/*",
+                "/learning-courses/api/v1/courses/*",
+                "/learning-courses/api/v1/chapters/*",
+                "/learning-courses/api/v1/lessons/*",
         };
     }
 
