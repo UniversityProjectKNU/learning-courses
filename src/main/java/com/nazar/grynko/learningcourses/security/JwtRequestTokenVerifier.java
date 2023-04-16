@@ -1,6 +1,7 @@
 package com.nazar.grynko.learningcourses.security;
 
 import io.jsonwebtoken.JwtException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,7 +18,9 @@ import java.io.IOException;
 public class JwtRequestTokenVerifier extends OncePerRequestFilter {
 
     private final static String BEARER_PREFIX = "Bearer ";
-    private final static String AUTHORIZATION_HEADER = "Authorization";
+
+    @Value("${security.authorization.header}")
+    private String AUTHORIZATION_HEADER;
 
     private final JwtProvider jwtProvider;
 

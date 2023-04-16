@@ -15,6 +15,7 @@ import java.util.function.Function;
 
 @Component
 public class JwtProvider {
+
     @Value("${security.key}")
     private String SECRET_KEY;
 
@@ -49,4 +50,5 @@ public class JwtProvider {
                 .parseClaimsJws(token)
                 .getBody();
     }
+
 }
