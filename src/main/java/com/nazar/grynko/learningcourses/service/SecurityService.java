@@ -4,8 +4,11 @@ import com.nazar.grynko.learningcourses.dto.security.SignInDto;
 import com.nazar.grynko.learningcourses.dto.security.SignUpDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.mapper.UserMapper;
+import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.security.JwtProvider;
 import com.nazar.grynko.learningcourses.security.JwtUserDetailsService;
+import com.nazar.grynko.learningcourses.service.internal.RoleInternalService;
+import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,16 +21,19 @@ public class SecurityService {
     private final JwtUserDetailsService jwtUserDetailsService;
     private final JwtProvider jwtProvider;
     private final PasswordEncoder passwordEncoder;
-    private final UserService userService;
+    private final UserInternalService userInternalService;
     private final UserMapper userMapper;
+    private final RoleInternalService roleInternalService;
 
     public SecurityService(JwtUserDetailsService jwtUserDetailsService, JwtProvider jwtProvider,
-                           PasswordEncoder passwordEncoder, UserService userService, UserMapper userMapper) {
+                           PasswordEncoder passwordEncoder, UserInternalService userInternalService,
+                           UserMapper userMapper, RoleInternalService roleInternalService) {
         this.jwtUserDetailsService = jwtUserDetailsService;
         this.jwtProvider = jwtProvider;
         this.passwordEncoder = passwordEncoder;
-        this.userService = userService;
+        this.userInternalService = userInternalService;
         this.userMapper = userMapper;
+        this.roleInternalService = roleInternalService;
     }
 
     public String signIn(SignInDto signInDto) {
@@ -42,13 +48,16 @@ public class SecurityService {
     }
 
     public UserDto signUp(SignUpDto dto) {
-        if (userService.userExists(dto.getLogin())) {
-            throw new IllegalArgumentException(String.format(
-                    "User with login %s already exists", dto.getLogin()));
+        if (userInternalService.existsUser(dto.getLogin())) {
+            throw new IllegalArgumentException(String.format("User with login %s already exists", dto.getLogin()));
         }
         //TODO make password encoding: dto.setPassword(passwordEncoder.encodePassword(dto.getPassword()));
         var user = userMapper.fromDtoSave(dto);
-        return userService.save(user);
+        user.getRoles().add(roleInternalService.getByType(RoleType.STUDENT));
+
+        user = userInternalService.save(user);
+
+        return userMapper.toDto(user);
     }
 
 }

@@ -49,8 +49,4 @@ public class UserService {
         return userMapper.toDto(user);
     }
 
-    public boolean userExists(String login) {
-        return userInternalService.existsUser(login);
-    }
-
 }

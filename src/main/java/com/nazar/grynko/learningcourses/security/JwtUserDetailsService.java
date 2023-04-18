@@ -1,34 +1,45 @@
 package com.nazar.grynko.learningcourses.security;
 
-import com.nazar.grynko.learningcourses.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.nazar.grynko.learningcourses.model.Role;
+import com.nazar.grynko.learningcourses.service.internal.RoleInternalService;
+import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.stream.Collectors;
 
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
-    private final UserRepository userRepository;
 
-    @Autowired
-    public JwtUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    private final UserInternalService userInternalService;
+    private final RoleInternalService roleInternalService;
+
+    public JwtUserDetailsService(UserInternalService userInternalService, RoleInternalService roleInternalService) {
+        this.userInternalService = userInternalService;
+        this.roleInternalService = roleInternalService;
     }
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        var user = userRepository
-                .findByLogin(login)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format(
-                        "User with login %s doesn't exist", login)));
+        var user = userInternalService
+                .getByLogin(login)
+                .orElseThrow(() -> new UsernameNotFoundException(String.format("User with login %s doesn't exist", login)));
+
+        var authorities = roleInternalService
+                .getUsersRoles(user.getId())
+                .stream()
+                .map(Role::getType)
+                .map(type -> new SimpleGrantedAuthority(type.toString()))
+                .collect(Collectors.toList());
 
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getLogin())
                 .password(user.getPassword())
-                .authorities(Collections.emptyList())
+                .authorities(authorities)
                 .build();
     }
+
 }

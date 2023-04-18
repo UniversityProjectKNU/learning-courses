@@ -1,6 +1,6 @@
 package com.nazar.grynko.learningcourses.configuration;
 
-import com.nazar.grynko.learningcourses.security.DevJwtRequestTokenVerifier;
+import com.nazar.grynko.learningcourses.security.DevJwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -25,7 +25,7 @@ public class DevSecurityConfiguration {
                 .and()
                 .authorizeRequests().anyRequest().permitAll()
                 .and()
-                .addFilterBefore(new DevJwtRequestTokenVerifier(), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new DevJwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
 
