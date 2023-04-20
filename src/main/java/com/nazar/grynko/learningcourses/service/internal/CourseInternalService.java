@@ -5,6 +5,7 @@ import com.nazar.grynko.learningcourses.model.Course;
 import com.nazar.grynko.learningcourses.model.User;
 import com.nazar.grynko.learningcourses.model.UserToCourse;
 import com.nazar.grynko.learningcourses.repository.CourseRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -14,12 +15,15 @@ import java.util.Optional;
 @Service
 public class CourseInternalService {
 
-    private final CourseRepository courseRepository;
     private final CourseTemplateInternalService courseTemplateInternalService;
     private final ChapterInternalService chapterInternalService;
     private final LessonInternalService lessonInternalService;
     private final CourseMapper courseMapper;
     private final UserToCourseInternalService userToCourseInternalService;
+    private final CourseRepository courseRepository;
+
+    @Value("${max.courses.number.at.time}")
+    private Integer MAX_COURSES_NUMBER;
 
     public CourseInternalService(CourseRepository courseRepository, CourseTemplateInternalService courseTemplateInternalService,
                                  ChapterInternalService chapterInternalService, LessonInternalService lessonInternalService, CourseMapper courseMapper,
@@ -74,6 +78,11 @@ public class CourseInternalService {
 
     @Transactional
     public UserToCourse enroll(User user, Course course) {
+        if (!isValidAmountOfCourses(user)) {
+            throw new IllegalStateException(
+                    String.format("User %d already has max amount of courses (%d)", user.getId(), MAX_COURSES_NUMBER));
+        }
+
         var entity = new UserToCourse()
                 .setUser(user)
                 .setCourse(course)
@@ -84,6 +93,14 @@ public class CourseInternalService {
         lessonInternalService.enroll(user, course.getId());
 
         return entity;
+    }
+
+    private boolean isValidAmountOfCourses(User user) {
+        var courses = userToCourseInternalService.getAllByUserId(user.getId());
+        var activeCoursesAmount = (int) courses.stream()
+                .filter(e -> !e.getIsPassed())
+                .count();
+        return activeCoursesAmount < MAX_COURSES_NUMBER;
     }
 
     private void setNullFields(Course source, Course destination) {
