@@ -2,11 +2,13 @@ package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.dto.course.CourseDto;
 import com.nazar.grynko.learningcourses.dto.course.CourseDtoSave;
+import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,10 +46,16 @@ public class CourseController {
 
     @PutMapping("/{id}")
     CourseDto update(@RequestBody CourseDto courseDto, @PathVariable Long id) {
-        if (!Objects.equals(courseDto.getId(), id))
+        if (!Objects.equals(courseDto.getId(), id)) {
             throw new InvalidPathException();
+        }
 
         return courseService.update(courseDto, id);
+    }
+
+    @PostMapping("/{id}/enroll")
+    UserToCourseDto enroll(@PathVariable Long id, Principal principal) {
+        return courseService.enroll(id, principal.getName());
     }
 
 }

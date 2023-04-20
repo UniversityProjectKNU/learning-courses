@@ -1,9 +1,7 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
 import com.nazar.grynko.learningcourses.mapper.LessonMapper;
-import com.nazar.grynko.learningcourses.model.Chapter;
-import com.nazar.grynko.learningcourses.model.Lesson;
-import com.nazar.grynko.learningcourses.model.LessonTemplate;
+import com.nazar.grynko.learningcourses.model.*;
 import com.nazar.grynko.learningcourses.repository.LessonRepository;
 import org.springframework.stereotype.Service;
 
@@ -17,12 +15,14 @@ public class LessonInternalService {
     private final LessonRepository lessonRepository;
     private final LessonTemplateInternalService lessonTemplateInternalService;
     private final LessonMapper lessonMapper;
+    private final UserToLessonInternalService userToLessonInternalService;
 
     public LessonInternalService(LessonRepository lessonRepository, LessonTemplateInternalService lessonTemplateInternalService,
-                                 LessonMapper lessonMapper) {
+                                 LessonMapper lessonMapper, UserToLessonInternalService userToLessonInternalService) {
         this.lessonRepository = lessonRepository;
         this.lessonTemplateInternalService = lessonTemplateInternalService;
         this.lessonMapper = lessonMapper;
+        this.userToLessonInternalService = userToLessonInternalService;
     }
 
     public Optional<Lesson> get(Long id) {
@@ -34,7 +34,7 @@ public class LessonInternalService {
     }
 
     public void delete(Long id) {
-        Lesson entity = get(id).orElseThrow(IllegalArgumentException::new);
+        var entity = get(id).orElseThrow(IllegalArgumentException::new);
         lessonRepository.delete(entity);
     }
 
@@ -43,20 +43,19 @@ public class LessonInternalService {
     }
 
     public List<Lesson> create(Long chapterTemplateId, Chapter chapter) {
-        List<LessonTemplate> lessonTemplates = lessonTemplateInternalService
+        var lessonTemplates = lessonTemplateInternalService
                 .getAllInChapterTemplate(chapterTemplateId);
 
-        List<Lesson> entities = new ArrayList<>();
-        for (LessonTemplate template : lessonTemplates) {
-            Lesson entity = create(template, chapter);
-            entities.add(entity);
+        var entities = new ArrayList<Lesson>();
+        for (var template : lessonTemplates) {
+            entities.add(create(template, chapter));
         }
 
         return entities;
     }
 
     public Lesson create(LessonTemplate template, Chapter chapter) {
-        Lesson entity = lessonMapper.fromTemplate(template).setId(null);
+        var entity = lessonMapper.fromTemplate(template).setId(null);
 
         entity.setChapter(chapter);
         entity.setIsFinished(false);
@@ -65,7 +64,7 @@ public class LessonInternalService {
     }
 
     public Lesson update(Lesson entity) {
-        Lesson dbLesson = lessonRepository.findById(entity.getId())
+        var dbLesson = lessonRepository.findById(entity.getId())
                 .orElseThrow(IllegalArgumentException::new);
         setNullFields(dbLesson, entity);
         return lessonRepository.save(entity);
@@ -83,9 +82,34 @@ public class LessonInternalService {
     }
 
     public boolean hasWithChapter(Long id, Long chapterId, Long courseId) {
-        Optional<Lesson> optional = lessonRepository
+        var optional = lessonRepository
                 .getLessonByIdAndChapterIdAndChapterCourseId(id, chapterId, courseId);
 
         return optional.isPresent();
+    }
+
+    public List<Lesson> getAllInCourse(Long courseId) {
+        return lessonRepository.getAllInCourse(courseId);
+    }
+
+    public List<UserToLesson> enroll(User user, Long courseId) {
+        var lessons = getAllInCourse(courseId);
+
+        var entities = new ArrayList<UserToLesson>();
+        for (var lesson : lessons) {
+            entities.add(enroll(user, lesson));
+        }
+
+        return entities;
+    }
+
+    public UserToLesson enroll(User user, Lesson lesson) {
+        var entity = new UserToLesson()
+                .setUser(user)
+                .setLesson(lesson)
+                .setMark(0)
+                .setIsPassed(false);
+
+        return userToLessonInternalService.save(entity);
     }
 }

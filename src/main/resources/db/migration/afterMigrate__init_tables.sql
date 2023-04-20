@@ -133,35 +133,35 @@ VALUES
 ##############################
 ##############################
 ##############################
-DELETE FROM `users_to_courses`;
-
-INSERT INTO `users_to_courses` (`id`, `user_id`, `course_id`, `mark`, `is_passed`)
-VALUES
-    (1, 2, 1, 0, FALSE),
-    (2, 2, 2, 0, FALSE),
-    (3, 3, 2, 0, FALSE),
-    (4, 4, 1, 0, FALSE),
-    (5, 5, 1, 0, FALSE),
-    (6, 5, 2, 0, FALSE),
-    (7, 6, 2, 0, FALSE);
+# DELETE FROM `users_to_courses`;
+#
+# INSERT INTO `users_to_courses` (`id`, `user_id`, `course_id`, `mark`, `is_passed`)
+# VALUES
+#     (1, 2, 1, 0, FALSE),
+#     (2, 2, 2, 0, FALSE),
+#     (3, 3, 2, 0, FALSE),
+#     (4, 4, 1, 0, FALSE),
+#     (5, 5, 1, 0, FALSE),
+#     (6, 5, 2, 0, FALSE),
+#     (7, 6, 2, 0, FALSE);
 ##############################
 ##############################
-DELETE FROM `users_to_lessons`;
-
-INSERT INTO `users_to_lessons`  (`id`, `user_id`, `lesson_id`, `mark`, `is_passed`)
-VALUES
-    (1, 4, 1, 10, TRUE),
-    (2, 4, 2, 12, TRUE),
-    (3, 4, 3, 10, TRUE),
-    (4, 4, 4, 0, FALSE),
-    (5, 5, 6, 12, TRUE),
-    (6, 5, 7, 12, TRUE),
-    (7, 5, 8, 8, TRUE),
-    (8, 5, 9, 0, FALSE),
-    (9, 6, 6, 14, TRUE),
-    (10, 6, 7, 0, FALSE),
-    (11, 6, 13, 12, TRUE),
-    (12, 6, 14, 12, TRUE),
-    (13, 6, 15, 0, FALSE);
+# DELETE FROM `users_to_lessons`;
+#
+# INSERT INTO `users_to_lessons`  (`id`, `user_id`, `lesson_id`, `mark`, `is_passed`)
+# VALUES
+#     (1, 4, 1, 10, TRUE),
+#     (2, 4, 2, 12, TRUE),
+#     (3, 4, 3, 10, TRUE),
+#     (4, 4, 4, 0, FALSE),
+#     (5, 5, 6, 12, TRUE),
+#     (6, 5, 7, 12, TRUE),
+#     (7, 5, 8, 8, TRUE),
+#     (8, 5, 9, 0, FALSE),
+#     (9, 6, 6, 14, TRUE),
+#     (10, 6, 7, 0, FALSE),
+#     (11, 6, 13, 12, TRUE),
+#     (12, 6, 14, 12, TRUE),
+#     (13, 6, 15, 0, FALSE);
 ##############################
 ##############################

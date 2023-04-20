@@ -2,7 +2,8 @@ package com.nazar.grynko.learningcourses.service.internal;
 
 import com.nazar.grynko.learningcourses.mapper.CourseMapper;
 import com.nazar.grynko.learningcourses.model.Course;
-import com.nazar.grynko.learningcourses.model.CourseTemplate;
+import com.nazar.grynko.learningcourses.model.User;
+import com.nazar.grynko.learningcourses.model.UserToCourse;
 import com.nazar.grynko.learningcourses.repository.CourseRepository;
 import org.springframework.stereotype.Service;
 
@@ -16,14 +17,19 @@ public class CourseInternalService {
     private final CourseRepository courseRepository;
     private final CourseTemplateInternalService courseTemplateInternalService;
     private final ChapterInternalService chapterInternalService;
+    private final LessonInternalService lessonInternalService;
     private final CourseMapper courseMapper;
+    private final UserToCourseInternalService userToCourseInternalService;
 
     public CourseInternalService(CourseRepository courseRepository, CourseTemplateInternalService courseTemplateInternalService,
-                                 ChapterInternalService chapterInternalService, CourseMapper courseMapper) {
+                                 ChapterInternalService chapterInternalService, LessonInternalService lessonInternalService, CourseMapper courseMapper,
+                                 UserToCourseInternalService userToCourseInternalService) {
         this.courseRepository = courseRepository;
         this.courseTemplateInternalService = courseTemplateInternalService;
         this.chapterInternalService = chapterInternalService;
+        this.lessonInternalService = lessonInternalService;
         this.courseMapper = courseMapper;
+        this.userToCourseInternalService = userToCourseInternalService;
     }
 
     public Optional<Course> get(Long id) {
@@ -35,17 +41,17 @@ public class CourseInternalService {
     }
 
     public void delete(Long id) {
-        Course course = courseRepository.findById(id)
+        var course = courseRepository.findById(id)
                 .orElseThrow(IllegalArgumentException::new);
         courseRepository.delete(course);
     }
 
     @Transactional
     public Course create(Long courseTemplateId) {
-        CourseTemplate template = courseTemplateInternalService.get(courseTemplateId)
+        var template = courseTemplateInternalService.get(courseTemplateId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        Course entity = courseMapper.fromTemplate(template).setId(null);
+        var entity = courseMapper.fromTemplate(template).setId(null);
         entity.setIsFinished(false);
 
         entity = courseRepository.save(entity);
@@ -60,10 +66,24 @@ public class CourseInternalService {
     }
 
     public Course update(Course course) {
-        Course dbCourse = courseRepository.findById(course.getId())
+        var dbCourse = courseRepository.findById(course.getId())
                 .orElseThrow(IllegalArgumentException::new);
         setNullFields(dbCourse, course);
         return courseRepository.save(course);
+    }
+
+    @Transactional
+    public UserToCourse enroll(User user, Course course) {
+        var entity = new UserToCourse()
+                .setUser(user)
+                .setCourse(course)
+                .setMark(0)
+                .setIsPassed(false);
+
+        entity = userToCourseInternalService.save(entity);
+        lessonInternalService.enroll(user, course.getId());
+
+        return entity;
     }
 
     private void setNullFields(Course source, Course destination) {
@@ -73,5 +93,4 @@ public class CourseInternalService {
         if (destination.getIsFinished() == null) destination.setIsFinished(source.getIsFinished());
         if (destination.getFinalFeedback() == null) destination.setFinalFeedback(source.getFinalFeedback());
     }
-
 }
