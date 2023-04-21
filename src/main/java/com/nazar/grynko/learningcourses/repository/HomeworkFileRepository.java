@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.repository;
 
+import com.nazar.grynko.learningcourses.model.HomeworkFile;
 import com.nazar.grynko.learningcourses.model.UserToLesson;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -8,8 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserToLessonRepository extends JpaRepository<UserToLesson, Long> {
+public interface HomeworkFileRepository extends JpaRepository<HomeworkFile, Long> {
 
-    @Query("select utl from UserToLesson utl where utl.user.login = ?1 and utl.lesson.id = ?2")
-    Optional<UserToLesson> findByUserLoginAndLessonId(String login, Long lessonId);
+    @Query("select h from HomeworkFile h where h.userToLesson = ?1")
+    Optional<HomeworkFile> get(UserToLesson userToLesson);
+
 }

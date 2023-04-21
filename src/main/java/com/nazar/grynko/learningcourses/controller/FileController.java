@@ -39,14 +39,8 @@ public class FileController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<?> delete(@RequestParam String fileName) {
-        try {
-            return ResponseEntity.ok(fileService.delete(fileName));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+    public void delete(@RequestParam String fileName) {
+        fileService.delete(fileName);
     }
 
 }

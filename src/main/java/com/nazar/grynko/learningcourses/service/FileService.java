@@ -28,7 +28,7 @@ public class FileService {
     }
 
     public String upload(MultipartFile multipartFile) {
-        var fileName = System.currentTimeMillis() + "_" + multipartFile.getOriginalFilename();
+        var fileName = formatFileName(multipartFile.getOriginalFilename());
         var file = convertFile(multipartFile);
 
         s3Client.putObject(new PutObjectRequest(bucketName, fileName, file));
@@ -37,7 +37,7 @@ public class FileService {
             log.info("{} file was deleted", file.getName());
         }
 
-        return "File was uploaded: " + fileName;
+        return fileName;
     }
 
     public byte[] download(String fileName) {
@@ -49,12 +49,12 @@ public class FileService {
         } catch (IOException e) {
             throw new IllegalStateException("Error downloading file");
         }
+
         return content;
     }
 
-    public String delete(String fileName) {
+    public void delete(String fileName) {
         s3Client.deleteObject(bucketName, fileName);
-        return "File was removed: " + fileName;
     }
 
     private File convertFile(MultipartFile multipartFile) {
@@ -71,6 +71,11 @@ public class FileService {
         }
 
         return file;
+    }
+
+    private String formatFileName(String fileName) {
+        var newName = System.currentTimeMillis() + "_" + fileName;
+        return newName.replace(" ", "_");
     }
 
 }

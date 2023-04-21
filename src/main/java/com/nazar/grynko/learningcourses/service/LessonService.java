@@ -3,8 +3,6 @@ package com.nazar.grynko.learningcourses.service;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoSave;
 import com.nazar.grynko.learningcourses.mapper.LessonMapper;
-import com.nazar.grynko.learningcourses.model.Chapter;
-import com.nazar.grynko.learningcourses.model.Lesson;
 import com.nazar.grynko.learningcourses.service.internal.ChapterInternalService;
 import com.nazar.grynko.learningcourses.service.internal.LessonInternalService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +18,7 @@ public class LessonService {
     private final LessonInternalService lessonInternalService;
     private final ChapterInternalService chapterInternalService;
     private final LessonMapper lessonMapper;
+
 
     @Autowired
     public LessonService(LessonInternalService lessonInternalService, ChapterInternalService chapterInternalService,
@@ -46,9 +45,9 @@ public class LessonService {
     }
 
     public LessonDto save(LessonDtoSave dto, Long chapterId) {
-        Lesson entity = lessonMapper.fromDtoSave(dto);
+        var entity = lessonMapper.fromDtoSave(dto);
 
-        Chapter chapter = chapterInternalService.get(chapterId)
+        var chapter = chapterInternalService.get(chapterId)
                 .orElseThrow(IllegalArgumentException::new);
         entity.setChapter(chapter);
         entity.setIsFinished(false);
@@ -58,7 +57,7 @@ public class LessonService {
     }
 
     public LessonDto update(LessonDto dto, Long id) {
-        Lesson entity = lessonMapper.fromDto(dto).setId(id);
+        var entity = lessonMapper.fromDto(dto).setId(id);
         entity = lessonInternalService.update(entity);
         return lessonMapper.toDto(entity);
     }
@@ -66,4 +65,5 @@ public class LessonService {
     public boolean hasWithChapter(Long id, Long chapterId, Long courseId) {
         return lessonInternalService.hasWithChapter(id, chapterId, courseId);
     }
+
 }
