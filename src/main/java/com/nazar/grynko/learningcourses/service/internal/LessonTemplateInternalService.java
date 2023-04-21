@@ -17,7 +17,8 @@ public class LessonTemplateInternalService {
     private final ChapterTemplateInternalService chapterTemplateInternalService;
 
     @Autowired
-    public LessonTemplateInternalService(LessonTemplateRepository lessonTemplateRepository, ChapterTemplateInternalService chapterTemplateInternalService) {
+    public LessonTemplateInternalService(LessonTemplateRepository lessonTemplateRepository,
+                                         ChapterTemplateInternalService chapterTemplateInternalService) {
         this.lessonTemplateRepository = lessonTemplateRepository;
         this.chapterTemplateInternalService = chapterTemplateInternalService;
     }
@@ -51,6 +52,10 @@ public class LessonTemplateInternalService {
         return lessonTemplateRepository.getLessonTemplatesByChapterTemplateId(chapterTemplateId);
     }
 
+    public List<LessonTemplate> getAllInCourseTemplate(Long courseTemplateId) {
+        return lessonTemplateRepository.getAllInCourse(courseTemplateId);
+    }
+
     public boolean hasWithCourseTemplate(Long id, Long chapterTemplateId, Long courseTemplateId) {
         Optional<LessonTemplate> optional = lessonTemplateRepository
                 .getLessonTemplateByIdAndChapterTemplateIdAndChapterTemplateCourseTemplateId(id, chapterTemplateId, courseTemplateId);
@@ -65,5 +70,4 @@ public class LessonTemplateInternalService {
         if(destination.getNumber() == null) destination.setNumber(source.getNumber());
         if(destination.getChapterTemplate() == null) destination.setChapterTemplate(source.getChapterTemplate());
     }
-
 }

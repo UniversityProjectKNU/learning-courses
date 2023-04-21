@@ -28,6 +28,20 @@ public class LessonTemplateService {
                 .flatMap(val -> Optional.of(lessonTemplateMapper.toDto(val)));
     }
 
+    public List<LessonTemplateDto> getAllInCourseTemplate(Long id) {
+        return lessonTemplateInternalService.getAllInCourseTemplate(id)
+                .stream()
+                .map(lessonTemplateMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<LessonTemplateDto> getAllInChapterTemplate(Long chapterTemplateId) {
+        return lessonTemplateInternalService.getAllInChapterTemplate(chapterTemplateId)
+                .stream()
+                .map(lessonTemplateMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
     public LessonTemplateDto save(LessonTemplateDtoSave dto, Long chapterTemplateId) {
         LessonTemplate entity = lessonTemplateMapper.fromDto(dto);
         entity = lessonTemplateInternalService.save(entity, chapterTemplateId);
@@ -44,15 +58,7 @@ public class LessonTemplateService {
         return lessonTemplateMapper.toDto(entity);
     }
 
-    public List<LessonTemplateDto> getAllInChapterTemplate(Long chapterTemplateId) {
-        return lessonTemplateInternalService.getAllInChapterTemplate(chapterTemplateId)
-                .stream()
-                .map(lessonTemplateMapper::toDto)
-                .collect(Collectors.toList());
-    }
-
     public boolean hasWithCourseTemplate(Long id, Long chapterTemplateId, Long courseTemplateId) {
         return lessonTemplateInternalService.hasWithCourseTemplate(id, chapterTemplateId, courseTemplateId);
     }
-
 }

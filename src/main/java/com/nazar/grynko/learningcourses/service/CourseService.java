@@ -21,8 +21,10 @@ public class CourseService {
     private final UserToCourseMapper userToCourseMapper;
     private final UserInternalService userInternalService;
 
-    public CourseService(CourseInternalService courseInternalService, CourseMapper courseMapper,
-                         UserToCourseMapper userToCourseMapper, UserInternalService userInternalService) {
+    public CourseService(CourseInternalService courseInternalService,
+                         CourseMapper courseMapper,
+                         UserToCourseMapper userToCourseMapper,
+                         UserInternalService userInternalService) {
         this.courseInternalService = courseInternalService;
         this.courseMapper = courseMapper;
         this.userToCourseMapper = userToCourseMapper;

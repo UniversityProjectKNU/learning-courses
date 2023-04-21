@@ -1,12 +1,13 @@
 package com.nazar.grynko.learningcourses.controller;
 
-import com.nazar.grynko.learningcourses.dto.course.CourseDto;
 import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDto;
 import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDtoSave;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.CourseService;
 import com.nazar.grynko.learningcourses.service.CourseTemplateService;
+import com.nazar.grynko.learningcourses.service.LessonTemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,12 +17,15 @@ import java.util.List;
 public class CourseTemplateController {
 
     private final CourseTemplateService courseTemplateService;
+    private final LessonTemplateService lessonTemplateService;
     private final CourseService courseService;
 
     @Autowired
     public CourseTemplateController(CourseTemplateService courseTemplateService,
+                                    LessonTemplateService lessonTemplateService,
                                     CourseService courseService) {
         this.courseTemplateService = courseTemplateService;
+        this.lessonTemplateService = lessonTemplateService;
         this.courseService = courseService;
     }
 
@@ -36,6 +40,17 @@ public class CourseTemplateController {
         return courseTemplateService.getAll();
     }
 
+    @GetMapping("/{id}/lessons-templates")
+    ResponseEntity<?> allLessonsInCourseTemplate(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(lessonTemplateService.getAllInCourseTemplate(id));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id) {
         courseTemplateService.delete(id);
@@ -48,15 +63,22 @@ public class CourseTemplateController {
 
     @PutMapping("/{id}")
     CourseTemplateDto update(@RequestBody CourseTemplateDto courseTemplateDto, @PathVariable Long id) {
-        if (!courseTemplateDto.getId().equals(id))
+        if (!courseTemplateDto.getId().equals(id)) {
             throw new IllegalArgumentException();
+        }
 
         return courseTemplateService.update(courseTemplateDto);
     }
 
     @PostMapping("/{id}/create")
-    CourseDto create(@PathVariable Long id) {
-        return courseService.create(id);
+    ResponseEntity<?> create(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(courseService.create(id));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
     }
 
 }

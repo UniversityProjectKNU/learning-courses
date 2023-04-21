@@ -16,6 +16,7 @@ import java.util.Optional;
 public class CourseInternalService {
 
     private final CourseTemplateInternalService courseTemplateInternalService;
+    private final LessonTemplateInternalService lessonTemplateInternalService;
     private final ChapterInternalService chapterInternalService;
     private final LessonInternalService lessonInternalService;
     private final CourseMapper courseMapper;
@@ -24,12 +25,19 @@ public class CourseInternalService {
 
     @Value("${max.courses.number.at.time}")
     private Integer MAX_COURSES_NUMBER;
+    @Value("${min.lessons.number.in.course}")
+    private Integer MIN_LESSONS_NUMBER;
 
-    public CourseInternalService(CourseRepository courseRepository, CourseTemplateInternalService courseTemplateInternalService,
-                                 ChapterInternalService chapterInternalService, LessonInternalService lessonInternalService, CourseMapper courseMapper,
+    public CourseInternalService(CourseRepository courseRepository,
+                                 CourseTemplateInternalService courseTemplateInternalService,
+                                 LessonTemplateInternalService lessonTemplateInternalService,
+                                 ChapterInternalService chapterInternalService,
+                                 LessonInternalService lessonInternalService,
+                                 CourseMapper courseMapper,
                                  UserToCourseInternalService userToCourseInternalService) {
         this.courseRepository = courseRepository;
         this.courseTemplateInternalService = courseTemplateInternalService;
+        this.lessonTemplateInternalService = lessonTemplateInternalService;
         this.chapterInternalService = chapterInternalService;
         this.lessonInternalService = lessonInternalService;
         this.courseMapper = courseMapper;
@@ -52,6 +60,11 @@ public class CourseInternalService {
 
     @Transactional
     public Course create(Long courseTemplateId) {
+        if (!isValidAmountOfLessons(courseTemplateId)) {
+            throw new IllegalStateException(String.format(
+                    "Course must contain at least %d lessons", MIN_LESSONS_NUMBER));
+        }
+
         var template = courseTemplateInternalService.get(courseTemplateId)
                 .orElseThrow(IllegalArgumentException::new);
 
@@ -101,6 +114,11 @@ public class CourseInternalService {
                 .filter(e -> !e.getIsPassed())
                 .count();
         return activeCoursesAmount < MAX_COURSES_NUMBER;
+    }
+
+    private boolean isValidAmountOfLessons(Long courseTemplateId) {
+        var lessonsTemplates = lessonTemplateInternalService.getAllInCourseTemplate(courseTemplateId);
+        return lessonsTemplates.size() >= MIN_LESSONS_NUMBER;
     }
 
     private void setNullFields(Course source, Course destination) {

@@ -5,7 +5,9 @@ import com.nazar.grynko.learningcourses.dto.course.CourseDtoSave;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.CourseService;
+import com.nazar.grynko.learningcourses.service.LessonService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -17,10 +19,13 @@ import java.util.Objects;
 public class CourseController {
 
     private final CourseService courseService;
+    private final LessonService lessonService;
 
     @Autowired
-    public CourseController(CourseService courseService) {
+    public CourseController(CourseService courseService,
+                            LessonService lessonService) {
         this.courseService = courseService;
+        this.lessonService = lessonService;
     }
 
     @GetMapping("/{id}")
@@ -32,6 +37,17 @@ public class CourseController {
     @GetMapping
     List<CourseDto> all() {
         return courseService.getAll();
+    }
+
+    @GetMapping("/{id}/lessons")
+    ResponseEntity<?> allLessonsInCourse(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(lessonService.getAllInCourse(id));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
     }
 
     @DeleteMapping("/{id}")

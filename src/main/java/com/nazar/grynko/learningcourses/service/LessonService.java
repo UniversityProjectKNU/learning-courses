@@ -21,7 +21,8 @@ public class LessonService {
 
 
     @Autowired
-    public LessonService(LessonInternalService lessonInternalService, ChapterInternalService chapterInternalService,
+    public LessonService(LessonInternalService lessonInternalService,
+                         ChapterInternalService chapterInternalService,
                          LessonMapper lessonMapper) {
         this.lessonInternalService = lessonInternalService;
         this.chapterInternalService = chapterInternalService;
@@ -35,6 +36,13 @@ public class LessonService {
 
     public List<LessonDto> getAllInChapter(Long chapterId) {
         return lessonInternalService.getAllInChapter(chapterId)
+                .stream()
+                .map(lessonMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<LessonDto> getAllInCourse(Long courseId) {
+        return lessonInternalService.getAllInCourse(courseId)
                 .stream()
                 .map(lessonMapper::toDto)
                 .collect(Collectors.toList());
