@@ -17,6 +17,7 @@ public class CourseInternalService {
 
     private final CourseTemplateInternalService courseTemplateInternalService;
     private final LessonTemplateInternalService lessonTemplateInternalService;
+    private final UserInternalService userInternalService;
     private final ChapterInternalService chapterInternalService;
     private final LessonInternalService lessonInternalService;
     private final CourseMapper courseMapper;
@@ -31,6 +32,7 @@ public class CourseInternalService {
     public CourseInternalService(CourseRepository courseRepository,
                                  CourseTemplateInternalService courseTemplateInternalService,
                                  LessonTemplateInternalService lessonTemplateInternalService,
+                                 UserInternalService userInternalService,
                                  ChapterInternalService chapterInternalService,
                                  LessonInternalService lessonInternalService,
                                  CourseMapper courseMapper,
@@ -38,6 +40,7 @@ public class CourseInternalService {
         this.courseRepository = courseRepository;
         this.courseTemplateInternalService = courseTemplateInternalService;
         this.lessonTemplateInternalService = lessonTemplateInternalService;
+        this.userInternalService = userInternalService;
         this.chapterInternalService = chapterInternalService;
         this.lessonInternalService = lessonInternalService;
         this.courseMapper = courseMapper;
@@ -59,7 +62,7 @@ public class CourseInternalService {
     }
 
     @Transactional
-    public Course create(Long courseTemplateId) {
+    public Course create(Long courseTemplateId, String login) {
         if (!isValidAmountOfLessons(courseTemplateId)) {
             throw new IllegalStateException(String.format(
                     "Course must contain at least %d lessons", MIN_LESSONS_NUMBER));
@@ -68,14 +71,23 @@ public class CourseInternalService {
         var template = courseTemplateInternalService.get(courseTemplateId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        var entity = courseMapper.fromTemplate(template).setId(null);
-        entity.setIsFinished(false);
+        var user = userInternalService.getByLogin(login).orElseThrow(IllegalArgumentException::new);
+        var course = courseMapper.fromTemplate(template)
+                .setId(null)
+                .setIsFinished(false);
 
-        entity = courseRepository.save(entity);
+        course = courseRepository.save(course);
+        chapterInternalService.create(template.getId(), course);
 
-        chapterInternalService.create(template.getId(), entity);
+        var userToCourse = new UserToCourse()
+                .setCourse(course)
+                .setUser(user)
+                .setMark(0)
+                .setIsPassed(false);
 
-        return entity;
+        userToCourseInternalService.save(userToCourse);
+
+        return course;
     }
 
     public Course save(Course entity) {

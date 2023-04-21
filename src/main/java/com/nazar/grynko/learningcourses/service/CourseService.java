@@ -47,8 +47,8 @@ public class CourseService {
         courseInternalService.delete(id);
     }
 
-    public CourseDto create(Long courseTemplateId) {
-        var course = courseInternalService.create(courseTemplateId);
+    public CourseDto create(Long courseTemplateId, String login) {
+        var course = courseInternalService.create(courseTemplateId, login);
         return courseMapper.toDto(course);
     }
 
