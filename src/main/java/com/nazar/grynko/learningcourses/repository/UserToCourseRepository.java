@@ -11,4 +11,5 @@ public interface UserToCourseRepository extends JpaRepository<UserToCourse, Long
 
     List<UserToCourse> getAllByUserId(Long userId);
 
+    List<UserToCourse> getAllByCourseId(Long courseId);
 }

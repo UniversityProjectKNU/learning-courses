@@ -2,9 +2,12 @@ package com.nazar.grynko.learningcourses.service;
 
 import com.nazar.grynko.learningcourses.dto.course.CourseDto;
 import com.nazar.grynko.learningcourses.dto.course.CourseDtoSave;
+import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDto;
 import com.nazar.grynko.learningcourses.mapper.CourseMapper;
+import com.nazar.grynko.learningcourses.mapper.UserMapper;
 import com.nazar.grynko.learningcourses.mapper.UserToCourseMapper;
+import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.service.internal.CourseInternalService;
 import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
 import org.springframework.stereotype.Component;
@@ -19,16 +22,16 @@ public class CourseService {
     private final CourseInternalService courseInternalService;
     private final CourseMapper courseMapper;
     private final UserToCourseMapper userToCourseMapper;
-    private final UserInternalService userInternalService;
+    private final UserMapper userMapper;
 
     public CourseService(CourseInternalService courseInternalService,
                          CourseMapper courseMapper,
                          UserToCourseMapper userToCourseMapper,
-                         UserInternalService userInternalService) {
+                         UserMapper userMapper) {
         this.courseInternalService = courseInternalService;
         this.courseMapper = courseMapper;
         this.userToCourseMapper = userToCourseMapper;
-        this.userInternalService = userInternalService;
+        this.userMapper = userMapper;
     }
 
     public Optional<CourseDto> get(Long id) {
@@ -66,10 +69,22 @@ public class CourseService {
     }
 
     public UserToCourseDto enroll(Long id, String login) {
-        var user = userInternalService.getByLogin(login).orElseThrow(IllegalAccessError::new);
-        var course = courseInternalService.get(id).orElseThrow(IllegalArgumentException::new);
-
-        var entity = courseInternalService.enroll(user, course);
+        var entity = courseInternalService.enroll(id, login);
         return userToCourseMapper.toDto(entity);
     }
+
+    public List<UserDto> getAllInstructorsForCourse(Long id, RoleType roleType) {
+        if (roleType == RoleType.ADMIN) {
+            throw new IllegalArgumentException(String.format(
+                    "Cannot get courses for role %s", roleType.name()));
+        }
+
+        var types = roleType == null ? List.of(RoleType.STUDENT, RoleType.INSTRUCTOR) : List.of(roleType);
+
+        return courseInternalService.getAllUsersForCourseByRole(id, types)
+                .stream()
+                .map(userMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
 }

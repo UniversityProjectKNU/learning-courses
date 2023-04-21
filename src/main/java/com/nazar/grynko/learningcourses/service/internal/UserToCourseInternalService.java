@@ -23,4 +23,7 @@ public class UserToCourseInternalService {
         return userToCourseRepository.getAllByUserId(userId);
     }
 
+    public List<UserToCourse> getAllByCourseId(Long courseId) {
+        return userToCourseRepository.getAllByCourseId(courseId);
+    }
 }

@@ -2,8 +2,8 @@ package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.dto.course.CourseDto;
 import com.nazar.grynko.learningcourses.dto.course.CourseDtoSave;
-import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
+import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.service.CourseService;
 import com.nazar.grynko.learningcourses.service.LessonService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,8 +70,25 @@ public class CourseController {
     }
 
     @PostMapping("/{id}/enroll")
-    UserToCourseDto enroll(@PathVariable Long id, Principal principal) {
-        return courseService.enroll(id, principal.getName());
+    ResponseEntity<?> enroll(@PathVariable Long id, Principal principal) {
+        try {
+            return ResponseEntity.ok(courseService.enroll(id, principal.getName()));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/users")
+    ResponseEntity<?> allUsersForCourse(@PathVariable Long id, @RequestParam(required = false) RoleType roleType) {
+        try {
+            return ResponseEntity.ok(courseService.getAllInstructorsForCourse(id, roleType));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
     }
 
 }

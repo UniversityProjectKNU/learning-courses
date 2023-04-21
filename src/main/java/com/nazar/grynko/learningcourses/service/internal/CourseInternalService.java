@@ -1,9 +1,7 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
 import com.nazar.grynko.learningcourses.mapper.CourseMapper;
-import com.nazar.grynko.learningcourses.model.Course;
-import com.nazar.grynko.learningcourses.model.User;
-import com.nazar.grynko.learningcourses.model.UserToCourse;
+import com.nazar.grynko.learningcourses.model.*;
 import com.nazar.grynko.learningcourses.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -11,6 +9,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class CourseInternalService {
@@ -102,7 +101,10 @@ public class CourseInternalService {
     }
 
     @Transactional
-    public UserToCourse enroll(User user, Course course) {
+    public UserToCourse enroll(Long courseId, String login) {
+        var user = userInternalService.getByLogin(login).orElseThrow(IllegalAccessError::new);
+        var course = get(courseId).orElseThrow(IllegalArgumentException::new);
+
         if (!isValidAmountOfCourses(user)) {
             throw new IllegalStateException(
                     String.format("User %d already has max amount of courses (%d)", user.getId(), MAX_COURSES_NUMBER));
@@ -118,6 +120,20 @@ public class CourseInternalService {
         lessonInternalService.enroll(user, course.getId());
 
         return entity;
+    }
+
+    public List<User> getAllUsersForCourseByRole(Long id, List<RoleType> roleTypes) {
+        if (roleTypes == null) {
+            roleTypes = List.of(RoleType.STUDENT, RoleType.INSTRUCTOR);
+        }
+
+        List<RoleType> finalRoleTypes = roleTypes;
+        return userToCourseInternalService
+                .getAllByCourseId(id)
+                .stream()
+                .map(UserToCourse::getUser)
+                .filter(user -> hasUserRole(user, finalRoleTypes))
+                .collect(Collectors.toList());
     }
 
     private boolean isValidAmountOfCourses(User user) {
@@ -140,4 +156,12 @@ public class CourseInternalService {
         if (destination.getIsFinished() == null) destination.setIsFinished(source.getIsFinished());
         if (destination.getFinalFeedback() == null) destination.setFinalFeedback(source.getFinalFeedback());
     }
+
+    private boolean hasUserRole(User user, List<RoleType> types) {
+        return user.getRoles()
+                .stream()
+                .map(Role::getType)
+                .anyMatch(types::contains);
+    }
+
 }
