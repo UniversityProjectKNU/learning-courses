@@ -5,11 +5,14 @@ import com.nazar.grynko.learningcourses.dto.course.CourseDtoSave;
 import com.nazar.grynko.learningcourses.dto.course.CourseDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDto;
+import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDtoUpdate;
 import com.nazar.grynko.learningcourses.mapper.CourseMapper;
 import com.nazar.grynko.learningcourses.mapper.UserMapper;
 import com.nazar.grynko.learningcourses.mapper.UserToCourseMapper;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.service.internal.CourseInternalService;
+import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
+import com.nazar.grynko.learningcourses.service.internal.UserToCourseInternalService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -20,15 +23,21 @@ import java.util.stream.Collectors;
 public class CourseService {
 
     private final CourseInternalService courseInternalService;
+    private final UserInternalService userInternalService;
+    private final UserToCourseInternalService userToCourseInternalService;
     private final CourseMapper courseMapper;
     private final UserToCourseMapper userToCourseMapper;
     private final UserMapper userMapper;
 
     public CourseService(CourseInternalService courseInternalService,
+                         UserInternalService userInternalService,
+                         UserToCourseInternalService userToCourseInternalService,
                          CourseMapper courseMapper,
                          UserToCourseMapper userToCourseMapper,
                          UserMapper userMapper) {
         this.courseInternalService = courseInternalService;
+        this.userInternalService = userInternalService;
+        this.userToCourseInternalService = userToCourseInternalService;
         this.courseMapper = courseMapper;
         this.userToCourseMapper = userToCourseMapper;
         this.userMapper = userMapper;
@@ -100,8 +109,23 @@ public class CourseService {
     }
 
     public UserToCourseDto getUsersCourseInfo(Long id, String login) {
-        var userToCourse = courseInternalService.getUsersCourseInfo(id, login);
+        var userId = userInternalService.getByLogin(login).orElseThrow(IllegalArgumentException::new).getId();
+
+        var userToCourse = courseInternalService.getUsersCourseInfo(id, userId);
         return userToCourseMapper.toDto(userToCourse);
     }
 
+    public UserToCourseDto getUsersCourseInfo(Long id, Long userId) {
+        userInternalService.get(userId)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("User %d doesn't exist", userId)));
+
+        var userToCourse = courseInternalService.getUsersCourseInfo(id, userId);
+        return userToCourseMapper.toDto(userToCourse);
+    }
+
+    public UserToCourseDto updateUserToCourse(Long id, Long userId, UserToCourseDtoUpdate dto) {
+        var entity = userToCourseMapper.fromDtoUpdate(dto).setId(id);
+        entity = userToCourseInternalService.update(userId, id, entity);
+        return userToCourseMapper.toDto(entity);
+    }
 }

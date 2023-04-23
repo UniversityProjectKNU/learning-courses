@@ -18,7 +18,8 @@ public class UserToLessonInternalService {
     private final UserToLessonRepository userToLessonRepository;
     private final HomeworkInternalService homeworkInternalService;
 
-    public UserToLessonInternalService(UserToLessonRepository userToLessonRepository, HomeworkInternalService homeworkInternalService) {
+    public UserToLessonInternalService(UserToLessonRepository userToLessonRepository,
+                                       HomeworkInternalService homeworkInternalService) {
         this.userToLessonRepository = userToLessonRepository;
         this.homeworkInternalService = homeworkInternalService;
     }
@@ -58,4 +59,20 @@ public class UserToLessonInternalService {
                 .map(UserToLesson::getLesson)
                 .collect(Collectors.toList());
     }
+
+    public UserToLesson update(Long userId, Long lessonId, UserToLesson entity) {
+        var dbEntity = userToLessonRepository.findByUserIdAndLessonId(userId, lessonId)
+                .orElseThrow(IllegalArgumentException::new);
+        fillNullFields(dbEntity, entity);
+        return userToLessonRepository.save(entity);
+    }
+
+    private void fillNullFields(UserToLesson source, UserToLesson destination) {
+        if (destination.getId() == null) destination.setId(source.getId());
+        if (destination.getUser() == null) destination.setUser(source.getUser());
+        if (destination.getLesson() == null) destination.setLesson(source.getLesson());
+        if (destination.getIsPassed() == null) destination.setIsPassed(source.getIsPassed());
+        if (destination.getMark() == null) destination.setMark(source.getMark());
+    }
+
 }

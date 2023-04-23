@@ -3,6 +3,7 @@ package com.nazar.grynko.learningcourses.service;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoSave;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoUpdate;
+import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDto;
 import com.nazar.grynko.learningcourses.mapper.LessonMapper;
 import com.nazar.grynko.learningcourses.mapper.UserToLessonMapper;
@@ -110,4 +111,9 @@ public class LessonService {
         return lessonInternalService.hasWithCourse(id, courseId);
     }
 
+    public UserToLessonDto updateUserToLesson(Long id, Long userId, UserToCourseDtoUpdate dto) {
+        var entity = userToLessonMapper.fromDtoUpdate(dto).setId(id);
+        entity = userToLessonInternalService.update(userId, id, entity);
+        return userToLessonMapper.toDto(entity);
+    }
 }

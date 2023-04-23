@@ -3,6 +3,7 @@ package com.nazar.grynko.learningcourses.controller;
 import com.nazar.grynko.learningcourses.dto.course.CourseDto;
 import com.nazar.grynko.learningcourses.dto.course.CourseDtoSave;
 import com.nazar.grynko.learningcourses.dto.course.CourseDtoUpdate;
+import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDtoUpdate;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.service.CourseService;
@@ -96,6 +97,47 @@ public class CourseController {
     ResponseEntity<?> assignInstructor(@PathVariable Long id, @RequestParam Long instructorId) {
         try {
             return ResponseEntity.ok(courseService.assignInstructor(id, instructorId));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/users/{userId}")
+    ResponseEntity<?> getUsersCourseInfo(@PathVariable Long id, @PathVariable Long userId) {
+        try {
+            return ResponseEntity.ok(courseService.getUsersCourseInfo(id, userId));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}/users/{userId}")
+    ResponseEntity<?> updateUsersCourseInfo(@PathVariable Long id,
+                                            @PathVariable Long userId,
+                                            @RequestBody UserToCourseDtoUpdate userToCourseDto) {
+        try {
+            return ResponseEntity.ok(courseService.updateUserToCourse(id, userId, userToCourseDto));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}/lessons/{lessonId}/users/{userId}")
+    ResponseEntity<?> updateUsersLessonInfo(@PathVariable Long id,
+                                            @PathVariable Long lessonId,
+                                            @PathVariable Long userId,
+                                            @RequestBody UserToCourseDtoUpdate userToCourseDto) {
+        try {
+            if (!lessonService.hasWithCourse(lessonId, id)) {
+                throw new InvalidPathException(String.format("Lesson %d in course %d doesn't exist", lessonId, id));
+            }
+            return ResponseEntity.ok(lessonService.updateUserToLesson(lessonId, userId, userToCourseDto));
         } catch (Exception e) {
             return ResponseEntity
                     .badRequest()

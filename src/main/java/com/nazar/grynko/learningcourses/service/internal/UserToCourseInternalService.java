@@ -32,4 +32,20 @@ public class UserToCourseInternalService {
         return userToCourseRepository.getByUserIdAndCourseId(userId, courseId);
     }
 
+    public UserToCourse update(Long userId, Long courseId, UserToCourse entity) {
+        var dbEntity = userToCourseRepository.getByUserIdAndCourseId(userId, courseId)
+                .orElseThrow(IllegalArgumentException::new);
+        fillNullFields(dbEntity, entity);
+        return userToCourseRepository.save(entity);
+    }
+
+    private void fillNullFields(UserToCourse source, UserToCourse destination) {
+        if (destination.getId() == null) destination.setId(source.getId());
+        if (destination.getCourse() == null) destination.setCourse(source.getCourse());
+        if (destination.getUser() == null) destination.setUser(source.getUser());
+        if (destination.getIsPassed() == null) destination.setIsPassed(source.getIsPassed());
+        if (destination.getMark() == null) destination.setMark(source.getMark());
+        if (destination.getFinalFeedback() == null) destination.setFinalFeedback(source.getFinalFeedback());
+    }
+
 }

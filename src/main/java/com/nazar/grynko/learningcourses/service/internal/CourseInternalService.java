@@ -192,9 +192,7 @@ public class CourseInternalService {
         return courses.collect(Collectors.toList());
     }
 
-    public UserToCourse getUsersCourseInfo(Long id, String login) {
-        var userId = userInternalService.getByLogin(login).orElseThrow(IllegalArgumentException::new).getId();
-
+    public UserToCourse getUsersCourseInfo(Long id, Long userId) {
         return userToCourseInternalService.getByUserIdAndCourseId(userId, id)
                 .orElseThrow(() -> new IllegalArgumentException("Course doesn't exist"));
     }
