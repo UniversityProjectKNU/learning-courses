@@ -73,7 +73,7 @@ public class CourseService {
         return userToCourseMapper.toDto(entity);
     }
 
-    public List<UserDto> getAllInstructorsForCourse(Long id, RoleType roleType) {
+    public List<UserDto> getAllUsersForCourse(Long id, RoleType roleType) {
         if (roleType == RoleType.ADMIN) {
             throw new IllegalArgumentException(String.format(
                     "Cannot get courses for role %s", roleType.name()));
@@ -97,6 +97,11 @@ public class CourseService {
         return courses.stream()
                 .map(courseMapper::toDto)
                 .collect(Collectors.toList());
+    }
+
+    public UserToCourseDto getUsersCourseInfo(Long id, String login) {
+        var userToCourse = courseInternalService.getUsersCourseInfo(id, login);
+        return userToCourseMapper.toDto(userToCourse);
     }
 
 }

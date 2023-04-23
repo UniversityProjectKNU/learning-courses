@@ -15,6 +15,9 @@ public interface LessonRepository extends JpaRepository<Lesson, Long> {
 
     Optional<Lesson> getLessonByIdAndChapterIdAndChapterCourseId(Long id, Long chapterId, Long courseId);
 
+    @Query("select l from Lesson l where l.id = ?1 and l.chapter.course.id = ?2")
+    Optional<Lesson> getLessonByIdAndCourseId(Long id, Long courseId);
+
     @Query("select l from Lesson l where l.chapter.course.id = ?1")
     List<Lesson> getAllInCourse(Long courseId);
 

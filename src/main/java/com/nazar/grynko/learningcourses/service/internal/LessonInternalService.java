@@ -82,14 +82,23 @@ public class LessonInternalService {
     }
 
     public boolean hasWithChapter(Long id, Long chapterId, Long courseId) {
-        var optional = lessonRepository
-                .getLessonByIdAndChapterIdAndChapterCourseId(id, chapterId, courseId);
+        return lessonRepository
+                .getLessonByIdAndChapterIdAndChapterCourseId(id, chapterId, courseId)
+                .isPresent();
+    }
 
-        return optional.isPresent();
+    public boolean hasWithCourse(Long id, Long courseId) {
+        return lessonRepository
+                .getLessonByIdAndCourseId(id, courseId)
+                .isPresent();
     }
 
     public List<Lesson> getAllInCourse(Long courseId) {
         return lessonRepository.getAllInCourse(courseId);
+    }
+
+    public List<Lesson> getUsersLessonsForCourse(Long courseId, String login) {
+        return userToLessonInternalService.getAllByUserLoginAndCourseId(login, courseId);
     }
 
     public List<UserToLesson> enroll(User user, Long courseId) {

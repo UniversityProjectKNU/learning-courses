@@ -192,6 +192,13 @@ public class CourseInternalService {
         return courses.collect(Collectors.toList());
     }
 
+    public UserToCourse getUsersCourseInfo(Long id, String login) {
+        var userId = userInternalService.getByLogin(login).orElseThrow(IllegalArgumentException::new).getId();
+
+        return userToCourseInternalService.getByUserIdAndCourseId(userId, id)
+                .orElseThrow(() -> new IllegalArgumentException("Course doesn't exist"));
+    }
+
     private void setNullFields(Course source, Course destination) {
         if (destination.getId() == null) destination.setId(source.getId());
         if (destination.getTitle() == null) destination.setTitle(source.getTitle());

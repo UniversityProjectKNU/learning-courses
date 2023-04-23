@@ -84,7 +84,7 @@ public class CourseController {
     @GetMapping("/{id}/users")
     ResponseEntity<?> allUsersForCourse(@PathVariable Long id, @RequestParam(required = false) RoleType roleType) {
         try {
-            return ResponseEntity.ok(courseService.getAllInstructorsForCourse(id, roleType));
+            return ResponseEntity.ok(courseService.getAllUsersForCourse(id, roleType));
         } catch (Exception e) {
             return ResponseEntity
                     .badRequest()
