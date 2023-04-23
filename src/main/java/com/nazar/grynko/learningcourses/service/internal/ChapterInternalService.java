@@ -39,7 +39,7 @@ public class ChapterInternalService {
     }
 
     public void delete(Long id) {
-        Chapter entity = get(id).orElseThrow(IllegalArgumentException::new);
+        var entity = get(id).orElseThrow(IllegalArgumentException::new);
         chapterRepository.delete(entity);
     }
 
@@ -48,12 +48,12 @@ public class ChapterInternalService {
     }
 
     public List<Chapter> create(Long courseTemplateId, Course course) {
-        List<ChapterTemplate> chapterTemplates = chapterTemplateInternalService
+        var chapterTemplates = chapterTemplateInternalService
                 .getAllInCourseTemplate(courseTemplateId);
 
-        List<Chapter> entities = new ArrayList<>();
-        for (ChapterTemplate template : chapterTemplates) {
-            Chapter entity = create(template, course);
+        var entities = new ArrayList<Chapter>();
+        for (var template : chapterTemplates) {
+            var entity = create(template, course);
             entities.add(entity);
         }
 
@@ -61,7 +61,7 @@ public class ChapterInternalService {
     }
 
     public Chapter create(ChapterTemplate template, Course course) {
-        Chapter entity = chapterMapper.fromTemplate(template).setId(null);
+        var entity = chapterMapper.fromTemplate(template).setId(null);
 
         entity.setCourse(course);
         entity.setIsFinished(false);
@@ -74,7 +74,7 @@ public class ChapterInternalService {
     }
 
     public Chapter update(Chapter entity) {
-        Chapter dbChapter = chapterRepository.findById(entity.getId())
+        var dbChapter = chapterRepository.findById(entity.getId())
                 .orElseThrow(IllegalArgumentException::new);
         setNullFields(dbChapter, entity);
         return chapterRepository.save(entity);
@@ -91,7 +91,7 @@ public class ChapterInternalService {
     }
 
     public boolean hasWithCourse(Long chapterId, Long courseId) {
-        Optional<Chapter> optional = chapterRepository
+        var optional = chapterRepository
                 .getChapterByIdAndCourseId(chapterId, courseId);
 
         return optional.isPresent();

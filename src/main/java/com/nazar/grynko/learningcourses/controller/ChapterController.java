@@ -24,8 +24,9 @@ public class ChapterController {
 
     @GetMapping("/{id}")
     ChapterDto one(@PathVariable Long id, @PathVariable Long courseId) {
-        if (!chapterService.hasWithCourse(id, courseId))
+        if (!chapterService.hasWithCourse(id, courseId)) {
             throw new InvalidPathException();
+        }
 
         return chapterService.get(id)
                 .orElseThrow(InvalidPathException::new);
@@ -38,8 +39,9 @@ public class ChapterController {
 
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id, @PathVariable Long courseId) {
-        if (!chapterService.hasWithCourse(id, courseId))
+        if (!chapterService.hasWithCourse(id, courseId)) {
             throw new InvalidPathException();
+        }
 
         chapterService.delete(id);
     }
@@ -51,8 +53,9 @@ public class ChapterController {
 
     @PutMapping("/{id}")
     ChapterDto update(@RequestBody ChapterDtoUpdate chapterDto, @PathVariable Long id, @PathVariable Long courseId) {
-        if (!chapterService.hasWithCourse(id, courseId) || !Objects.equals(chapterDto.getId(), id))
+        if (!chapterService.hasWithCourse(id, courseId) || !Objects.equals(chapterDto.getId(), id)) {
             throw new InvalidPathException();
+        }
 
         return chapterService.update(chapterDto, id);
     }

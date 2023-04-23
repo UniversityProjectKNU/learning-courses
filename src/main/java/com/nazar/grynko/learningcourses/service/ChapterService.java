@@ -4,8 +4,6 @@ import com.nazar.grynko.learningcourses.dto.chapter.ChapterDto;
 import com.nazar.grynko.learningcourses.dto.chapter.ChapterDtoSave;
 import com.nazar.grynko.learningcourses.dto.chapter.ChapterDtoUpdate;
 import com.nazar.grynko.learningcourses.mapper.ChapterMapper;
-import com.nazar.grynko.learningcourses.model.Chapter;
-import com.nazar.grynko.learningcourses.model.Course;
 import com.nazar.grynko.learningcourses.service.internal.ChapterInternalService;
 import com.nazar.grynko.learningcourses.service.internal.CourseInternalService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,10 +45,10 @@ public class ChapterService {
     }
 
     public ChapterDto save(ChapterDtoSave dto, Long courseId) {
-        Course course = courseInternalService.get(courseId)
+        var course = courseInternalService.get(courseId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        Chapter entity = chapterMapper.fromDtoSave(dto);
+        var entity = chapterMapper.fromDtoSave(dto);
         entity.setCourse(course);
         entity.setIsFinished(false);
 
@@ -59,7 +57,7 @@ public class ChapterService {
     }
 
     public ChapterDto update(ChapterDtoUpdate dto, Long id) {
-        Chapter entity = chapterMapper.fromDtoUpdate(dto).setId(id);
+        var entity = chapterMapper.fromDtoUpdate(dto).setId(id);
         entity = chapterInternalService.update(entity);
         return chapterMapper.toDto(entity);
     }

@@ -70,28 +70,6 @@ public class CourseController {
         return courseService.update(courseDto, id);
     }
 
-    @PutMapping("/{id}/chapters/")
-    ResponseEntity<?> getAllChapters(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(courseService.getAllChapters(id));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
-    }
-
-    @PutMapping("/{id}/lessons/")
-    ResponseEntity<?> getAllLessons(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(courseService.getAllLessons(id));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
-    }
-
     @PostMapping("/{id}/enroll")
     ResponseEntity<?> enroll(@PathVariable Long id, Principal principal) {
         try {
