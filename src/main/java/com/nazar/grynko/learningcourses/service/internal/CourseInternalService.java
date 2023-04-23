@@ -136,6 +136,30 @@ public class CourseInternalService {
                 .collect(Collectors.toList());
     }
 
+    public UserToCourse assignInstructor(Long id, Long instructorId) {
+        var user = userInternalService.get(instructorId).orElseThrow(IllegalAccessError::new);
+
+        if (!hasUserRole(user, RoleType.INSTRUCTOR)) {
+            throw new IllegalArgumentException("Cannot assign not instructor");
+        }
+
+        var optional = userToCourseInternalService.getByUserIdAndCourseId(instructorId, id);
+        if (optional.isPresent()) {
+            throw new IllegalArgumentException(String.format(
+                    "Instructor %d was already assign to the course %d", instructorId, id));
+        }
+
+        var course = get(id).orElseThrow(IllegalArgumentException::new);
+
+        var entity = new UserToCourse()
+                .setUser(user)
+                .setCourse(course)
+                .setMark(0)
+                .setIsPassed(false);
+
+        return userToCourseInternalService.save(entity);
+    }
+
     private boolean isValidAmountOfCourses(User user) {
         var courses = userToCourseInternalService.getAllByUserId(user.getId());
         var activeCoursesAmount = (int) courses.stream()
@@ -162,6 +186,13 @@ public class CourseInternalService {
                 .stream()
                 .map(Role::getType)
                 .anyMatch(types::contains);
+    }
+
+    private boolean hasUserRole(User user, RoleType type) {
+        return user.getRoles()
+                .stream()
+                .map(Role::getType)
+                .anyMatch(t -> t == type);
     }
 
 }

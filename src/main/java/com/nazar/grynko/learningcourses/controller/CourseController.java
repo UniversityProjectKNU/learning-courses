@@ -91,4 +91,15 @@ public class CourseController {
         }
     }
 
+    @PutMapping("/{id}/users/instructors")
+    ResponseEntity<?> assignInstructor(@PathVariable Long id, @RequestParam Long instructorId) {
+        try {
+            return ResponseEntity.ok(courseService.assignInstructor(id, instructorId));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
 }

@@ -9,7 +9,6 @@ import com.nazar.grynko.learningcourses.mapper.UserMapper;
 import com.nazar.grynko.learningcourses.mapper.UserToCourseMapper;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.service.internal.CourseInternalService;
-import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -87,4 +86,9 @@ public class CourseService {
                 .collect(Collectors.toList());
     }
 
+    //TODO change UserToCourseDto to have ids
+    public UserToCourseDto assignInstructor(Long id, Long instructorId) {
+        var userToCourse = courseInternalService.assignInstructor(id, instructorId);
+        return userToCourseMapper.toDto(userToCourse);
+    }
 }

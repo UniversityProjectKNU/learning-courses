@@ -5,6 +5,7 @@ import com.nazar.grynko.learningcourses.repository.UserToCourseRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserToCourseInternalService {
@@ -26,4 +27,9 @@ public class UserToCourseInternalService {
     public List<UserToCourse> getAllByCourseId(Long courseId) {
         return userToCourseRepository.getAllByCourseId(courseId);
     }
+
+    public Optional<UserToCourse> getByUserIdAndCourseId(Long userId, Long courseId) {
+        return userToCourseRepository.getByUserIdAndCourseId(userId, courseId);
+    }
+
 }

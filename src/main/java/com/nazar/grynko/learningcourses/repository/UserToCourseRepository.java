@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserToCourseRepository extends JpaRepository<UserToCourse, Long> {
@@ -12,4 +13,6 @@ public interface UserToCourseRepository extends JpaRepository<UserToCourse, Long
     List<UserToCourse> getAllByUserId(Long userId);
 
     List<UserToCourse> getAllByCourseId(Long courseId);
+
+    Optional<UserToCourse> getByUserIdAndCourseId(Long userId, Long courseId);
 }
