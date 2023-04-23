@@ -2,6 +2,7 @@ package com.nazar.grynko.learningcourses.mapper;
 
 import com.nazar.grynko.learningcourses.dto.course.CourseDto;
 import com.nazar.grynko.learningcourses.dto.course.CourseDtoSave;
+import com.nazar.grynko.learningcourses.dto.course.CourseDtoUpdate;
 import com.nazar.grynko.learningcourses.model.Course;
 import com.nazar.grynko.learningcourses.model.CourseTemplate;
 import org.modelmapper.ModelMapper;
@@ -32,4 +33,7 @@ public class CourseMapper {
         return modelMapper.map(template, Course.class);
     }
 
+    public Course fromDtoUpdate(CourseDtoUpdate dto) {
+        return modelMapper.map(dto, Course.class);
+    }
 }

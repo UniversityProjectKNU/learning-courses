@@ -2,6 +2,7 @@ package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.dto.chapter.ChapterDto;
 import com.nazar.grynko.learningcourses.dto.chapter.ChapterDtoSave;
+import com.nazar.grynko.learningcourses.dto.chapter.ChapterDtoUpdate;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.ChapterService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ public class ChapterController {
     }
 
     @PutMapping("/{id}")
-    ChapterDto update(@RequestBody ChapterDto chapterDto, @PathVariable Long id, @PathVariable Long courseId) {
+    ChapterDto update(@RequestBody ChapterDtoUpdate chapterDto, @PathVariable Long id, @PathVariable Long courseId) {
         if (!chapterService.hasWithCourse(id, courseId) || !Objects.equals(chapterDto.getId(), id))
             throw new InvalidPathException();
 

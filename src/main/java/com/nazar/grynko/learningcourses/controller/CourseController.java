@@ -2,6 +2,7 @@ package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.dto.course.CourseDto;
 import com.nazar.grynko.learningcourses.dto.course.CourseDtoSave;
+import com.nazar.grynko.learningcourses.dto.course.CourseDtoUpdate;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.service.CourseService;
@@ -61,12 +62,34 @@ public class CourseController {
     }
 
     @PutMapping("/{id}")
-    CourseDto update(@RequestBody CourseDto courseDto, @PathVariable Long id) {
+    CourseDto update(@RequestBody CourseDtoUpdate courseDto, @PathVariable Long id) {
         if (!Objects.equals(courseDto.getId(), id)) {
             throw new InvalidPathException();
         }
 
         return courseService.update(courseDto, id);
+    }
+
+    @PutMapping("/{id}/chapters/")
+    ResponseEntity<?> getAllChapters(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(courseService.getAllChapters(id));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/{id}/lessons/")
+    ResponseEntity<?> getAllLessons(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(courseService.getAllLessons(id));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
     }
 
     @PostMapping("/{id}/enroll")

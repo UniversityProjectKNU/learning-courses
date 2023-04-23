@@ -2,6 +2,7 @@ package com.nazar.grynko.learningcourses.service;
 
 import com.nazar.grynko.learningcourses.dto.chapter.ChapterDto;
 import com.nazar.grynko.learningcourses.dto.chapter.ChapterDtoSave;
+import com.nazar.grynko.learningcourses.dto.chapter.ChapterDtoUpdate;
 import com.nazar.grynko.learningcourses.mapper.ChapterMapper;
 import com.nazar.grynko.learningcourses.model.Chapter;
 import com.nazar.grynko.learningcourses.model.Course;
@@ -57,8 +58,8 @@ public class ChapterService {
         return chapterMapper.toDto(entity);
     }
 
-    public ChapterDto update(ChapterDto dto, Long id) {
-        Chapter entity = chapterMapper.fromDto(dto).setId(id);
+    public ChapterDto update(ChapterDtoUpdate dto, Long id) {
+        Chapter entity = chapterMapper.fromDtoUpdate(dto).setId(id);
         entity = chapterInternalService.update(entity);
         return chapterMapper.toDto(entity);
     }

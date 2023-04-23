@@ -2,6 +2,7 @@ package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoSave;
+import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoUpdate;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.ChapterService;
 import com.nazar.grynko.learningcourses.service.LessonService;
@@ -69,7 +70,7 @@ public class LessonController {
     }
 
     @PutMapping("/{id}")
-    LessonDto update(@RequestBody LessonDto lessonDto, @PathVariable Long id,
+    LessonDto update(@RequestBody LessonDtoUpdate lessonDto, @PathVariable Long id,
                      @PathVariable Long chapterId, @PathVariable Long courseId) {
         if (!lessonService.hasWithChapter(id, chapterId, courseId) || !Objects.equals(lessonDto.getId(), id)) {
             throw new InvalidPathException("Such lesson doesn't exist");

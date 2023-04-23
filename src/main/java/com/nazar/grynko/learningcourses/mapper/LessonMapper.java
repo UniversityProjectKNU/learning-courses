@@ -2,6 +2,7 @@ package com.nazar.grynko.learningcourses.mapper;
 
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoSave;
+import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoUpdate;
 import com.nazar.grynko.learningcourses.model.Lesson;
 import com.nazar.grynko.learningcourses.model.LessonTemplate;
 import org.modelmapper.ModelMapper;
@@ -17,7 +18,8 @@ public class LessonMapper {
     }
 
     public LessonDto toDto(Lesson entity) {
-        return modelMapper.map(entity, LessonDto.class);
+        return modelMapper.map(entity, LessonDto.class)
+                .setCourseId(entity.getChapter().getCourse().getId());
     }
 
     public Lesson fromDto(LessonDto dto) {
@@ -25,6 +27,10 @@ public class LessonMapper {
     }
 
     public Lesson fromDtoSave(LessonDtoSave dto) {
+        return modelMapper.map(dto, Lesson.class);
+    }
+
+    public Lesson fromDtoUpdate(LessonDtoUpdate dto) {
         return modelMapper.map(dto, Lesson.class);
     }
 

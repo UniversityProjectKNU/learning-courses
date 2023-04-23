@@ -2,6 +2,7 @@ package com.nazar.grynko.learningcourses.service;
 
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoSave;
+import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoUpdate;
 import com.nazar.grynko.learningcourses.mapper.LessonMapper;
 import com.nazar.grynko.learningcourses.service.internal.ChapterInternalService;
 import com.nazar.grynko.learningcourses.service.internal.LessonInternalService;
@@ -64,8 +65,8 @@ public class LessonService {
         return lessonMapper.toDto(entity);
     }
 
-    public LessonDto update(LessonDto dto, Long id) {
-        var entity = lessonMapper.fromDto(dto).setId(id);
+    public LessonDto update(LessonDtoUpdate dto, Long id) {
+        var entity = lessonMapper.fromDtoUpdate(dto).setId(id);
         entity = lessonInternalService.update(entity);
         return lessonMapper.toDto(entity);
     }

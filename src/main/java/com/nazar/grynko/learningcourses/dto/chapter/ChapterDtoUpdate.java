@@ -1,4 +1,4 @@
-package com.nazar.grynko.learningcourses.dto.lesson;
+package com.nazar.grynko.learningcourses.dto.chapter;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
@@ -9,13 +9,12 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
-
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class LessonDto implements Serializable {
+public class ChapterDtoUpdate implements Serializable {
 
     private Long id;
     private String title;
@@ -23,9 +22,6 @@ public class LessonDto implements Serializable {
     private String number;
     @JsonProperty("isFinished")
     private Boolean isFinished;
-    private Integer maxMark;
-    private Integer successMark;
-    private Long chapterId;
-    private Long courseId;
+    private String finalFeedback;
 
 }
