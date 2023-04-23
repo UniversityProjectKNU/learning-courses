@@ -4,10 +4,13 @@ import com.nazar.grynko.learningcourses.dto.role.RoleDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDtoUpdate;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
+import com.nazar.grynko.learningcourses.service.CourseService;
 import com.nazar.grynko.learningcourses.service.RoleService;
 import com.nazar.grynko.learningcourses.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.Set;
 
@@ -16,10 +19,14 @@ import java.util.Set;
 public class UserController {
 
     private final UserService userService;
+    private final CourseService courseService;
     private final RoleService roleService;
 
-    public UserController(UserService userService, RoleService roleService) {
+    public UserController(UserService userService,
+                          CourseService courseService,
+                          RoleService roleService) {
         this.userService = userService;
+        this.courseService = courseService;
         this.roleService = roleService;
     }
 
@@ -58,6 +65,19 @@ public class UserController {
         userService.get(id).orElseThrow(InvalidPathException::new);
 
         return roleService.updateRoles(roles, id);
+    }
+
+    @GetMapping("/my-courses")
+    ResponseEntity<?> getUsersCourses(@RequestParam(required = false) Boolean isFinished,
+                                      Principal principal) {
+        try {
+            return ResponseEntity.ok(courseService.getUsersCourses(principal.getName(), isFinished));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+
     }
 
 }

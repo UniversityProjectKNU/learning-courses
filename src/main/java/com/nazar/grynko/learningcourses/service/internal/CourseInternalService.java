@@ -125,6 +125,10 @@ public class CourseInternalService {
     }
 
     public List<User> getAllUsersForCourseByRole(Long id, List<RoleType> roleTypes) {
+        if (!courseExists(id)) {
+            throw new IllegalArgumentException("Course doesn't exist");
+        }
+
         if (roleTypes == null) {
             roleTypes = List.of(RoleType.STUDENT, RoleType.INSTRUCTOR);
         }
@@ -175,6 +179,19 @@ public class CourseInternalService {
         return lessonsTemplates.size() >= MIN_LESSONS_NUMBER;
     }
 
+    public List<Course> getUsersCourses(String login, Boolean isFinished) {
+        var userId = userInternalService.getByLogin(login).orElseThrow(IllegalArgumentException::new).getId();
+        var courses = userToCourseInternalService.getAllByUserId(userId)
+                .stream()
+                .map(UserToCourse::getCourse);
+
+        if (isFinished != null) {
+            courses = courses.filter(c -> c.getIsFinished() == isFinished);
+        }
+
+        return courses.collect(Collectors.toList());
+    }
+
     private void setNullFields(Course source, Course destination) {
         if (destination.getId() == null) destination.setId(source.getId());
         if (destination.getTitle() == null) destination.setTitle(source.getTitle());
@@ -197,4 +214,7 @@ public class CourseInternalService {
                 .anyMatch(t -> t == type);
     }
 
+    public boolean courseExists(Long id) {
+        return get(id).isPresent();
+    }
 }

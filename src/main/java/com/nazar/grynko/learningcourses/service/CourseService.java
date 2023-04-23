@@ -92,4 +92,11 @@ public class CourseService {
         return userToCourseMapper.toDto(userToCourse);
     }
 
+    public List<CourseDto> getUsersCourses(String login, Boolean isFinished) {
+        var courses = courseInternalService.getUsersCourses(login, isFinished);
+        return courses.stream()
+                .map(courseMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
 }
