@@ -20,5 +20,7 @@ public class UserToCourseDto implements Serializable {
     private Integer mark;
     @JsonProperty("isPassed")
     private Boolean isPassed;
+    private Long userId;
+    private Long courseId;
 
 }

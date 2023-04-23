@@ -102,8 +102,10 @@ public class CourseInternalService {
 
     @Transactional
     public UserToCourse enroll(Long courseId, String login) {
-        var user = userInternalService.getByLogin(login).orElseThrow(IllegalAccessError::new);
-        var course = get(courseId).orElseThrow(IllegalArgumentException::new);
+        var user = userInternalService.getByLogin(login).orElseThrow(
+                () -> new IllegalArgumentException("User doesn't exist"));
+        var course = get(courseId).orElseThrow(
+                () -> new IllegalArgumentException("Course doesn't exist"));
 
         if (!isValidAmountOfCourses(user)) {
             throw new IllegalStateException(

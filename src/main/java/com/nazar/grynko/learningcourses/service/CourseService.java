@@ -86,7 +86,6 @@ public class CourseService {
                 .collect(Collectors.toList());
     }
 
-    //TODO change UserToCourseDto to have ids
     public UserToCourseDto assignInstructor(Long id, Long instructorId) {
         var userToCourse = courseInternalService.assignInstructor(id, instructorId);
         return userToCourseMapper.toDto(userToCourse);
