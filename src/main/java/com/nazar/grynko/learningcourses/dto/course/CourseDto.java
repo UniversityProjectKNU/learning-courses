@@ -21,6 +21,5 @@ public class CourseDto implements Serializable {
     private String description;
     @JsonProperty("isFinished")
     private Boolean isFinished;
-    private String finalFeedback;
 
 }

@@ -42,7 +42,7 @@ public class ChapterTemplateInternalService {
     public ChapterTemplate update(ChapterTemplate entity) {
         var dbChapterTemplate = chapterTemplateRepository.findById(entity.getId())
                 .orElseThrow(IllegalArgumentException::new);
-        setNullFields(dbChapterTemplate, entity);
+        fillNullFields(dbChapterTemplate, entity);
         return chapterTemplateRepository.save(entity);
     }
 
@@ -56,7 +56,7 @@ public class ChapterTemplateInternalService {
         return optional.isPresent();
     }
 
-    private void setNullFields(ChapterTemplate source, ChapterTemplate destination) {
+    private void fillNullFields(ChapterTemplate source, ChapterTemplate destination) {
         if (destination.getId() == null) destination.setId(source.getId());
         if (destination.getTitle() == null) destination.setTitle(source.getTitle());
         if (destination.getDescription() == null) destination.setDescription(source.getDescription());

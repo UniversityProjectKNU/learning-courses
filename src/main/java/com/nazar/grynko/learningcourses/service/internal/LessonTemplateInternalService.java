@@ -42,7 +42,7 @@ public class LessonTemplateInternalService {
     public LessonTemplate update(LessonTemplate entity) {
         LessonTemplate dbLessonTemplate = lessonTemplateRepository.findById(entity.getId())
                 .orElseThrow(IllegalArgumentException::new);
-        setNullFields(dbLessonTemplate, entity);
+        fillNullFields(dbLessonTemplate, entity);
         return lessonTemplateRepository.save(entity);
     }
 
@@ -63,11 +63,11 @@ public class LessonTemplateInternalService {
         return optional.isPresent();
     }
 
-    private void setNullFields(LessonTemplate source, LessonTemplate destination) {
-        if(destination.getId() == null) destination.setId(source.getId());
-        if(destination.getTitle() == null) destination.setTitle(source.getTitle());
-        if(destination.getDescription() == null) destination.setDescription(source.getDescription());
-        if(destination.getNumber() == null) destination.setNumber(source.getNumber());
-        if(destination.getChapterTemplate() == null) destination.setChapterTemplate(source.getChapterTemplate());
+    private void fillNullFields(LessonTemplate source, LessonTemplate destination) {
+        if (destination.getId() == null) destination.setId(source.getId());
+        if (destination.getTitle() == null) destination.setTitle(source.getTitle());
+        if (destination.getDescription() == null) destination.setDescription(source.getDescription());
+        if (destination.getNumber() == null) destination.setNumber(source.getNumber());
+        if (destination.getChapterTemplate() == null) destination.setChapterTemplate(source.getChapterTemplate());
     }
 }

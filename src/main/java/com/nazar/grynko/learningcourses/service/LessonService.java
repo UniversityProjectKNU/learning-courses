@@ -7,6 +7,7 @@ import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDto;
 import com.nazar.grynko.learningcourses.mapper.LessonMapper;
 import com.nazar.grynko.learningcourses.mapper.UserToLessonMapper;
 import com.nazar.grynko.learningcourses.service.internal.ChapterInternalService;
+import com.nazar.grynko.learningcourses.service.internal.CourseInternalService;
 import com.nazar.grynko.learningcourses.service.internal.LessonInternalService;
 import com.nazar.grynko.learningcourses.service.internal.UserToLessonInternalService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ public class LessonService {
 
     private final LessonInternalService lessonInternalService;
     private final ChapterInternalService chapterInternalService;
+    private final CourseInternalService courseInternalService;
     private final UserToLessonInternalService userToLessonInternalService;
     private final LessonMapper lessonMapper;
     private final UserToLessonMapper userToLessonMapper;
@@ -28,11 +30,13 @@ public class LessonService {
     @Autowired
     public LessonService(LessonInternalService lessonInternalService,
                          ChapterInternalService chapterInternalService,
+                         CourseInternalService courseInternalService,
                          UserToLessonInternalService userToLessonInternalService,
                          LessonMapper lessonMapper,
                          UserToLessonMapper userToLessonMapper) {
         this.lessonInternalService = lessonInternalService;
         this.chapterInternalService = chapterInternalService;
+        this.courseInternalService = courseInternalService;
         this.userToLessonInternalService = userToLessonInternalService;
         this.lessonMapper = lessonMapper;
         this.userToLessonMapper = userToLessonMapper;
@@ -44,6 +48,9 @@ public class LessonService {
     }
 
     public List<LessonDto> getAllInChapter(Long chapterId) {
+        chapterInternalService.get(chapterId)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Chapter %d doesn't exist", chapterId)));
+
         return lessonInternalService.getAllInChapter(chapterId)
                 .stream()
                 .map(lessonMapper::toDto)
@@ -51,6 +58,9 @@ public class LessonService {
     }
 
     public List<LessonDto> getAllInCourse(Long courseId) {
+        courseInternalService.get(courseId)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Chapter %d doesn't exist", courseId)));
+
         return lessonInternalService.getAllInCourse(courseId)
                 .stream()
                 .map(lessonMapper::toDto)

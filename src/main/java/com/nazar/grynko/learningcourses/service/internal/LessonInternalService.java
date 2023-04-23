@@ -66,11 +66,11 @@ public class LessonInternalService {
     public Lesson update(Lesson entity) {
         var dbLesson = lessonRepository.findById(entity.getId())
                 .orElseThrow(IllegalArgumentException::new);
-        setNullFields(dbLesson, entity);
+        fillNullFields(dbLesson, entity);
         return lessonRepository.save(entity);
     }
 
-    private void setNullFields(Lesson source, Lesson destination) {
+    private void fillNullFields(Lesson source, Lesson destination) {
         if (destination.getId() == null) destination.setId(source.getId());
         if (destination.getTitle() == null) destination.setTitle(source.getTitle());
         if (destination.getDescription() == null) destination.setDescription(source.getDescription());

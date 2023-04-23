@@ -14,7 +14,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Accessors(chain = true)
 @Entity
-@Table(name="chapters")
+@Table(name = "chapters")
 public class Chapter {
 
     @Id
@@ -30,7 +30,6 @@ public class Chapter {
     private Integer number;
     @Column(nullable = false)
     private Boolean isFinished;
-    private String finalFeedback;
 
     @ManyToOne
     @JoinColumn(

@@ -17,6 +17,5 @@ public class CourseDtoSave implements Serializable {
 
     private String title;
     private String description;
-    private String finalFeedback;
 
 }

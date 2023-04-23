@@ -18,6 +18,5 @@ public class ChapterDtoSave implements Serializable {
     private String title;
     private String description;
     private String number;
-    private String finalFeedback;
 
 }

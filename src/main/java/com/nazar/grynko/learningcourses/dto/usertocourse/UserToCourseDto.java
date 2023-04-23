@@ -22,5 +22,6 @@ public class UserToCourseDto implements Serializable {
     private Boolean isPassed;
     private Long userId;
     private Long courseId;
+    private String finalFeedback;
 
 }

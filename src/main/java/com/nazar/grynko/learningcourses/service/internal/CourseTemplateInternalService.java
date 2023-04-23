@@ -28,7 +28,7 @@ public class CourseTemplateInternalService {
 
     public void delete(Long id) {
         CourseTemplate entity = courseTemplateRepository.findById(id)
-                        .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(IllegalArgumentException::new);
         courseTemplateRepository.delete(entity);
     }
 
@@ -39,14 +39,14 @@ public class CourseTemplateInternalService {
     public CourseTemplate update(CourseTemplate entity) {
         CourseTemplate dbCourseTemplate = courseTemplateRepository.findById(entity.getId())
                 .orElseThrow(IllegalArgumentException::new);
-        setNullFields(dbCourseTemplate, entity);
+        fillNullFields(dbCourseTemplate, entity);
         return courseTemplateRepository.save(entity);
     }
 
-    private void setNullFields(CourseTemplate source, CourseTemplate destination) {
-        if(destination.getId() == null) destination.setId(source.getId());
-        if(destination.getTitle() == null) destination.setTitle(source.getTitle());
-        if(destination.getDescription() == null) destination.setDescription(source.getDescription());
+    private void fillNullFields(CourseTemplate source, CourseTemplate destination) {
+        if (destination.getId() == null) destination.setId(source.getId());
+        if (destination.getTitle() == null) destination.setTitle(source.getTitle());
+        if (destination.getDescription() == null) destination.setDescription(source.getDescription());
     }
-    
+
 }

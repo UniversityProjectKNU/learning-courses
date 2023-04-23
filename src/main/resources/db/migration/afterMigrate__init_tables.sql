@@ -86,11 +86,11 @@ VALUES
 ##############################
 DELETE FROM `courses`;
 
-INSERT INTO `courses` (`id`, `title`, `description`, `is_finished`, `final_feedback`)
+INSERT INTO `courses` (`id`, `title`, `description`, `is_finished`)
 VALUES
-    (1, 'C++ super course', 'This course will help you to learn basics of such language as C++.', FALSE, NULL),
-    (2, 'JavaRush course', 	'The Java course is divided into 40 levels. You can move to the next level only if you have solved most of the problems of the current level.', FALSE, NULL),
-    (3, 'JavaRush course', 	'The Java course is divided into 40 levels. You can move to the next level only if you have solved most of the problems of the current level.', FALSE, NULL);
+    (1, 'C++ super course', 'This course will help you to learn basics of such language as C++.', FALSE),
+    (2, 'JavaRush course', 	'The Java course is divided into 40 levels. You can move to the next level only if you have solved most of the problems of the current level.', FALSE),
+    (3, 'JavaRush course', 	'The Java course is divided into 40 levels. You can move to the next level only if you have solved most of the problems of the current level.', FALSE);
 ##############################
 ##############################
 DELETE FROM `chapters`;

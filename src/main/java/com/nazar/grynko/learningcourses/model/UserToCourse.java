@@ -25,6 +25,8 @@ public class UserToCourse {
     private Integer mark;
     @Column(nullable = false)
     private Boolean isPassed;
+    @Column
+    private String finalFeedback;
 
     @ManyToOne
     @JoinColumn(

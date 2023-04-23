@@ -76,17 +76,16 @@ public class ChapterInternalService {
     public Chapter update(Chapter entity) {
         var dbChapter = chapterRepository.findById(entity.getId())
                 .orElseThrow(IllegalArgumentException::new);
-        setNullFields(dbChapter, entity);
+        fillNullFields(dbChapter, entity);
         return chapterRepository.save(entity);
     }
 
-    private void setNullFields(Chapter source, Chapter destination) {
+    private void fillNullFields(Chapter source, Chapter destination) {
         if (destination.getId() == null) destination.setId(source.getId());
         if (destination.getTitle() == null) destination.setTitle(source.getTitle());
         if (destination.getDescription() == null) destination.setDescription(source.getDescription());
         if (destination.getNumber() == null) destination.setNumber(source.getNumber());
         if (destination.getIsFinished() == null) destination.setIsFinished(source.getIsFinished());
-        if (destination.getFinalFeedback() == null) destination.setFinalFeedback(source.getFinalFeedback());
         if (destination.getCourse() == null) destination.setCourse(source.getCourse());
     }
 

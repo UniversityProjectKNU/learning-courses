@@ -14,7 +14,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Accessors(chain = true)
 @Entity
-@Table(name="courses")
+@Table(name = "courses")
 public class Course {
 
     @Id
@@ -28,6 +28,5 @@ public class Course {
     private String description;
     @Column(nullable = false)
     private Boolean isFinished;
-    private String finalFeedback;
 
 }

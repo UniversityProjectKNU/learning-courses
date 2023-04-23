@@ -96,7 +96,7 @@ public class CourseInternalService {
     public Course update(Course course) {
         var dbCourse = courseRepository.findById(course.getId())
                 .orElseThrow(IllegalArgumentException::new);
-        setNullFields(dbCourse, course);
+        fillNullFields(dbCourse, course);
         return courseRepository.save(course);
     }
 
@@ -199,12 +199,11 @@ public class CourseInternalService {
                 .orElseThrow(() -> new IllegalArgumentException("Course doesn't exist"));
     }
 
-    private void setNullFields(Course source, Course destination) {
+    private void fillNullFields(Course source, Course destination) {
         if (destination.getId() == null) destination.setId(source.getId());
         if (destination.getTitle() == null) destination.setTitle(source.getTitle());
         if (destination.getDescription() == null) destination.setDescription(source.getDescription());
         if (destination.getIsFinished() == null) destination.setIsFinished(source.getIsFinished());
-        if (destination.getFinalFeedback() == null) destination.setFinalFeedback(source.getFinalFeedback());
     }
 
     private boolean hasUserRole(User user, List<RoleType> types) {
