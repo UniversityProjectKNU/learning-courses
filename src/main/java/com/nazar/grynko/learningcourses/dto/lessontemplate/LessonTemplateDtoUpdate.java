@@ -1,4 +1,4 @@
-package com.nazar.grynko.learningcourses.dto.chaptertemplate;
+package com.nazar.grynko.learningcourses.dto.lessontemplate;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,12 +11,11 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class ChapterTemplateDto {
+public class LessonTemplateDtoUpdate {
 
     private Long id;
     private String title;
     private String description;
     private Integer number;
-    private Long courseTemplateId;
 
 }

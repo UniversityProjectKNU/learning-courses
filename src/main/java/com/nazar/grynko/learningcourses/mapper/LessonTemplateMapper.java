@@ -2,6 +2,7 @@ package com.nazar.grynko.learningcourses.mapper;
 
 import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateDto;
 import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateDtoSave;
+import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateDtoUpdate;
 import com.nazar.grynko.learningcourses.model.LessonTemplate;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -25,7 +26,11 @@ public class LessonTemplateMapper {
     }
 
     public LessonTemplateDto toDto(LessonTemplate entity) {
-        return modelMapper.map(entity, LessonTemplateDto.class);
+        return modelMapper.map(entity, LessonTemplateDto.class)
+                .setCourseTemplateId(entity.getChapterTemplate().getCourseTemplate().getId());
     }
 
+    public LessonTemplate fromDtoUpdate(LessonTemplateDtoUpdate dto) {
+        return modelMapper.map(dto, LessonTemplate.class);
+    }
 }

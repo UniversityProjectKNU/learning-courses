@@ -2,6 +2,7 @@ package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateDto;
 import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateDtoSave;
+import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateDtoUpdate;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.ChapterTemplateService;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +21,9 @@ public class ChapterTemplateController {
 
     @GetMapping("/{id}")
     ChapterTemplateDto one(@PathVariable Long id, @PathVariable Long courseTemplateId) {
-        if (!chapterTemplateService.hasWithCourseTemplate(id, courseTemplateId))
+        if (!chapterTemplateService.hasWithCourseTemplate(id, courseTemplateId)) {
             throw new InvalidPathException();
+        }
 
         return chapterTemplateService.get(id)
                 .orElseThrow(InvalidPathException::new);
@@ -34,8 +36,9 @@ public class ChapterTemplateController {
 
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id, @PathVariable Long courseTemplateId) {
-        if (!chapterTemplateService.hasWithCourseTemplate(id, courseTemplateId))
+        if (!chapterTemplateService.hasWithCourseTemplate(id, courseTemplateId)) {
             throw new InvalidPathException();
+        }
 
         chapterTemplateService.delete(id);
     }
@@ -46,12 +49,11 @@ public class ChapterTemplateController {
     }
 
     @PutMapping("/{id}")
-    ChapterTemplateDto update(@RequestBody ChapterTemplateDto chapterTemplateDto,
+    ChapterTemplateDto update(@RequestBody ChapterTemplateDtoUpdate chapterTemplateDto,
                               @PathVariable Long id, @PathVariable Long courseTemplateId) {
-        if (!chapterTemplateDto.getId().equals(id))
+        if (!chapterTemplateDto.getId().equals(id) || !chapterTemplateService.hasWithCourseTemplate(id, courseTemplateId)) {
             throw new IllegalArgumentException();
-        if (!chapterTemplateService.hasWithCourseTemplate(id, courseTemplateId))
-            throw new InvalidPathException();
+        }
 
         return chapterTemplateService.update(chapterTemplateDto);
     }

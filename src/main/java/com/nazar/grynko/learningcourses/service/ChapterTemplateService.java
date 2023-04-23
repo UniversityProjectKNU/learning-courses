@@ -2,8 +2,8 @@ package com.nazar.grynko.learningcourses.service;
 
 import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateDto;
 import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateDtoSave;
+import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateDtoUpdate;
 import com.nazar.grynko.learningcourses.mapper.ChapterTemplateMapper;
-import com.nazar.grynko.learningcourses.model.ChapterTemplate;
 import com.nazar.grynko.learningcourses.service.internal.ChapterTemplateInternalService;
 import org.springframework.stereotype.Component;
 
@@ -32,19 +32,19 @@ public class ChapterTemplateService {
     }
 
     public ChapterTemplateDto save(ChapterTemplateDtoSave dto, Long courseTemplateId) {
-        ChapterTemplate entity = chapterTemplateMapper.fromDto(dto);
+        var entity = chapterTemplateMapper.fromDto(dto);
         entity = chapterTemplateInternalService.save(entity, courseTemplateId);
         return chapterTemplateMapper.toDto(entity);
     }
 
-    public ChapterTemplateDto update(ChapterTemplateDto dto) {
-        ChapterTemplate chapterTemplate = chapterTemplateMapper.fromDto(dto);
+    public ChapterTemplateDto update(ChapterTemplateDtoUpdate dto) {
+        var chapterTemplate = chapterTemplateMapper.fromDtoUpdate(dto);
         chapterTemplate = chapterTemplateInternalService.update(chapterTemplate);
         return chapterTemplateMapper.toDto(chapterTemplate);
     }
 
     public List<ChapterTemplateDto> getAllInCourseTemplate(Long courseTemplateId) {
-        List<ChapterTemplate> chapterTemplates = chapterTemplateInternalService.getAllInCourseTemplate(courseTemplateId);
+        var chapterTemplates = chapterTemplateInternalService.getAllInCourseTemplate(courseTemplateId);
         return chapterTemplates.stream().map(chapterTemplateMapper::toDto).collect(Collectors.toList());
     }
 

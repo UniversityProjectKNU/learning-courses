@@ -11,12 +11,11 @@ import lombok.experimental.Accessors;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class ChapterTemplateDto {
+public class ChapterTemplateDtoUpdate {
 
     private Long id;
     private String title;
     private String description;
     private Integer number;
-    private Long courseTemplateId;
 
 }

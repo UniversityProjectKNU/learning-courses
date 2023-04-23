@@ -2,6 +2,7 @@ package com.nazar.grynko.learningcourses.mapper;
 
 import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDto;
 import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDtoSave;
+import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDtoUpdate;
 import com.nazar.grynko.learningcourses.model.CourseTemplate;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -27,4 +28,7 @@ public class CourseTemplateMapper {
         return modelMapper.map(entity, CourseTemplateDto.class);
     }
 
+    public CourseTemplate fromDtoUpdate(CourseTemplateDtoUpdate dto) {
+        return modelMapper.map(dto, CourseTemplate.class);
+    }
 }

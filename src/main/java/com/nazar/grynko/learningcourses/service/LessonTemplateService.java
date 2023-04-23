@@ -2,8 +2,8 @@ package com.nazar.grynko.learningcourses.service;
 
 import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateDto;
 import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateDtoSave;
+import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateDtoUpdate;
 import com.nazar.grynko.learningcourses.mapper.LessonTemplateMapper;
-import com.nazar.grynko.learningcourses.model.LessonTemplate;
 import com.nazar.grynko.learningcourses.service.internal.LessonTemplateInternalService;
 import org.springframework.stereotype.Component;
 
@@ -43,7 +43,7 @@ public class LessonTemplateService {
     }
 
     public LessonTemplateDto save(LessonTemplateDtoSave dto, Long chapterTemplateId) {
-        LessonTemplate entity = lessonTemplateMapper.fromDto(dto);
+        var entity = lessonTemplateMapper.fromDto(dto);
         entity = lessonTemplateInternalService.save(entity, chapterTemplateId);
         return lessonTemplateMapper.toDto(entity);
     }
@@ -52,8 +52,8 @@ public class LessonTemplateService {
         lessonTemplateInternalService.delete(id);
     }
 
-    public LessonTemplateDto update(LessonTemplateDto dto) {
-        LessonTemplate entity = lessonTemplateMapper.fromDto(dto);
+    public LessonTemplateDto update(LessonTemplateDtoUpdate dto) {
+        var entity = lessonTemplateMapper.fromDtoUpdate(dto);
         entity = lessonTemplateInternalService.update(entity);
         return lessonTemplateMapper.toDto(entity);
     }
