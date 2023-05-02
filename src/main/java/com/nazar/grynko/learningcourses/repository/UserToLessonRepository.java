@@ -19,4 +19,8 @@ public interface UserToLessonRepository extends JpaRepository<UserToLesson, Long
 
     @Query("select utl from UserToLesson utl where utl.user.login = ?1 and utl.lesson.chapter.course.id = ?2")
     List<UserToLesson> getAllByUserLoginAndCourseId(String login, Long courseId);
+
+    @Query("select utl from UserToLesson utl where utl.lesson.chapter.course.id = :courseId")
+    List<UserToLesson> getAllByCourseId(Long courseId);
+
 }

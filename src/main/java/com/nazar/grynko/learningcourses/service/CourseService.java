@@ -128,4 +128,11 @@ public class CourseService {
         entity = userToCourseInternalService.update(userId, id, entity);
         return userToCourseMapper.toDto(entity);
     }
+
+    public void finish(Long id) {
+        courseInternalService.get(id)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Course %d doesn't exist", id)));
+        courseInternalService.finish(id);
+    }
+
 }

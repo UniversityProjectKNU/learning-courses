@@ -21,6 +21,7 @@ public class CourseInternalService {
     private final LessonInternalService lessonInternalService;
     private final CourseMapper courseMapper;
     private final UserToCourseInternalService userToCourseInternalService;
+    private final UserToLessonInternalService userToLessonInternalService;
     private final CourseRepository courseRepository;
 
     @Value("${max.courses.number.at.time}")
@@ -35,7 +36,8 @@ public class CourseInternalService {
                                  ChapterInternalService chapterInternalService,
                                  LessonInternalService lessonInternalService,
                                  CourseMapper courseMapper,
-                                 UserToCourseInternalService userToCourseInternalService) {
+                                 UserToCourseInternalService userToCourseInternalService,
+                                 UserToLessonInternalService userToLessonInternalService) {
         this.courseRepository = courseRepository;
         this.courseTemplateInternalService = courseTemplateInternalService;
         this.lessonTemplateInternalService = lessonTemplateInternalService;
@@ -44,6 +46,7 @@ public class CourseInternalService {
         this.lessonInternalService = lessonInternalService;
         this.courseMapper = courseMapper;
         this.userToCourseInternalService = userToCourseInternalService;
+        this.userToLessonInternalService = userToLessonInternalService;
     }
 
     public Optional<Course> get(Long id) {
@@ -81,12 +84,28 @@ public class CourseInternalService {
         var userToCourse = new UserToCourse()
                 .setCourse(course)
                 .setUser(user)
-                .setMark(0)
+                .setMark(0f)
                 .setIsPassed(false);
 
         userToCourseInternalService.save(userToCourse);
 
         return course;
+    }
+
+    @Transactional
+    public void finish(Long id) {
+        var entity = get(id).orElseThrow(IllegalArgumentException::new);
+        if (entity.getIsFinished()) {
+            throw new IllegalStateException("Course was already finished");
+        }
+
+        entity.setIsFinished(true);
+        courseRepository.save(entity);
+
+        chapterInternalService.finish(id);
+        userToCourseInternalService.finish(id);
+
+        userToLessonInternalService.setIsPassedForLessonsInCourse(id);
     }
 
     public Course save(Course entity) {
@@ -115,7 +134,7 @@ public class CourseInternalService {
         var entity = new UserToCourse()
                 .setUser(user)
                 .setCourse(course)
-                .setMark(0)
+                .setMark(0f)
                 .setIsPassed(false);
 
         entity = userToCourseInternalService.save(entity);
@@ -160,7 +179,7 @@ public class CourseInternalService {
         var entity = new UserToCourse()
                 .setUser(user)
                 .setCourse(course)
-                .setMark(0)
+                .setMark(0f)
                 .setIsPassed(false);
 
         return userToCourseInternalService.save(entity);
@@ -221,4 +240,5 @@ public class CourseInternalService {
     public boolean courseExists(Long id) {
         return get(id).isPresent();
     }
+
 }

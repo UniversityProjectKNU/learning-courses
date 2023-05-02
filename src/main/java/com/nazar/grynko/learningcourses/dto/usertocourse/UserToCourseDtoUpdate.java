@@ -16,7 +16,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 public class UserToCourseDtoUpdate implements Serializable {
 
-    private Integer mark;
+    private Float mark;
     @JsonProperty("isPassed")
     private Boolean isPassed;
     private String finalFeedback;

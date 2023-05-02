@@ -17,7 +17,7 @@ import java.io.Serializable;
 public class UserToCourseDto implements Serializable {
 
     private Long id;
-    private Integer mark;
+    private Float mark;
     @JsonProperty("isPassed")
     private Boolean isPassed;
     private Long userId;

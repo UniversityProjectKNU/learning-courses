@@ -71,6 +71,20 @@ public class CourseController {
         return courseService.update(courseDto, id);
     }
 
+    //TODO if course is finished - no actions with it
+    @PutMapping("/{id}/finish")
+    ResponseEntity<String> finish(@PathVariable Long id) {
+        try {
+            courseService.finish(id);
+            return ResponseEntity.ok("Ok");
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+
     @PostMapping("/{id}/enroll")
     ResponseEntity<?> enroll(@PathVariable Long id, Principal principal) {
         try {

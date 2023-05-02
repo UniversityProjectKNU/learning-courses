@@ -75,4 +75,12 @@ public class UserToLessonInternalService {
         if (destination.getMark() == null) destination.setMark(source.getMark());
     }
 
+    public void setIsPassedForLessonsInCourse(Long courseId) {
+        var usersToLessons = userToLessonRepository.getAllByCourseId(courseId);
+        usersToLessons.forEach(utl -> {
+            var lesson = utl.getLesson();
+            utl.setIsPassed(utl.getMark() >= lesson.getSuccessMark());
+        });
+    }
+
 }

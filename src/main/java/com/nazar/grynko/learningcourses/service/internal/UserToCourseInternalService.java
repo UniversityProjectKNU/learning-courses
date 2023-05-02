@@ -1,19 +1,35 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
+import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.model.UserToCourse;
+import com.nazar.grynko.learningcourses.model.UserToLesson;
+import com.nazar.grynko.learningcourses.repository.LessonRepository;
+import com.nazar.grynko.learningcourses.repository.RoleRepository;
 import com.nazar.grynko.learningcourses.repository.UserToCourseRepository;
+import com.nazar.grynko.learningcourses.repository.UserToLessonRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 public class UserToCourseInternalService {
 
     private final UserToCourseRepository userToCourseRepository;
+    private final UserToLessonRepository userToLessonRepository;
+    private final LessonRepository lessonRepository;
+    private final RoleRepository roleRepository;
 
-    public UserToCourseInternalService(UserToCourseRepository userToCourseRepository) {
+    public UserToCourseInternalService(UserToCourseRepository userToCourseRepository,
+                                       UserToLessonRepository userToLessonRepository,
+                                       LessonRepository lessonRepository,
+                                       RoleRepository roleRepository) {
         this.userToCourseRepository = userToCourseRepository;
+        this.userToLessonRepository = userToLessonRepository;
+        this.lessonRepository = lessonRepository;
+        this.roleRepository = roleRepository;
     }
 
     public UserToCourse save(UserToCourse entity) {
@@ -46,6 +62,39 @@ public class UserToCourseInternalService {
         if (destination.getIsPassed() == null) destination.setIsPassed(source.getIsPassed());
         if (destination.getMark() == null) destination.setMark(source.getMark());
         if (destination.getFinalFeedback() == null) destination.setFinalFeedback(source.getFinalFeedback());
+    }
+
+    public void finish(Long courseId) {
+        var studentRole = roleRepository.getByType(RoleType.STUDENT);
+
+        var usersToLessons = userToLessonRepository.getAllByCourseId(courseId)
+                .stream()
+                .filter(e -> e.getUser().getRoles().contains(studentRole))
+                .collect(Collectors.groupingBy(UserToLesson::getUser));
+
+        var usersToCourses = userToCourseRepository.getAllByCourseId(courseId)
+                .stream()
+                .filter(e -> e.getUser().getRoles().contains(studentRole))
+                .collect(Collectors.toMap(UserToCourse::getUser, Function.identity()));
+
+        var successMark = lessonRepository.getSuccessMarkForCourse(courseId);
+
+        for (var user : usersToLessons.keySet()) {
+            var lessons = usersToLessons.get(user);
+
+            int sum = lessons.stream()
+                    .map(UserToLesson::getMark)
+                    .reduce(0, Integer::sum);
+            int n = lessons.size();
+
+            var mark = (sum * 1f / n);
+
+            var userToCourse = usersToCourses.get(user);
+            userToCourse.setMark(mark)
+                    .setIsPassed(Double.compare(mark, successMark) >= 0);
+        }
+
+        userToCourseRepository.saveAll(usersToCourses.values());
     }
 
 }

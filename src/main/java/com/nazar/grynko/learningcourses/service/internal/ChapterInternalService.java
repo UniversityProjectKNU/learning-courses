@@ -73,6 +73,21 @@ public class ChapterInternalService {
         return entity;
     }
 
+    public void finish(Long courseId) {
+        var chapters = getAllInCourse(courseId);
+
+        for (var chapter : chapters) {
+            finish(chapter);
+        }
+    }
+
+    private void finish(Chapter chapter) {
+        chapter.setIsFinished(true);
+        chapterRepository.save(chapter);
+
+        lessonInternalService.finish(chapter.getId());
+    }
+
     public Chapter update(Chapter entity) {
         var dbChapter = chapterRepository.findById(entity.getId())
                 .orElseThrow(IllegalArgumentException::new);

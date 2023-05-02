@@ -22,7 +22,7 @@ public class UserToCourse {
     private Long id;
 
     @Column(nullable = false)
-    private Integer mark;
+    private Float mark;
     @Column(nullable = false)
     private Boolean isPassed;
     @Column

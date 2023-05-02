@@ -3,7 +3,7 @@ CREATE TABLE `learning_courses`.`users_to_courses`
     `id`             BIGINT AUTO_INCREMENT NOT NULL,
     `user_id`        BIGINT                NOT NULL,
     `course_id`      BIGINT                NOT NULL,
-    `mark`           INT                   NOT NULL DEFAULT 0,
+    `mark`           FLOAT                 NOT NULL DEFAULT 0,
     `is_passed`      BOOLEAN               NOT NULL DEFAULT FALSE,
     `final_feedback` VARCHAR(256),
 

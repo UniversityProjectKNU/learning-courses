@@ -54,6 +54,15 @@ public class LessonInternalService {
         return entities;
     }
 
+    public void finish(Long chapterId) {
+        var lessons = getAllInChapter(chapterId);
+
+        for (var lesson : lessons) {
+            lesson.setIsFinished(true);
+            lessonRepository.save(lesson);
+        }
+    }
+
     public Lesson create(LessonTemplate template, Chapter chapter) {
         var entity = lessonMapper.fromTemplate(template).setId(null);
 
