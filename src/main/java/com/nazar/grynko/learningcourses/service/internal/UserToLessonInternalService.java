@@ -1,6 +1,7 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
 import com.nazar.grynko.learningcourses.dto.hoeworkfile.FileDto;
+import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDto;
 import com.nazar.grynko.learningcourses.model.HomeworkFile;
 import com.nazar.grynko.learningcourses.model.Lesson;
 import com.nazar.grynko.learningcourses.model.UserToLesson;
@@ -32,6 +33,24 @@ public class UserToLessonInternalService {
         return userToLessonRepository.findByUserLoginAndLessonId(login, lessonId);
     }
 
+    public Optional<UserToLesson> get(Long userId, Long lessonId) {
+        return userToLessonRepository.findByUserIdAndLessonId(userId, lessonId);
+    }
+
+    public HomeworkFile getFileInfo(Long lessonId, String login) {
+        var userToLesson = get(login, lessonId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        return homeworkInternalService.get(userToLesson);
+    }
+
+    public HomeworkFile getFileInfo(Long lessonId, Long studentId) {
+        var userToLesson = get(studentId, lessonId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        return homeworkInternalService.get(userToLesson);
+    }
+
     public HomeworkFile upload(Long lessonId, String login, MultipartFile file) {
         var userToLesson = get(login, lessonId)
                 .orElseThrow(IllegalArgumentException::new);
@@ -53,7 +72,7 @@ public class UserToLessonInternalService {
         homeworkInternalService.delete(userToLesson);
     }
 
-    public List<Lesson> getAllByUserLoginAndCourseId(String login, Long courseId) {
+    public List<Lesson> getAllLessonsByUserLoginAndCourseId(String login, Long courseId) {
         return userToLessonRepository.getAllByUserLoginAndCourseId(login, courseId)
                 .stream()
                 .map(UserToLesson::getLesson)
@@ -64,6 +83,7 @@ public class UserToLessonInternalService {
         var dbEntity = userToLessonRepository.findByUserIdAndLessonId(userId, lessonId)
                 .orElseThrow(IllegalArgumentException::new);
         fillNullFields(dbEntity, entity);
+        entity.setId(dbEntity.getId());
         return userToLessonRepository.save(entity);
     }
 
@@ -83,4 +103,7 @@ public class UserToLessonInternalService {
         });
     }
 
+    public List<UserToLesson> getAllByUserLoginAndCourseId(String login, Long courseId) {
+        return userToLessonRepository.getAllByUserLoginAndCourseId(login, courseId);
+    }
 }

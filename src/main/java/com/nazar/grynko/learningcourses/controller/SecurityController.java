@@ -2,6 +2,7 @@ package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.dto.security.SignInDto;
 import com.nazar.grynko.learningcourses.dto.security.SignUpDto;
+import com.nazar.grynko.learningcourses.dto.simple.SimpleDto;
 import com.nazar.grynko.learningcourses.service.SecurityService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("learning-courses/api/v1/")
+@RequestMapping("learning-courses/api/v1")
 public class SecurityController {
 
     private final SecurityService securityService;
@@ -22,10 +23,9 @@ public class SecurityController {
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<String> signIn(@RequestBody SignInDto signInDto) {
+    public ResponseEntity<?> signIn(@RequestBody SignInDto signInDto) {
         try {
-            var jwtToken = securityService.signIn(signInDto);
-            return ResponseEntity.ok(jwtToken);
+            return ResponseEntity.ok(securityService.signIn(signInDto));
         } catch (BadCredentialsException | UsernameNotFoundException e) {
             return ResponseEntity
                     .badRequest()
@@ -36,12 +36,11 @@ public class SecurityController {
     @PostMapping("/sign-up")
     public ResponseEntity<?> signUp(@RequestBody SignUpDto signUpDto) {
         try {
-            var user = securityService.signUp(signUpDto);
-            return ResponseEntity.ok(user);
+            return ResponseEntity.ok(securityService.signUp(signUpDto));
         } catch (Exception e) {
             return ResponseEntity
                     .badRequest()
-                    .body(e.getMessage());
+                    .body(new SimpleDto<>(e.getMessage()));
         }
     }
 

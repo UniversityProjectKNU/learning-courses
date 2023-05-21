@@ -3,6 +3,8 @@ package com.nazar.grynko.learningcourses.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
+import com.nazar.grynko.learningcourses.dto.hoeworkfile.HomeworkFileDto;
+import com.nazar.grynko.learningcourses.model.HomeworkFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -47,7 +49,7 @@ public class FileService {
         try (var is = s3Object.getObjectContent()) {
             content = IOUtils.toByteArray(is);
         } catch (IOException e) {
-            throw new IllegalStateException("Error downloading file");
+            throw new IllegalStateException("Error downloading file: " + e.getMessage());
         }
 
         return content;

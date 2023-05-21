@@ -54,13 +54,19 @@ public class LessonInternalService {
         return entities;
     }
 
-    public void finish(Long chapterId) {
+    public void finishInChapter(Long chapterId) {
         var lessons = getAllInChapter(chapterId);
 
         for (var lesson : lessons) {
             lesson.setIsFinished(true);
             lessonRepository.save(lesson);
         }
+    }
+
+    public Lesson finish(Long lessonId) {
+        var lesson = get(lessonId).orElseThrow(IllegalArgumentException::new)
+                .setIsFinished(true);
+        return lessonRepository.save(lesson);
     }
 
     public Lesson create(LessonTemplate template, Chapter chapter) {
@@ -107,7 +113,7 @@ public class LessonInternalService {
     }
 
     public List<Lesson> getUsersLessonsForCourse(Long courseId, String login) {
-        return userToLessonInternalService.getAllByUserLoginAndCourseId(login, courseId);
+        return userToLessonInternalService.getAllLessonsByUserLoginAndCourseId(login, courseId);
     }
 
     public List<UserToLesson> enroll(User user, Long courseId) {

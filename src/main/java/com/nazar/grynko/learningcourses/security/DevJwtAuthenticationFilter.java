@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class DevJwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String DEV_LOGIN = "dev_login";
+    private static final String DEV_LOGIN = "instructor1@gmail.com";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,

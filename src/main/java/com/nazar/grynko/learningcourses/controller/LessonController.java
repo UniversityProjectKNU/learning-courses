@@ -3,11 +3,14 @@ package com.nazar.grynko.learningcourses.controller;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoSave;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoUpdate;
+import com.nazar.grynko.learningcourses.dto.simple.SimpleDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.ChapterService;
 import com.nazar.grynko.learningcourses.service.LessonService;
 import com.nazar.grynko.learningcourses.service.UserToLessonService;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -79,15 +82,68 @@ public class LessonController {
         return lessonService.update(lessonDto, id);
     }
 
+    @PutMapping("/{id}/finish")
+    @ResponseStatus(HttpStatus.OK)
+    ResponseEntity<?> finishLesson(@PathVariable Long id, @PathVariable Long chapterId, @PathVariable Long courseId) {
+        try {
+            if (!lessonService.hasWithChapter(id, chapterId, courseId)) {
+                throw new InvalidPathException("Such lesson doesn't exist");
+            }
+            return ResponseEntity.ok(lessonService.finish(id));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    //TODO when file's size is bigger then we can allow
     @PostMapping("/{id}/files/upload")
     public ResponseEntity<?> upload(@PathVariable Long id, @PathVariable Long chapterId, @PathVariable Long courseId,
                                     @RequestBody MultipartFile file, Principal principal) {
+        try {
+            if (!lessonService.hasWithChapter(id, chapterId, courseId)) {
+                throw new InvalidPathException("Such lesson doesn't exist");
+            }
+            else if (lessonService.isFinished(id)) {
+                throw new InvalidPathException("You cannot upload file in finished lesson");
+            }
+
+            return ResponseEntity.ok(userToLessonService.upload(id, principal.getName(), file));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/files/info")
+    public ResponseEntity<?> getFileInfo(@PathVariable Long id, @PathVariable Long chapterId,
+                                         @PathVariable Long courseId, Principal principal) {
         if (!lessonService.hasWithChapter(id, chapterId, courseId)) {
             throw new InvalidPathException("Such lesson doesn't exist");
         }
 
+
         try {
-            return ResponseEntity.ok(userToLessonService.upload(id, principal.getName(), file));
+            return ResponseEntity.ok(userToLessonService.getFileInfo(id, principal.getName()));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/{id}/files/info/{userId}")
+    public ResponseEntity<?> getStudentFileInfo(@PathVariable Long id, @PathVariable Long chapterId,
+                                         @PathVariable Long courseId, @PathVariable Long userId) {
+        if (!lessonService.hasWithChapter(id, chapterId, courseId)) {
+            throw new InvalidPathException("Such lesson doesn't exist");
+        }
+
+
+        try {
+            return ResponseEntity.ok(userToLessonService.getFileInfo(id, userId));
         } catch (Exception e) {
             return ResponseEntity
                     .badRequest()
@@ -114,12 +170,22 @@ public class LessonController {
     }
 
     @DeleteMapping("/{id}/files/delete")
-    public void delete(@PathVariable Long id, @PathVariable Long chapterId, @PathVariable Long courseId, Principal principal) {
-        if (!lessonService.hasWithChapter(id, chapterId, courseId)) {
-            throw new InvalidPathException("Such lesson doesn't exist");
-        }
+    public ResponseEntity<?> delete(@PathVariable Long id, @PathVariable Long chapterId, @PathVariable Long courseId, Principal principal) {
+        try {
+            if (!lessonService.hasWithChapter(id, chapterId, courseId)) {
+                throw new InvalidPathException("Such lesson doesn't exist");
+            }
+            else if (lessonService.isFinished(id)) {
+                throw new InvalidPathException("You cannot upload file in finished lesson");
+            }
 
-        userToLessonService.delete(id, principal.getName());
+            userToLessonService.delete(id, principal.getName());
+            return ResponseEntity.ok(new SimpleDto<>("Ok"));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
     }
 
 }

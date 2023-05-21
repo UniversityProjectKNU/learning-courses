@@ -17,6 +17,8 @@ public class LessonTemplateDto {
     private String title;
     private String description;
     private Integer number;
+    private Integer maxMark;
+    private Integer successMark;
     private Long courseTemplateId;
     private Long chapterTemplateId;
 

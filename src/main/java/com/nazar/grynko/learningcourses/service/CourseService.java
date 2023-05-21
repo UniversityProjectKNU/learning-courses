@@ -6,6 +6,8 @@ import com.nazar.grynko.learningcourses.dto.course.CourseDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDto;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDtoUpdate;
+import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseInfoDto;
+import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDto;
 import com.nazar.grynko.learningcourses.mapper.CourseMapper;
 import com.nazar.grynko.learningcourses.mapper.UserMapper;
 import com.nazar.grynko.learningcourses.mapper.UserToCourseMapper;
@@ -82,7 +84,7 @@ public class CourseService {
         return userToCourseMapper.toDto(entity);
     }
 
-    public List<UserDto> getAllUsersForCourse(Long id, RoleType roleType) {
+    public List<UserToCourseInfoDto> getAllUserToCourseInfoForCourse(Long id, RoleType roleType) {
         if (roleType == RoleType.ADMIN) {
             throw new IllegalArgumentException(String.format(
                     "Cannot get courses for role %s", roleType.name()));
@@ -90,9 +92,17 @@ public class CourseService {
 
         var types = roleType == null ? List.of(RoleType.STUDENT, RoleType.INSTRUCTOR) : List.of(roleType);
 
-        return courseInternalService.getAllUsersForCourseByRole(id, types)
+        return userToCourseInternalService.getAllByCourseId(id)
                 .stream()
-                .map(userMapper::toDto)
+                .filter(userToCourse -> {
+                    for (var role: userToCourse.getUser().getRoles()) {
+                        if (types.contains(role.getType())) {
+                           return true;
+                        }
+                    }
+                    return false;
+                })
+                .map(userToCourseMapper::toUserToCourseInfoDto)
                 .collect(Collectors.toList());
     }
 
@@ -129,10 +139,11 @@ public class CourseService {
         return userToCourseMapper.toDto(entity);
     }
 
-    public void finish(Long id) {
+    public CourseDto finish(Long id) {
         courseInternalService.get(id)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Course %d doesn't exist", id)));
-        courseInternalService.finish(id);
+        var entity = courseInternalService.finish(id);
+        return courseMapper.toDto(entity);
     }
 
 }

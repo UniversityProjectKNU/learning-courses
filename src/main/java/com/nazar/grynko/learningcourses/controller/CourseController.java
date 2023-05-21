@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
 import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
@@ -52,6 +53,18 @@ public class CourseController {
         }
     }
 
+    //TODO use id or refactor LessonController
+    @GetMapping("/{id}/lessons/{lessonId}")
+    ResponseEntity<?> getLessonsInCourse(@PathVariable Long id, @PathVariable Long lessonId) {
+        try {
+            return ResponseEntity.ok(lessonService.get(lessonId));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id) {
         courseService.delete(id);
@@ -73,10 +86,9 @@ public class CourseController {
 
     //TODO if course is finished - no actions with it
     @PutMapping("/{id}/finish")
-    ResponseEntity<String> finish(@PathVariable Long id) {
+    ResponseEntity<?> finish(@PathVariable Long id) {
         try {
-            courseService.finish(id);
-            return ResponseEntity.ok("Ok");
+            return ResponseEntity.ok(courseService.finish(id));
         } catch (Exception e) {
             return ResponseEntity
                     .badRequest()
@@ -99,7 +111,7 @@ public class CourseController {
     @GetMapping("/{id}/users")
     ResponseEntity<?> allUsersForCourse(@PathVariable Long id, @RequestParam(required = false) RoleType roleType) {
         try {
-            return ResponseEntity.ok(courseService.getAllUsersForCourse(id, roleType));
+            return ResponseEntity.ok(courseService.getAllUserToCourseInfoForCourse(id, roleType));
         } catch (Exception e) {
             return ResponseEntity
                     .badRequest()
@@ -118,8 +130,9 @@ public class CourseController {
         }
     }
 
+    //TODO the same as UserCourseController#getCoursesLessons
     @GetMapping("/{id}/users/{userId}")
-    ResponseEntity<?> getUsersCourseInfo(@PathVariable Long id, @PathVariable Long userId) {
+    ResponseEntity<?> getUserToCourseInfo(@PathVariable Long id, @PathVariable Long userId) {
         try {
             return ResponseEntity.ok(courseService.getUsersCourseInfo(id, userId));
         } catch (Exception e) {
@@ -129,12 +142,29 @@ public class CourseController {
         }
     }
 
+    //TODO think if we need to move it to UserCourseController
     @PutMapping("/{id}/users/{userId}")
     ResponseEntity<?> updateUsersCourseInfo(@PathVariable Long id,
                                             @PathVariable Long userId,
                                             @RequestBody UserToCourseDtoUpdate userToCourseDto) {
         try {
             return ResponseEntity.ok(courseService.updateUserToCourse(id, userId, userToCourseDto));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
+    }
+
+    @RolesAllowed("INSTRUCTOR")
+    @GetMapping("/{id}/lessons/{lessonId}/users/{userId}")
+    ResponseEntity<?> getStudentLessonInfo(@PathVariable Long id, @PathVariable Long lessonId,
+                                           @PathVariable Long userId) {
+        try {
+            if (!lessonService.hasWithCourse(lessonId, id)) {
+                throw new InvalidPathException(String.format("Lesson %d in course %d doesn't exist", lessonId, id));
+            }
+            return ResponseEntity.ok(lessonService.getStudentLessonInfo(lessonId, userId));
         } catch (Exception e) {
             return ResponseEntity
                     .badRequest()

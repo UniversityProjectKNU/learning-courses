@@ -1,6 +1,8 @@
-package com.nazar.grynko.learningcourses.dto.usertolesson;
+package com.nazar.grynko.learningcourses.dto.usertocourse;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.nazar.grynko.learningcourses.dto.course.CourseDto;
+import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,13 +16,13 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Accessors(chain = true)
-public class UserToLessonDto implements Serializable {
+public class UserToCourseInfoDto implements Serializable {
 
-    private Long id;
-    private Integer mark;
+    private Float mark;
     @JsonProperty("isPassed")
     private Boolean isPassed;
-    private Long userId;
-    private Long lessonId;
+    private String finalFeedback;
+    private UserDto user;
+    private CourseDto course;
 
 }

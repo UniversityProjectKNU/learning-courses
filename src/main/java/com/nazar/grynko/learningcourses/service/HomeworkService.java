@@ -1,0 +1,29 @@
+package com.nazar.grynko.learningcourses.service;
+
+import com.nazar.grynko.learningcourses.dto.hoeworkfile.FileDto;
+import com.nazar.grynko.learningcourses.dto.hoeworkfile.HomeworkFileDto;
+import com.nazar.grynko.learningcourses.mapper.HomeworkFileMapper;
+import com.nazar.grynko.learningcourses.service.internal.HomeworkInternalService;
+import org.springframework.stereotype.Service;
+
+@Service
+public class HomeworkService {
+
+    private final HomeworkInternalService homeworkInternalService;
+    private final HomeworkFileMapper homeworkFileMapper;
+
+
+    public HomeworkService(HomeworkInternalService homeworkInternalService, HomeworkFileMapper homeworkFileMapper) {
+        this.homeworkInternalService = homeworkInternalService;
+        this.homeworkFileMapper = homeworkFileMapper;
+    }
+
+    public HomeworkFileDto getFileInfo(Long id) {
+        var entity = homeworkInternalService.get(id);
+        return homeworkFileMapper.toDto(entity);
+    }
+
+    public FileDto download(Long id) {
+        return homeworkInternalService.download(id);
+    }
+}

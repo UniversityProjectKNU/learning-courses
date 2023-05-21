@@ -16,5 +16,7 @@ public class LessonTemplateDtoSave {
     private String title;
     private String description;
     private Integer number;
+    private Integer maxMark;
+    private Integer successMark;
 
 }

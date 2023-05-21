@@ -6,6 +6,7 @@ import com.nazar.grynko.learningcourses.service.LessonService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
 import java.security.Principal;
 
 @RestController
@@ -48,7 +49,7 @@ public class UserCourseController {
     @GetMapping("/{courseId}/lessons")
     ResponseEntity<?> getCoursesLessons(@PathVariable Long courseId, Principal principal) {
         try {
-            return ResponseEntity.ok(lessonService.getUsersLessonsForCourse(courseId, principal.getName()));
+            return ResponseEntity.ok(lessonService.getAllUserToLessonForCourse(courseId, principal.getName()));
         } catch (Exception e) {
             return ResponseEntity
                     .badRequest()

@@ -133,13 +133,14 @@ VALUES
 ##############################
 ##############################
 ##############################
-# DELETE FROM `users_to_courses`;
-#
-# INSERT INTO `users_to_courses` (`id`, `user_id`, `course_id`, `mark`, `is_passed`)
-# VALUES
-#     (1, 2, 1, 0, FALSE),
-#     (2, 2, 2, 0, FALSE),
-#     (3, 3, 2, 0, FALSE),
+DELETE FROM `users_to_courses`;
+
+INSERT INTO `users_to_courses` (`id`, `user_id`, `course_id`, `mark`, `is_passed`)
+VALUES
+    (1, 2, 1, 0, FALSE),
+    (2, 3, 1, 0, FALSE),
+    (3, 2, 2, 0, FALSE),
+    (4, 3, 3, 0, FALSE);
 #     (4, 4, 1, 0, FALSE),
 #     (5, 5, 1, 0, FALSE),
 #     (6, 5, 2, 0, FALSE),

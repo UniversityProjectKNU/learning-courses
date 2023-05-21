@@ -85,7 +85,7 @@ public class ChapterInternalService {
         chapter.setIsFinished(true);
         chapterRepository.save(chapter);
 
-        lessonInternalService.finish(chapter.getId());
+        lessonInternalService.finishInChapter(chapter.getId());
     }
 
     public Chapter update(Chapter entity) {

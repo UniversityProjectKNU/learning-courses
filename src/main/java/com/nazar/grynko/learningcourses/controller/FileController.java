@@ -1,6 +1,7 @@
 package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.service.FileService;
+import com.nazar.grynko.learningcourses.service.HomeworkService;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,9 +12,23 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileController {
 
     private final FileService fileService;
+    private final HomeworkService homeworkService;
 
-    public FileController(FileService fileService) {
+    public FileController(FileService fileService,
+                          HomeworkService homeworkService) {
         this.fileService = fileService;
+        this.homeworkService = homeworkService;
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getInfoById(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(homeworkService.getFileInfo(id));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
     }
 
     @PostMapping("/upload")
@@ -27,20 +42,15 @@ public class FileController {
         }
     }
 
-    @GetMapping("/download")
-    public ResponseEntity<ByteArrayResource> download(@RequestParam String fileName) {
-        var data = fileService.download(fileName);
-        return ResponseEntity
-                .ok()
-                .contentLength(data.length)
-                .header("Content-type", "application/octet-stream")
-                .header("Content-disposition", "attachment; filename=\"" + fileName + "\"")
-                .body(new ByteArrayResource(data));
-    }
-
-    @DeleteMapping("/delete")
-    public void delete(@RequestParam String fileName) {
-        fileService.delete(fileName);
+    @GetMapping("/{id}/download")
+    public ResponseEntity<?> download(@PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(homeworkService.download(id));
+        } catch (Exception e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
     }
 
 }

@@ -8,6 +8,8 @@ import com.nazar.grynko.learningcourses.service.FileService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+
 @Service
 public class HomeworkInternalService {
 
@@ -49,12 +51,19 @@ public class HomeworkInternalService {
     }
 
     public FileDto download(UserToLesson userToLesson) {
-        var homework = homeworkFileRepository.get(userToLesson);
-        if (homework.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
+        var homework = homeworkFileRepository.get(userToLesson)
+                .orElseThrow(IllegalArgumentException::new);
 
-        var title = homework.get().getTitle();
+        return downloadInternal(homework);
+    }
+
+    public FileDto download(Long id) {
+        var homework = get(id);
+        return downloadInternal(homework);
+    }
+
+    private FileDto downloadInternal(HomeworkFile file) {
+        var title = file.getTitle();
 
         return new FileDto()
                 .setData(fileService.download(title))
@@ -62,12 +71,16 @@ public class HomeworkInternalService {
     }
 
     public void delete(UserToLesson userToLesson) {
-        var homework = homeworkFileRepository.get(userToLesson);
-        if (homework.isEmpty()) {
-            throw new IllegalArgumentException();
-        }
+        var homework = homeworkFileRepository.get(userToLesson).orElseThrow(IllegalArgumentException::new);
+        fileService.delete(homework.getTitle());
+    }
 
-        fileService.delete(homework.get().getTitle());
+    public HomeworkFile get(UserToLesson userToLesson) {
+        return homeworkFileRepository.get(userToLesson).orElse(null);
+    }
+
+    public HomeworkFile get(Long id) {
+        return homeworkFileRepository.findById(id).orElse(null);
     }
 
 }

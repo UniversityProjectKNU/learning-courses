@@ -3,6 +3,7 @@ package com.nazar.grynko.learningcourses.service;
 import com.nazar.grynko.learningcourses.dto.security.SignInDto;
 import com.nazar.grynko.learningcourses.dto.security.SignUpDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
+import com.nazar.grynko.learningcourses.dto.user.UserSecurityDto;
 import com.nazar.grynko.learningcourses.mapper.UserMapper;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.security.JwtProvider;
@@ -10,10 +11,12 @@ import com.nazar.grynko.learningcourses.security.JwtUserDetailsService;
 import com.nazar.grynko.learningcourses.service.internal.RoleInternalService;
 import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class SecurityService {
@@ -36,7 +39,7 @@ public class SecurityService {
         this.roleInternalService = roleInternalService;
     }
 
-    public String signIn(SignInDto signInDto) {
+    public UserSecurityDto signIn(SignInDto signInDto) {
         var userDetails = jwtUserDetailsService.loadUserByUsername(signInDto.getLogin());
 
         //TODO make password comparison: !passwordEncoder.matches(signInDto.getPassword(), userDetails.getPassword())
@@ -44,7 +47,15 @@ public class SecurityService {
             throw new BadCredentialsException("Password is incorrect");
         }
 
-        return jwtProvider.generateToken(userDetails);
+        var roleValue = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList())
+                .get(0);
+
+        return new UserSecurityDto()
+                .setLogin(signInDto.getLogin())
+                .setToken(jwtProvider.generateToken(userDetails))
+                .setRole(RoleType.valueOf(roleValue));
     }
 
     public UserDto signUp(SignUpDto dto) {

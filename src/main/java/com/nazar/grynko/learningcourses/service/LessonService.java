@@ -75,6 +75,13 @@ public class LessonService {
                 .collect(Collectors.toList());
     }
 
+    public List<UserToLessonDto> getAllUserToLessonForCourse(Long courseId, String login) {
+        return userToLessonInternalService.getAllByUserLoginAndCourseId(login, courseId)
+                .stream()
+                .map(userToLessonMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
     public UserToLessonDto getUsersLessonInfo(Long id, String login) {
         var userToLesson = userToLessonInternalService.get(login, id)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("User doesn't have lesson %d", id)));
@@ -112,8 +119,23 @@ public class LessonService {
     }
 
     public UserToLessonDto updateUserToLesson(Long id, Long userId, UserToCourseDtoUpdate dto) {
-        var entity = userToLessonMapper.fromDtoUpdate(dto).setId(id);
+        var entity = userToLessonMapper.fromDtoUpdate(dto);
         entity = userToLessonInternalService.update(userId, id, entity);
         return userToLessonMapper.toDto(entity);
+    }
+
+    public UserToLessonDto getStudentLessonInfo(Long lessonId, Long studentId) {
+        var userToLesson = userToLessonInternalService.get(studentId, lessonId)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("User doesn't have lesson %d", lessonId)));
+        return userToLessonMapper.toDto(userToLesson);
+    }
+
+    public LessonDto finish(Long lessonId) {
+        var entity = lessonInternalService.finish(lessonId);
+        return lessonMapper.toDto(entity);
+    }
+
+    public boolean isFinished(Long id) {
+        return lessonInternalService.get(id).orElseThrow(IllegalArgumentException::new).getIsFinished();
     }
 }

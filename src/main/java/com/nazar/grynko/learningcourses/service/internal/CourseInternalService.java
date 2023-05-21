@@ -93,7 +93,7 @@ public class CourseInternalService {
     }
 
     @Transactional
-    public void finish(Long id) {
+    public Course finish(Long id) {
         var entity = get(id).orElseThrow(IllegalArgumentException::new);
         if (entity.getIsFinished()) {
             throw new IllegalStateException("Course was already finished");
@@ -106,6 +106,8 @@ public class CourseInternalService {
         userToCourseInternalService.finish(id);
 
         userToLessonInternalService.setIsPassedForLessonsInCourse(id);
+
+        return entity;
     }
 
     public Course save(Course entity) {
@@ -213,7 +215,7 @@ public class CourseInternalService {
 
     public UserToCourse getUsersCourseInfo(Long id, Long userId) {
         return userToCourseInternalService.getByUserIdAndCourseId(userId, id)
-                .orElseThrow(() -> new IllegalArgumentException("Course doesn't exist"));
+                .orElseThrow(() -> new IllegalArgumentException("User doesn't have this course"));
     }
 
     private void fillNullFields(Course source, Course destination) {
