@@ -11,11 +11,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
 import java.security.Principal;
 import java.util.List;
 
 @RestController
 @RequestMapping("learning-courses/api/v1/courses-templates")
+@RolesAllowed({"INSTRUCTOR", "ADMIN"})
 public class CourseTemplateController {
 
     private final CourseTemplateService courseTemplateService;
@@ -72,7 +74,6 @@ public class CourseTemplateController {
         return courseTemplateService.update(courseTemplateDto);
     }
 
-    //@RolesAllowed("INSTRUCTOR")
     @PostMapping("/{id}/create")
     ResponseEntity<?> create(@PathVariable Long id, Principal principal) {
         try {

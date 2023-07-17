@@ -7,10 +7,12 @@ import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.ChapterTemplateService;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
 @RestController
 @RequestMapping("learning-courses/api/v1/courses-templates/{courseTemplateId}/chapters-templates/")
+@RolesAllowed({"INSTRUCTOR", "ADMIN"})
 public class ChapterTemplateController {
 
     private final ChapterTemplateService chapterTemplateService;

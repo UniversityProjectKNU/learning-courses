@@ -8,6 +8,7 @@ import com.nazar.grynko.learningcourses.service.ChapterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,6 +38,7 @@ public class ChapterController {
         return chapterService.getAllInCourse(courseId);
     }
 
+    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id, @PathVariable Long courseId) {
         if (!chapterService.hasWithCourse(id, courseId)) {
@@ -46,11 +48,13 @@ public class ChapterController {
         chapterService.delete(id);
     }
 
+    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PostMapping
     ChapterDto save(@RequestBody ChapterDtoSave chapterDto, @PathVariable Long courseId) {
         return chapterService.save(chapterDto, courseId);
     }
 
+    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/{id}")
     ChapterDto update(@RequestBody ChapterDtoUpdate chapterDto, @PathVariable Long id, @PathVariable Long courseId) {
         if (!chapterService.hasWithCourse(id, courseId) || !Objects.equals(chapterDto.getId(), id)) {

@@ -8,6 +8,8 @@ import com.nazar.grynko.learningcourses.service.RoleService;
 import com.nazar.grynko.learningcourses.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
+import java.security.Principal;
 import java.util.List;
 import java.util.Set;
 
@@ -30,11 +32,13 @@ public class UserController {
                 .orElseThrow(InvalidPathException::new);
     }
 
+    @RolesAllowed("ADMIN")
     @GetMapping
     List<UserDto> all() {
         return userService.getAll();
     }
 
+    @RolesAllowed("ADMIN")
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id) {
         userService.delete(id);
@@ -49,11 +53,13 @@ public class UserController {
         return userService.update(dtoUpdate);
     }
 
+    @RolesAllowed("ADMIN")
     @GetMapping("/{id}/roles")
     Set<RoleDto> getUsersRoles(@PathVariable Long id) {
         return roleService.getUsersRoles(id);
     }
 
+    @RolesAllowed("ADMIN")
     @PutMapping("/{id}/roles")
     Set<RoleDto> updateRoles(@RequestBody Set<RoleDto> roles, @PathVariable Long id) {
         userService.get(id).orElseThrow(InvalidPathException::new);

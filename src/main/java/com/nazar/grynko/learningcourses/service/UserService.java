@@ -8,7 +8,9 @@ import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.security.Principal;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -47,6 +49,13 @@ public class UserService {
     public UserDto save(User user) {
         user = userInternalService.save(user);
         return userMapper.toDto(user);
+    }
+
+    public boolean isTheSameUser(Long id, Principal principal) {
+        var userByLogin = userInternalService.getByLogin(principal.getName());
+        var userById = userInternalService.get(id);
+
+        return userByLogin.isPresent() && userById.isPresent() && Objects.equals(userByLogin.get().getLogin(), userById.get().getLogin());
     }
 
 }

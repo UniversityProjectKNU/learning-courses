@@ -37,6 +37,7 @@ public class CourseController {
                 .orElseThrow(InvalidPathException::new);
     }
 
+    @RolesAllowed("ADMIN")
     @GetMapping
     List<CourseDto> all() {
         return courseService.getAll();
@@ -65,16 +66,19 @@ public class CourseController {
         }
     }
 
+    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id) {
         courseService.delete(id);
     }
 
+    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PostMapping
     CourseDto save(@RequestBody CourseDtoSave courseDto) {
         return courseService.save(courseDto);
     }
 
+    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/{id}")
     CourseDto update(@RequestBody CourseDtoUpdate courseDto, @PathVariable Long id) {
         if (!Objects.equals(courseDto.getId(), id)) {
@@ -85,6 +89,7 @@ public class CourseController {
     }
 
     //TODO if course is finished - no actions with it
+    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/{id}/finish")
     ResponseEntity<?> finish(@PathVariable Long id) {
         try {
@@ -96,7 +101,7 @@ public class CourseController {
         }
     }
 
-
+    @RolesAllowed("STUDENT")
     @PostMapping("/{id}/enroll")
     ResponseEntity<?> enroll(@PathVariable Long id, Principal principal) {
         try {
@@ -119,6 +124,7 @@ public class CourseController {
         }
     }
 
+    @RolesAllowed("ADMIN")
     @PutMapping("/{id}/users/instructors")
     ResponseEntity<?> assignInstructor(@PathVariable Long id, @RequestParam Long instructorId) {
         try {
@@ -143,6 +149,7 @@ public class CourseController {
     }
 
     //TODO think if we need to move it to UserCourseController
+    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/{id}/users/{userId}")
     ResponseEntity<?> updateUsersCourseInfo(@PathVariable Long id,
                                             @PathVariable Long userId,
@@ -156,7 +163,6 @@ public class CourseController {
         }
     }
 
-    @RolesAllowed("INSTRUCTOR")
     @GetMapping("/{id}/lessons/{lessonId}/users/{userId}")
     ResponseEntity<?> getStudentLessonInfo(@PathVariable Long id, @PathVariable Long lessonId,
                                            @PathVariable Long userId) {
@@ -172,6 +178,7 @@ public class CourseController {
         }
     }
 
+    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/{id}/lessons/{lessonId}/users/{userId}")
     ResponseEntity<?> updateUsersLessonInfo(@PathVariable Long id,
                                             @PathVariable Long lessonId,

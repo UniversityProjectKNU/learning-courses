@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.annotation.security.RolesAllowed;
 import java.security.Principal;
 import java.util.List;
 import java.util.Objects;
@@ -40,7 +41,6 @@ public class LessonController {
             throw new InvalidPathException("Such lesson doesn't exist");
         }
 
-
         return lessonService.get(id)
                 .orElseThrow(InvalidPathException::new);
     }
@@ -54,6 +54,7 @@ public class LessonController {
         return lessonService.getAllInChapter(chapterId);
     }
 
+    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id, @PathVariable Long chapterId, @PathVariable Long courseId) {
         if (!lessonService.hasWithChapter(id, chapterId, courseId)) {
@@ -63,6 +64,7 @@ public class LessonController {
         lessonService.delete(id);
     }
 
+    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PostMapping
     LessonDto save(@RequestBody LessonDtoSave lessonDto, @PathVariable Long chapterId, @PathVariable Long courseId) {
         if (!chapterService.hasWithCourse(chapterId, courseId)) {
@@ -72,6 +74,7 @@ public class LessonController {
         return lessonService.save(lessonDto, chapterId);
     }
 
+    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/{id}")
     LessonDto update(@RequestBody LessonDtoUpdate lessonDto, @PathVariable Long id,
                      @PathVariable Long chapterId, @PathVariable Long courseId) {
@@ -82,8 +85,8 @@ public class LessonController {
         return lessonService.update(lessonDto, id);
     }
 
+    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/{id}/finish")
-    @ResponseStatus(HttpStatus.OK)
     ResponseEntity<?> finishLesson(@PathVariable Long id, @PathVariable Long chapterId, @PathVariable Long courseId) {
         try {
             if (!lessonService.hasWithChapter(id, chapterId, courseId)) {
@@ -140,7 +143,6 @@ public class LessonController {
         if (!lessonService.hasWithChapter(id, chapterId, courseId)) {
             throw new InvalidPathException("Such lesson doesn't exist");
         }
-
 
         try {
             return ResponseEntity.ok(userToLessonService.getFileInfo(id, userId));
