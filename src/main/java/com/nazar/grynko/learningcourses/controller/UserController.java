@@ -1,17 +1,16 @@
 package com.nazar.grynko.learningcourses.controller;
 
-import com.nazar.grynko.learningcourses.dto.role.RoleDto;
+import com.nazar.grynko.learningcourses.dto.role.UserRoleUpdateDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDtoUpdate;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.RoleService;
 import com.nazar.grynko.learningcourses.service.UserService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
-import java.security.Principal;
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("learning-courses/api/v1/users")
@@ -54,17 +53,29 @@ public class UserController {
     }
 
     @RolesAllowed("ADMIN")
-    @GetMapping("/{id}/roles")
-    Set<RoleDto> getUsersRoles(@PathVariable Long id) {
-        return roleService.getUsersRoles(id);
+    @GetMapping("/{id}/role")
+    ResponseEntity<?> getUsersRole(@PathVariable Long id) {
+        try {
+            userService.get(id).orElseThrow(InvalidPathException::new);
+            return ResponseEntity.ok(roleService.getUsersRoles(id));
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
     }
 
     @RolesAllowed("ADMIN")
-    @PutMapping("/{id}/roles")
-    Set<RoleDto> updateRoles(@RequestBody Set<RoleDto> roles, @PathVariable Long id) {
-        userService.get(id).orElseThrow(InvalidPathException::new);
-
-        return roleService.updateRoles(roles, id);
+    @PutMapping("/{id}/role")
+    ResponseEntity<?> updateRole(@RequestBody UserRoleUpdateDto role, @PathVariable Long id) {
+        try {
+            userService.get(id).orElseThrow(InvalidPathException::new);
+            return ResponseEntity.ok(roleService.updateRole(role, id));
+        } catch (RuntimeException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        }
     }
 
 }

@@ -64,7 +64,7 @@ public class SecurityService {
         }
         //TODO make password encoding: dto.setPassword(passwordEncoder.encodePassword(dto.getPassword()));
         var user = userMapper.fromDtoSave(dto);
-        user.getRoles().add(roleInternalService.getByType(RoleType.STUDENT));
+        user.setRole(RoleType.STUDENT);
 
         user = userInternalService.save(user);
 

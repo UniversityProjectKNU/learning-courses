@@ -3,13 +3,10 @@ package com.nazar.grynko.learningcourses.service;
 import com.nazar.grynko.learningcourses.dto.course.CourseDto;
 import com.nazar.grynko.learningcourses.dto.course.CourseDtoSave;
 import com.nazar.grynko.learningcourses.dto.course.CourseDtoUpdate;
-import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDto;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseInfoDto;
-import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDto;
 import com.nazar.grynko.learningcourses.mapper.CourseMapper;
-import com.nazar.grynko.learningcourses.mapper.UserMapper;
 import com.nazar.grynko.learningcourses.mapper.UserToCourseMapper;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.service.internal.CourseInternalService;
@@ -29,20 +26,17 @@ public class CourseService {
     private final UserToCourseInternalService userToCourseInternalService;
     private final CourseMapper courseMapper;
     private final UserToCourseMapper userToCourseMapper;
-    private final UserMapper userMapper;
 
     public CourseService(CourseInternalService courseInternalService,
                          UserInternalService userInternalService,
                          UserToCourseInternalService userToCourseInternalService,
                          CourseMapper courseMapper,
-                         UserToCourseMapper userToCourseMapper,
-                         UserMapper userMapper) {
+                         UserToCourseMapper userToCourseMapper) {
         this.courseInternalService = courseInternalService;
         this.userInternalService = userInternalService;
         this.userToCourseInternalService = userToCourseInternalService;
         this.courseMapper = courseMapper;
         this.userToCourseMapper = userToCourseMapper;
-        this.userMapper = userMapper;
     }
 
     public Optional<CourseDto> get(Long id) {
@@ -94,14 +88,7 @@ public class CourseService {
 
         return userToCourseInternalService.getAllByCourseId(id)
                 .stream()
-                .filter(userToCourse -> {
-                    for (var role: userToCourse.getUser().getRoles()) {
-                        if (types.contains(role.getType())) {
-                           return true;
-                        }
-                    }
-                    return false;
-                })
+                .filter(userToCourse -> types.contains(userToCourse.getUser().getRole()))
                 .map(userToCourseMapper::toUserToCourseInfoDto)
                 .collect(Collectors.toList());
     }

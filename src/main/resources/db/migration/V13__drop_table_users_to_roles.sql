@@ -1,0 +1,1 @@
+DROP TABLE learning_courses.users_to_roles;

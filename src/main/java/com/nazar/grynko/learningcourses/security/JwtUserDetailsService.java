@@ -1,6 +1,5 @@
 package com.nazar.grynko.learningcourses.security;
 
-import com.nazar.grynko.learningcourses.model.Role;
 import com.nazar.grynko.learningcourses.service.internal.RoleInternalService;
 import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
@@ -28,10 +28,7 @@ public class JwtUserDetailsService implements UserDetailsService {
                 .getByLogin(login)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User with login %s doesn't exist", login)));
 
-        var authorities = roleInternalService
-                .getUsersRoles(user.getId())
-                .stream()
-                .map(Role::getType)
+        var authorities = Stream.of(roleInternalService.getUsersRole(user.getId()))
                 .map(type -> new SimpleGrantedAuthority(type.toString()))
                 .collect(Collectors.toList());
 

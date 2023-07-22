@@ -1,36 +1,15 @@
 ##############################
 ##############################
-DELETE FROM `roles`;
-
-INSERT INTO `roles` (`id`, `type`)
-VALUES
-    (1, 'ADMIN'),
-    (2, 'INSTRUCTOR'),
-    (3, 'STUDENT');
-##############################
-##############################
 DELETE FROM `users`;
 
-INSERT INTO `users` (`id`, `login`, `password`, `first_name`, `last_name`)
+INSERT INTO `users` (`id`, `login`, `password`, `first_name`, `last_name`, `role`)
 VALUES
-    (1, 'admin1@gmail.com', 'password', 'Nazar', 'Grynko'),
-    (2, 'instructor1@gmail.com', 'password', 'Maxim', 'Veres'),
-    (3, 'instructor2@gmail.com', 'password', 'Konstantin', 'Zhereb'),
-    (4, 'user1@gmail.com', 'password', 'Alex', 'Bilokrynytskyi'),
-    (5, 'user2@gmail.com', 'password', 'Pavlo', 'Kilko'),
-    (6, 'user3@gmail.com', 'password', 'Maria', 'Kukharchuk');
-##############################
-##############################
-DELETE FROM `users_to_roles`;
-
-INSERT INTO `users_to_roles` (`id`, `user_id`, `role_id`)
-VALUES
-    (1, 1, 1),
-    (2, 2, 2),
-    (3, 3, 2),
-    (4, 4, 3),
-    (5, 5, 3),
-    (6, 6, 3);
+    (1, 'admin1@gmail.com', 'password', 'Nazar', 'Grynko', 'ADMIN'),
+    (2, 'instructor1@gmail.com', 'password', 'Maxim', 'Veres', 'INSTRUCTOR'),
+    (3, 'instructor2@gmail.com', 'password', 'Konstantin', 'Zhereb', 'INSTRUCTOR'),
+    (4, 'user1@gmail.com', 'password', 'Alex', 'Bilokrynytskyi', 'STUDENT'),
+    (5, 'user2@gmail.com', 'password', 'Pavlo', 'Kilko', 'STUDENT'),
+    (6, 'user3@gmail.com', 'password', 'Maria', 'Kukharchuk', 'STUDENT');
 ##############################
 ##############################
 ##############################

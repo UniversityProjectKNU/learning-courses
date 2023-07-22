@@ -145,28 +145,10 @@ public class CourseInternalService {
         return entity;
     }
 
-    public List<User> getAllUsersForCourseByRole(Long id, List<RoleType> roleTypes) {
-        if (!courseExists(id)) {
-            throw new IllegalArgumentException("Course doesn't exist");
-        }
-
-        if (roleTypes == null) {
-            roleTypes = List.of(RoleType.STUDENT, RoleType.INSTRUCTOR);
-        }
-
-        List<RoleType> finalRoleTypes = roleTypes;
-        return userToCourseInternalService
-                .getAllByCourseId(id)
-                .stream()
-                .map(UserToCourse::getUser)
-                .filter(user -> hasUserRole(user, finalRoleTypes))
-                .collect(Collectors.toList());
-    }
-
     public UserToCourse assignInstructor(Long id, Long instructorId) {
         var user = userInternalService.get(instructorId).orElseThrow(IllegalAccessError::new);
 
-        if (!hasUserRole(user, RoleType.INSTRUCTOR)) {
+        if (user.getRole().equals(RoleType.INSTRUCTOR)) {
             throw new IllegalArgumentException("Cannot assign not instructor");
         }
 
@@ -223,20 +205,6 @@ public class CourseInternalService {
         if (destination.getTitle() == null) destination.setTitle(source.getTitle());
         if (destination.getDescription() == null) destination.setDescription(source.getDescription());
         if (destination.getIsFinished() == null) destination.setIsFinished(source.getIsFinished());
-    }
-
-    private boolean hasUserRole(User user, List<RoleType> types) {
-        return user.getRoles()
-                .stream()
-                .map(Role::getType)
-                .anyMatch(types::contains);
-    }
-
-    private boolean hasUserRole(User user, RoleType type) {
-        return user.getRoles()
-                .stream()
-                .map(Role::getType)
-                .anyMatch(t -> t == type);
     }
 
     public boolean courseExists(Long id) {

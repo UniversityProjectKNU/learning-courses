@@ -53,8 +53,7 @@ public class UserInternalService {
         if (destination.getPassword() == null) destination.setPassword(source.getPassword());
         if (destination.getFirstName() == null) destination.setFirstName(source.getFirstName());
         if (destination.getLastName() == null) destination.setLastName(source.getLastName());
-        if (destination.getRoles() == null || destination.getRoles().size() == 0)
-            destination.setRoles(source.getRoles());
+        if (destination.getRole() == null) destination.setRole(source.getRole());
     }
 
     public User save(User entity) {

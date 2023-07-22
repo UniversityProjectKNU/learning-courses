@@ -4,7 +4,6 @@ import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.model.UserToCourse;
 import com.nazar.grynko.learningcourses.model.UserToLesson;
 import com.nazar.grynko.learningcourses.repository.LessonRepository;
-import com.nazar.grynko.learningcourses.repository.RoleRepository;
 import com.nazar.grynko.learningcourses.repository.UserToCourseRepository;
 import com.nazar.grynko.learningcourses.repository.UserToLessonRepository;
 import org.springframework.stereotype.Service;
@@ -20,16 +19,13 @@ public class UserToCourseInternalService {
     private final UserToCourseRepository userToCourseRepository;
     private final UserToLessonRepository userToLessonRepository;
     private final LessonRepository lessonRepository;
-    private final RoleRepository roleRepository;
 
     public UserToCourseInternalService(UserToCourseRepository userToCourseRepository,
                                        UserToLessonRepository userToLessonRepository,
-                                       LessonRepository lessonRepository,
-                                       RoleRepository roleRepository) {
+                                       LessonRepository lessonRepository) {
         this.userToCourseRepository = userToCourseRepository;
         this.userToLessonRepository = userToLessonRepository;
         this.lessonRepository = lessonRepository;
-        this.roleRepository = roleRepository;
     }
 
     public UserToCourse save(UserToCourse entity) {
@@ -65,16 +61,14 @@ public class UserToCourseInternalService {
     }
 
     public void finish(Long courseId) {
-        var studentRole = roleRepository.getByType(RoleType.STUDENT);
-
         var usersToLessons = userToLessonRepository.getAllByCourseId(courseId)
                 .stream()
-                .filter(e -> e.getUser().getRoles().contains(studentRole))
+                .filter(e -> e.getUser().getRole().equals(RoleType.STUDENT))
                 .collect(Collectors.groupingBy(UserToLesson::getUser));
 
         var usersToCourses = userToCourseRepository.getAllByCourseId(courseId)
                 .stream()
-                .filter(e -> e.getUser().getRoles().contains(studentRole))
+                .filter(e -> e.getUser().getRole().equals(RoleType.STUDENT))
                 .collect(Collectors.toMap(UserToCourse::getUser, Function.identity()));
 
         var successMark = lessonRepository.getSuccessMarkForCourse(courseId);
