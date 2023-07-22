@@ -7,7 +7,9 @@ import com.nazar.grynko.learningcourses.model.User;
 import com.nazar.grynko.learningcourses.repository.RoleRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class RoleInternalService {
@@ -26,8 +28,14 @@ public class RoleInternalService {
 
     //TODO invalidate token after role is changed
     public Set<Role> updateRoles(Set<Role> roles, Long userId) {
-        if (roles.size() == 0 || hasUserActiveCourses(userId)) {
-            throw new IllegalArgumentException("Cannot update user's roles");
+        if (roles.size() == 0) {
+            throw new IllegalArgumentException("Cannot update user's roles to empty set of roles");
+        }
+        else if (hasUserActiveCourses(userId)) {
+            throw new IllegalArgumentException("Cannot update user's roles since user has active courses");
+        }
+        else if (getTypes(userId).contains(RoleType.ADMIN)) {
+            throw new IllegalArgumentException("Cannot update admin`s roles");
         }
 
         User user = userInternalService.get(userId)
@@ -52,6 +60,13 @@ public class RoleInternalService {
         return userInternalService.get(id)
                 .orElseThrow(InvalidPathException::new)
                 .getRoles();
+    }
+
+    private List<RoleType> getTypes(Long id) {
+        return getUsersRoles(id)
+                .stream()
+                .map(Role::getType)
+                .collect(Collectors.toList());
     }
 
     public Role getByType(RoleType type) {

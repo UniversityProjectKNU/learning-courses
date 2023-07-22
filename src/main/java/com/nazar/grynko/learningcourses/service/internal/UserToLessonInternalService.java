@@ -1,7 +1,6 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
 import com.nazar.grynko.learningcourses.dto.hoeworkfile.FileDto;
-import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDto;
 import com.nazar.grynko.learningcourses.model.HomeworkFile;
 import com.nazar.grynko.learningcourses.model.Lesson;
 import com.nazar.grynko.learningcourses.model.UserToLesson;
