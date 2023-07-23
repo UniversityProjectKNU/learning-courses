@@ -31,6 +31,11 @@ public class UserService {
                 .flatMap(val -> Optional.of(userMapper.toDto(val)));
     }
 
+    public Optional<UserDto> get(String login) {
+        return userInternalService.getByLogin(login)
+                .flatMap(val -> Optional.of(userMapper.toDto(val)));
+    }
+
     public List<UserDto> getAll() {
         return userInternalService.getAll()
                 .stream().map(userMapper::toDto).collect(Collectors.toList());
@@ -40,10 +45,19 @@ public class UserService {
         userInternalService.delete(id);
     }
 
-    public UserDto update(UserDtoUpdate dto) {
-        var user = userMapper.fromDtoUpdate(dto);
+    public UserDto update(UserDtoUpdate dto, Long id) {
+        var user = userMapper.fromDtoUpdate(dto)
+                .setId(id);
         user = userInternalService.update(user);
         return userMapper.toDto(user);
+    }
+
+    public UserDto updateSelf(UserDtoUpdate dto, String login) {
+        var id = userInternalService.getByLogin(login)
+                .orElseThrow(IllegalAccessError::new)
+                .getId();
+
+        return update(dto, id);
     }
 
     public UserDto save(User user) {
@@ -57,5 +71,4 @@ public class UserService {
 
         return userByLogin.isPresent() && userById.isPresent() && Objects.equals(userByLogin.get().getLogin(), userById.get().getLogin());
     }
-
 }

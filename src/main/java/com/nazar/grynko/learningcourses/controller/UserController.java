@@ -13,6 +13,7 @@ import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
 @RestController
+@RolesAllowed("ADMIN")
 @RequestMapping("learning-courses/api/v1/users")
 public class UserController {
 
@@ -31,28 +32,25 @@ public class UserController {
                 .orElseThrow(InvalidPathException::new);
     }
 
-    @RolesAllowed("ADMIN")
     @GetMapping
     List<UserDto> all() {
         return userService.getAll();
     }
 
-    @RolesAllowed("ADMIN")
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id) {
         userService.delete(id);
     }
 
     @PutMapping("/{id}")
-    UserDto update(@RequestBody UserDtoUpdate dtoUpdate, @PathVariable Long id) {
+    ResponseEntity<UserDto> update(@RequestBody UserDtoUpdate dtoUpdate, @PathVariable Long id) {
         if (!dtoUpdate.getId().equals(id)) {
             throw new IllegalArgumentException();
         }
 
-        return userService.update(dtoUpdate);
+        return ResponseEntity.ok(userService.update(dtoUpdate, id));
     }
 
-    @RolesAllowed("ADMIN")
     @GetMapping("/{id}/role")
     ResponseEntity<?> getUsersRole(@PathVariable Long id) {
         try {
@@ -65,7 +63,6 @@ public class UserController {
         }
     }
 
-    @RolesAllowed("ADMIN")
     @PutMapping("/{id}/role")
     ResponseEntity<?> updateRole(@RequestBody UserRoleUpdateDto role, @PathVariable Long id) {
         try {
