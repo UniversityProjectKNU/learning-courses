@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("learning-courses/api/v1/courses-templates/{courseTemplateId}/chapters-templates/{chapterTemplateId}/lessons-templates")
+@RolesAllowed({"INSTRUCTOR", "ADMIN"})
 public class LessonTemplateController {
 
     private final LessonTemplateService lessonTemplateService;
@@ -25,7 +26,6 @@ public class LessonTemplateController {
         this.chapterTemplateService = chapterTemplateService;
     }
 
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @GetMapping("/{id}")
     LessonTemplateDto one(@PathVariable Long id, @PathVariable Long chapterTemplateId,
                           @PathVariable Long courseTemplateId) {
@@ -37,7 +37,6 @@ public class LessonTemplateController {
                 .orElseThrow(InvalidPathException::new);
     }
 
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @GetMapping
     List<LessonTemplateDto> allInChapter(@PathVariable Long chapterTemplateId, @PathVariable Long courseTemplateId) {
         if (!chapterTemplateService.hasWithCourseTemplate(chapterTemplateId, courseTemplateId)) {
@@ -47,7 +46,6 @@ public class LessonTemplateController {
         return lessonTemplateService.getAllInChapterTemplate(chapterTemplateId);
     }
 
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @DeleteMapping("/{id}")
     void delete(@PathVariable Long id, @PathVariable Long chapterTemplateId, @PathVariable Long courseTemplateId) {
         if (!lessonTemplateService.hasWithCourseTemplate(id, chapterTemplateId, courseTemplateId)) {
@@ -57,7 +55,6 @@ public class LessonTemplateController {
         lessonTemplateService.delete(id);
     }
 
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PostMapping
     LessonTemplateDto save(@RequestBody LessonTemplateDtoSave lessonTemplateDtoSave, @PathVariable Long chapterTemplateId,
                            @PathVariable Long courseTemplateId) {
@@ -68,7 +65,6 @@ public class LessonTemplateController {
         return lessonTemplateService.save(lessonTemplateDtoSave, chapterTemplateId);
     }
 
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/{id}")
     LessonTemplateDto update(@RequestBody LessonTemplateDtoUpdate lessonTemplateDto, @PathVariable Long id,
                              @PathVariable Long chapterTemplateId, @PathVariable Long courseTemplateId) {
