@@ -3,7 +3,11 @@ package com.nazar.grynko.learningcourses.controller;
 import com.nazar.grynko.learningcourses.dto.course.CourseDto;
 import com.nazar.grynko.learningcourses.dto.course.CourseDtoSave;
 import com.nazar.grynko.learningcourses.dto.course.CourseDtoUpdate;
+import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
+import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDto;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDtoUpdate;
+import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseInfoDto;
+import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.service.CourseService;
@@ -32,38 +36,27 @@ public class CourseController {
     }
 
     @GetMapping("/{id}")
-    CourseDto one(@PathVariable Long id) {
-        return courseService.get(id)
-                .orElseThrow(InvalidPathException::new);
+    ResponseEntity<CourseDto> one(@PathVariable Long id) {
+        return ResponseEntity.ok(courseService.get(id)
+                .orElseThrow(InvalidPathException::new));
     }
 
     @RolesAllowed("ADMIN")
     @GetMapping
-    List<CourseDto> all() {
-        return courseService.getAll();
+    ResponseEntity<List<CourseDto>> all() {
+        return ResponseEntity.ok(courseService.getAll());
     }
 
     @GetMapping("/{id}/lessons")
-    ResponseEntity<?> allLessonsInCourse(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(lessonService.getAllInCourse(id));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+    ResponseEntity<List<LessonDto>> allLessonsInCourse(@PathVariable Long id) {
+        return ResponseEntity.ok(lessonService.getAllInCourse(id));
     }
 
     //TODO use id or refactor LessonController
     @GetMapping("/{id}/lessons/{lessonId}")
-    ResponseEntity<?> getLessonsInCourse(@PathVariable Long id, @PathVariable Long lessonId) {
-        try {
-            return ResponseEntity.ok(lessonService.get(lessonId));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+    ResponseEntity<LessonDto> getLessonsInCourse(@PathVariable Long id, @PathVariable Long lessonId) {
+        return ResponseEntity.ok(lessonService.get(lessonId)
+                .orElseThrow(IllegalArgumentException::new));
     }
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
@@ -74,126 +67,80 @@ public class CourseController {
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PostMapping
-    CourseDto save(@RequestBody CourseDtoSave courseDto) {
-        return courseService.save(courseDto);
+    ResponseEntity<CourseDto> save(@RequestBody CourseDtoSave courseDto) {
+        return ResponseEntity.ok(courseService.save(courseDto));
     }
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/{id}")
-    CourseDto update(@RequestBody CourseDtoUpdate courseDto, @PathVariable Long id) {
+    ResponseEntity<CourseDto> update(@RequestBody CourseDtoUpdate courseDto, @PathVariable Long id) {
         if (!Objects.equals(courseDto.getId(), id)) {
             throw new InvalidPathException();
         }
 
-        return courseService.update(courseDto, id);
+        return ResponseEntity.ok(courseService.update(courseDto, id));
     }
 
     //TODO if course is finished - no actions with it
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/{id}/finish")
-    ResponseEntity<?> finish(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(courseService.finish(id));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+    ResponseEntity<CourseDto> finish(@PathVariable Long id) {
+        return ResponseEntity.ok(courseService.finish(id));
     }
 
     @RolesAllowed("STUDENT")
     @PostMapping("/{id}/enroll")
-    ResponseEntity<?> enroll(@PathVariable Long id, Principal principal) {
-        try {
-            return ResponseEntity.ok(courseService.enroll(id, principal.getName()));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+    ResponseEntity<UserToCourseDto> enroll(@PathVariable Long id, Principal principal) {
+        return ResponseEntity.ok(courseService.enroll(id, principal.getName()));
     }
 
     @GetMapping("/{id}/users")
-    ResponseEntity<?> allUsersForCourse(@PathVariable Long id, @RequestParam(required = false) RoleType roleType) {
-        try {
-            return ResponseEntity.ok(courseService.getAllUserToCourseInfoForCourse(id, roleType));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+    ResponseEntity<List<UserToCourseInfoDto>> allUsersForCourse(@PathVariable Long id, @RequestParam(required = false) RoleType roleType) {
+        return ResponseEntity.ok(courseService.getAllUserToCourseInfoForCourse(id, roleType));
     }
 
     @RolesAllowed("ADMIN")
     @PutMapping("/{id}/users/instructors")
-    ResponseEntity<?> assignInstructor(@PathVariable Long id, @RequestParam Long instructorId) {
-        try {
-            return ResponseEntity.ok(courseService.assignInstructor(id, instructorId));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+    ResponseEntity<UserToCourseDto> assignInstructor(@PathVariable Long id, @RequestParam Long instructorId) {
+        return ResponseEntity.ok(courseService.assignInstructor(id, instructorId));
     }
 
     //TODO the same as UserCourseController#getCoursesLessons
+    //If it's not instructor's student
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @GetMapping("/{id}/users/{userId}")
-    ResponseEntity<?> getUserToCourseInfo(@PathVariable Long id, @PathVariable Long userId) {
-        try {
-            return ResponseEntity.ok(courseService.getUsersCourseInfo(id, userId));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+    ResponseEntity<UserToCourseDto> getUserToCourseInfo(@PathVariable Long id, @PathVariable Long userId) {
+        return ResponseEntity.ok(courseService.getUsersCourseInfo(id, userId));
     }
 
     //TODO think if we need to move it to UserCourseController
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/{id}/users/{userId}")
-    ResponseEntity<?> updateUsersCourseInfo(@PathVariable Long id,
+    ResponseEntity<UserToCourseDto> updateUsersCourseInfo(@PathVariable Long id,
                                             @PathVariable Long userId,
                                             @RequestBody UserToCourseDtoUpdate userToCourseDto) {
-        try {
-            return ResponseEntity.ok(courseService.updateUserToCourse(id, userId, userToCourseDto));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+        return ResponseEntity.ok(courseService.updateUserToCourse(id, userId, userToCourseDto));
     }
 
     @GetMapping("/{id}/lessons/{lessonId}/users/{userId}")
-    ResponseEntity<?> getStudentLessonInfo(@PathVariable Long id, @PathVariable Long lessonId,
-                                           @PathVariable Long userId) {
-        try {
-            if (!lessonService.hasWithCourse(lessonId, id)) {
-                throw new InvalidPathException(String.format("Lesson %d in course %d doesn't exist", lessonId, id));
-            }
-            return ResponseEntity.ok(lessonService.getStudentLessonInfo(lessonId, userId));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
+    ResponseEntity<UserToLessonDto> getStudentLessonInfo(@PathVariable Long id, @PathVariable Long lessonId,
+                                                         @PathVariable Long userId) {
+        if (!lessonService.hasWithCourse(lessonId, id)) {
+            throw new InvalidPathException(String.format("Lesson %d in course %d doesn't exist", lessonId, id));
         }
+        return ResponseEntity.ok(lessonService.getStudentLessonInfo(lessonId, userId));
     }
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/{id}/lessons/{lessonId}/users/{userId}")
-    ResponseEntity<?> updateUsersLessonInfo(@PathVariable Long id,
+    ResponseEntity<UserToLessonDto> updateUsersLessonInfo(@PathVariable Long id,
                                             @PathVariable Long lessonId,
                                             @PathVariable Long userId,
                                             @RequestBody UserToCourseDtoUpdate userToCourseDto) {
-        try {
-            if (!lessonService.hasWithCourse(lessonId, id)) {
-                throw new InvalidPathException(String.format("Lesson %d in course %d doesn't exist", lessonId, id));
-            }
-            return ResponseEntity.ok(lessonService.updateUserToLesson(lessonId, userId, userToCourseDto));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
+        if (!lessonService.hasWithCourse(lessonId, id)) {
+            throw new InvalidPathException(String.format("Lesson %d in course %d doesn't exist", lessonId, id));
         }
+        return ResponseEntity.ok(lessonService.updateUserToLesson(lessonId, userId, userToCourseDto));
     }
 
 }

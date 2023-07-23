@@ -6,6 +6,7 @@ import com.nazar.grynko.learningcourses.dto.chapter.ChapterDtoUpdate;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.ChapterService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
@@ -24,18 +25,18 @@ public class ChapterController {
     }
 
     @GetMapping("/{id}")
-    ChapterDto one(@PathVariable Long id, @PathVariable Long courseId) {
+    ResponseEntity<ChapterDto> one(@PathVariable Long id, @PathVariable Long courseId) {
         if (!chapterService.hasWithCourse(id, courseId)) {
             throw new InvalidPathException();
         }
 
-        return chapterService.get(id)
-                .orElseThrow(InvalidPathException::new);
+        return ResponseEntity.ok(chapterService.get(id)
+                .orElseThrow(InvalidPathException::new));
     }
 
     @GetMapping
-    List<ChapterDto> allInCourse(@PathVariable Long courseId) {
-        return chapterService.getAllInCourse(courseId);
+    ResponseEntity<List<ChapterDto>> allInCourse(@PathVariable Long courseId) {
+        return ResponseEntity.ok(chapterService.getAllInCourse(courseId));
     }
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
@@ -50,18 +51,18 @@ public class ChapterController {
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PostMapping
-    ChapterDto save(@RequestBody ChapterDtoSave chapterDto, @PathVariable Long courseId) {
-        return chapterService.save(chapterDto, courseId);
+    ResponseEntity<ChapterDto> save(@RequestBody ChapterDtoSave chapterDto, @PathVariable Long courseId) {
+        return ResponseEntity.ok(chapterService.save(chapterDto, courseId));
     }
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/{id}")
-    ChapterDto update(@RequestBody ChapterDtoUpdate chapterDto, @PathVariable Long id, @PathVariable Long courseId) {
+    ResponseEntity<ChapterDto> update(@RequestBody ChapterDtoUpdate chapterDto, @PathVariable Long id, @PathVariable Long courseId) {
         if (!chapterService.hasWithCourse(id, courseId) || !Objects.equals(chapterDto.getId(), id)) {
             throw new InvalidPathException();
         }
 
-        return chapterService.update(chapterDto, id);
+        return ResponseEntity.ok(chapterService.update(chapterDto, id));
     }
 
 }

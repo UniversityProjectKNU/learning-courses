@@ -1,8 +1,10 @@
 package com.nazar.grynko.learningcourses.controller;
 
+import com.nazar.grynko.learningcourses.dto.course.CourseDto;
 import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDto;
 import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDtoSave;
 import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDtoUpdate;
+import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.CourseService;
 import com.nazar.grynko.learningcourses.service.CourseTemplateService;
@@ -34,9 +36,9 @@ public class CourseTemplateController {
     }
 
     @GetMapping("/{id}")
-    CourseTemplateDto one(@PathVariable Long id) {
-        return courseTemplateService.get(id)
-                .orElseThrow(InvalidPathException::new);
+    ResponseEntity<CourseTemplateDto> one(@PathVariable Long id) {
+        return ResponseEntity.ok(courseTemplateService.get(id)
+                .orElseThrow(InvalidPathException::new));
     }
 
     @GetMapping
@@ -45,14 +47,8 @@ public class CourseTemplateController {
     }
 
     @GetMapping("/{id}/lessons-templates")
-    ResponseEntity<?> allLessonsInCourseTemplate(@PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(lessonTemplateService.getAllInCourseTemplate(id));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+    ResponseEntity<List<LessonTemplateDto>> allLessonsInCourseTemplate(@PathVariable Long id) {
+        return ResponseEntity.ok(lessonTemplateService.getAllInCourseTemplate(id));
     }
 
     @DeleteMapping("/{id}")
@@ -61,28 +57,22 @@ public class CourseTemplateController {
     }
 
     @PostMapping
-    CourseTemplateDto save(@RequestBody CourseTemplateDtoSave courseTemplateDtoSave) {
-        return courseTemplateService.save(courseTemplateDtoSave);
+    ResponseEntity<CourseTemplateDto> save(@RequestBody CourseTemplateDtoSave courseTemplateDtoSave) {
+        return ResponseEntity.ok(courseTemplateService.save(courseTemplateDtoSave));
     }
 
     @PutMapping("/{id}")
-    CourseTemplateDto update(@RequestBody CourseTemplateDtoUpdate courseTemplateDto, @PathVariable Long id) {
+    ResponseEntity<CourseTemplateDto> update(@RequestBody CourseTemplateDtoUpdate courseTemplateDto, @PathVariable Long id) {
         if (!courseTemplateDto.getId().equals(id)) {
             throw new IllegalArgumentException();
         }
 
-        return courseTemplateService.update(courseTemplateDto);
+        return ResponseEntity.ok(courseTemplateService.update(courseTemplateDto));
     }
 
     @PostMapping("/{id}/create")
-    ResponseEntity<?> create(@PathVariable Long id, Principal principal) {
-        try {
-            return ResponseEntity.ok(courseService.create(id, principal.getName()));
-        } catch (Exception e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+    ResponseEntity<CourseDto> create(@PathVariable Long id, Principal principal) {
+        return ResponseEntity.ok(courseService.create(id, principal.getName()));
     }
 
 }

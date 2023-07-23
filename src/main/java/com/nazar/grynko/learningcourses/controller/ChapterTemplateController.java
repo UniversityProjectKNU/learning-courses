@@ -5,6 +5,7 @@ import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateDtoSa
 import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateDtoUpdate;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.ChapterTemplateService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
@@ -22,18 +23,18 @@ public class ChapterTemplateController {
     }
 
     @GetMapping("/{id}")
-    ChapterTemplateDto one(@PathVariable Long id, @PathVariable Long courseTemplateId) {
+    ResponseEntity<ChapterTemplateDto> one(@PathVariable Long id, @PathVariable Long courseTemplateId) {
         if (!chapterTemplateService.hasWithCourseTemplate(id, courseTemplateId)) {
             throw new InvalidPathException();
         }
 
-        return chapterTemplateService.get(id)
-                .orElseThrow(InvalidPathException::new);
+        return ResponseEntity.ok(chapterTemplateService.get(id)
+                .orElseThrow(InvalidPathException::new));
     }
 
     @GetMapping
-    List<ChapterTemplateDto> allInCourse(@PathVariable Long courseTemplateId) {
-        return chapterTemplateService.getAllInCourseTemplate(courseTemplateId);
+    ResponseEntity<List<ChapterTemplateDto>> allInCourse(@PathVariable Long courseTemplateId) {
+        return ResponseEntity.ok(chapterTemplateService.getAllInCourseTemplate(courseTemplateId));
     }
 
     @DeleteMapping("/{id}")
@@ -46,18 +47,18 @@ public class ChapterTemplateController {
     }
 
     @PostMapping
-    ChapterTemplateDto save(@RequestBody ChapterTemplateDtoSave chapterTemplateDtoSave, @PathVariable Long courseTemplateId) {
-        return chapterTemplateService.save(chapterTemplateDtoSave, courseTemplateId);
+    ResponseEntity<ChapterTemplateDto> save(@RequestBody ChapterTemplateDtoSave chapterTemplateDtoSave, @PathVariable Long courseTemplateId) {
+        return ResponseEntity.ok(chapterTemplateService.save(chapterTemplateDtoSave, courseTemplateId));
     }
 
     @PutMapping("/{id}")
-    ChapterTemplateDto update(@RequestBody ChapterTemplateDtoUpdate chapterTemplateDto,
+    ResponseEntity<ChapterTemplateDto> update(@RequestBody ChapterTemplateDtoUpdate chapterTemplateDto,
                               @PathVariable Long id, @PathVariable Long courseTemplateId) {
         if (!chapterTemplateDto.getId().equals(id) || !chapterTemplateService.hasWithCourseTemplate(id, courseTemplateId)) {
             throw new IllegalArgumentException();
         }
 
-        return chapterTemplateService.update(chapterTemplateDto);
+        return ResponseEntity.ok(chapterTemplateService.update(chapterTemplateDto));
     }
 
 }

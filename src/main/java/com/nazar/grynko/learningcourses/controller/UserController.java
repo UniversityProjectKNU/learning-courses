@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.controller;
 
+import com.nazar.grynko.learningcourses.dto.role.RoleDto;
 import com.nazar.grynko.learningcourses.dto.role.UserRoleUpdateDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDtoUpdate;
@@ -27,14 +28,14 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    UserDto one(@PathVariable Long id) {
-        return userService.get(id)
-                .orElseThrow(InvalidPathException::new);
+    ResponseEntity<UserDto> one(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.get(id)
+                .orElseThrow(InvalidPathException::new));
     }
 
     @GetMapping
-    List<UserDto> all() {
-        return userService.getAll();
+    ResponseEntity<List<UserDto>> all() {
+        return ResponseEntity.ok(userService.getAll());
     }
 
     @DeleteMapping("/{id}")
@@ -47,32 +48,19 @@ public class UserController {
         if (!dtoUpdate.getId().equals(id)) {
             throw new IllegalArgumentException();
         }
-
         return ResponseEntity.ok(userService.update(dtoUpdate, id));
     }
 
     @GetMapping("/{id}/role")
-    ResponseEntity<?> getUsersRole(@PathVariable Long id) {
-        try {
-            userService.get(id).orElseThrow(InvalidPathException::new);
-            return ResponseEntity.ok(roleService.getUsersRoles(id));
-        } catch (RuntimeException e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+    ResponseEntity<RoleDto> getUsersRole(@PathVariable Long id) {
+        userService.get(id).orElseThrow(InvalidPathException::new);
+        return ResponseEntity.ok(roleService.getUsersRoles(id));
     }
 
     @PutMapping("/{id}/role")
-    ResponseEntity<?> updateRole(@RequestBody UserRoleUpdateDto role, @PathVariable Long id) {
-        try {
-            userService.get(id).orElseThrow(InvalidPathException::new);
-            return ResponseEntity.ok(roleService.updateRole(role, id));
-        } catch (RuntimeException e) {
-            return ResponseEntity
-                    .badRequest()
-                    .body(e.getMessage());
-        }
+    ResponseEntity<RoleDto> updateRole(@RequestBody UserRoleUpdateDto role, @PathVariable Long id) {
+        userService.get(id).orElseThrow(InvalidPathException::new);
+        return ResponseEntity.ok(roleService.updateRole(role, id));
     }
 
 }
