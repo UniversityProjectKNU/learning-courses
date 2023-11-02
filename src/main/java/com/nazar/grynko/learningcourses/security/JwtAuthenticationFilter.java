@@ -49,7 +49,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 var authentication = jwtProvider.getAuthenticationToken(jwtToken, userDetails);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (JwtException e) {
-                throw new IllegalStateException(String.format("Token %s cannot be trusted", jwtToken));
+                throw new IllegalStateException(String.format("Token %s cannot be trusted. Message: " + e.getMessage(), jwtToken));
             }
         }
 
