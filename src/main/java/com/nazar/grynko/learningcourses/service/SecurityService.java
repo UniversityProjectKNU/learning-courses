@@ -15,7 +15,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,8 +41,7 @@ public class SecurityService {
     public UserSecurityDto signIn(SignInDto signInDto) {
         var userDetails = jwtUserDetailsService.loadUserByUsername(signInDto.getLogin());
 
-        //TODO make password comparison: !passwordEncoder.matches(signInDto.getPassword(), userDetails.getPassword())
-        if (!Objects.equals(signInDto.getPassword(), userDetails.getPassword())) {
+        if (!passwordEncoder.matches(signInDto.getPassword(), userDetails.getPassword())) {
             throw new BadCredentialsException("Password is incorrect");
         }
 
@@ -62,7 +60,8 @@ public class SecurityService {
         if (userInternalService.existsUser(dto.getLogin())) {
             throw new IllegalArgumentException(String.format("User with login %s already exists", dto.getLogin()));
         }
-        //TODO make password encoding: dto.setPassword(passwordEncoder.encodePassword(dto.getPassword()));
+        dto.setPassword(passwordEncoder.encode(dto.getPassword()));
+
         var user = userMapper.fromDtoSave(dto);
         user.setRole(RoleType.STUDENT);
 

@@ -27,7 +27,7 @@ public class OnStartUpRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        onStartUp();
+        //onStartUp();
     }
 
     private void onStartUp() {
