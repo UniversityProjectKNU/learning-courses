@@ -3,12 +3,12 @@ package com.nazar.grynko.learningcourses.service;
 import com.nazar.grynko.learningcourses.dto.security.SignInDto;
 import com.nazar.grynko.learningcourses.dto.security.SignUpDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
+import com.nazar.grynko.learningcourses.dto.user.UserDtoCreate;
 import com.nazar.grynko.learningcourses.dto.user.UserSecurityDto;
 import com.nazar.grynko.learningcourses.mapper.UserMapper;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.security.JwtProvider;
 import com.nazar.grynko.learningcourses.security.JwtUserDetailsService;
-import com.nazar.grynko.learningcourses.service.internal.RoleInternalService;
 import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
@@ -25,17 +25,17 @@ public class SecurityService {
     private final PasswordEncoder passwordEncoder;
     private final UserInternalService userInternalService;
     private final UserMapper userMapper;
-    private final RoleInternalService roleInternalService;
 
-    public SecurityService(JwtUserDetailsService jwtUserDetailsService, JwtProvider jwtProvider,
-                           PasswordEncoder passwordEncoder, UserInternalService userInternalService,
-                           UserMapper userMapper, RoleInternalService roleInternalService) {
+    public SecurityService(JwtUserDetailsService jwtUserDetailsService,
+                           JwtProvider jwtProvider,
+                           PasswordEncoder passwordEncoder,
+                           UserInternalService userInternalService,
+                           UserMapper userMapper) {
         this.jwtUserDetailsService = jwtUserDetailsService;
         this.jwtProvider = jwtProvider;
         this.passwordEncoder = passwordEncoder;
         this.userInternalService = userInternalService;
         this.userMapper = userMapper;
-        this.roleInternalService = roleInternalService;
     }
 
     public UserSecurityDto signIn(SignInDto signInDto) {
@@ -62,8 +62,21 @@ public class SecurityService {
         }
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
 
-        var user = userMapper.fromDtoSave(dto);
+        var user = userMapper.fromDtoSignUp(dto);
         user.setRole(RoleType.STUDENT);
+
+        user = userInternalService.save(user);
+
+        return userMapper.toDto(user);
+    }
+
+    public UserDto createUser(UserDtoCreate dto) {
+        if (userInternalService.existsUser(dto.getLogin())) {
+            throw new IllegalArgumentException(String.format("User with login %s already exists", dto.getLogin()));
+        }
+
+        dto.setPassword(passwordEncoder.encode(dto.getPassword()));
+        var user = userMapper.fromDtoCreate(dto);
 
         user = userInternalService.save(user);
 

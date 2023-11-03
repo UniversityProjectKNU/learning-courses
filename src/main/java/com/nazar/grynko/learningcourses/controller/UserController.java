@@ -3,9 +3,11 @@ package com.nazar.grynko.learningcourses.controller;
 import com.nazar.grynko.learningcourses.dto.role.RoleDto;
 import com.nazar.grynko.learningcourses.dto.role.UserRoleUpdateDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
+import com.nazar.grynko.learningcourses.dto.user.UserDtoCreate;
 import com.nazar.grynko.learningcourses.dto.user.UserDtoUpdate;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.RoleService;
+import com.nazar.grynko.learningcourses.service.SecurityService;
 import com.nazar.grynko.learningcourses.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,11 +21,14 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final SecurityService securityService;
     private final RoleService roleService;
 
     public UserController(UserService userService,
+                          SecurityService securityService,
                           RoleService roleService) {
         this.userService = userService;
+        this.securityService = securityService;
         this.roleService = roleService;
     }
 
@@ -36,6 +41,11 @@ public class UserController {
     @GetMapping
     ResponseEntity<List<UserDto>> all() {
         return ResponseEntity.ok(userService.getAll());
+    }
+
+    @PostMapping("/user")
+    ResponseEntity<UserDto> createUser(@RequestBody UserDtoCreate dto) {
+        return ResponseEntity.ok(securityService.createUser(dto));
     }
 
     @DeleteMapping("/user")
@@ -62,7 +72,5 @@ public class UserController {
         userService.get(userId).orElseThrow(InvalidPathException::new);
         return ResponseEntity.ok(roleService.updateRole(role, userId));
     }
-
-    //TODO create instructor by admin (create user in general)
 
 }
