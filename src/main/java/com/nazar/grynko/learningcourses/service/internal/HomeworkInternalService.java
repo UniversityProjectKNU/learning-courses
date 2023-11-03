@@ -8,8 +8,6 @@ import com.nazar.grynko.learningcourses.service.FileService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-
 @Service
 public class HomeworkInternalService {
 
@@ -29,7 +27,7 @@ public class HomeworkInternalService {
      * @param userToLesson  is entity from {@link HomeworkFileRepository} database with user and lesson
      * @return entity with meta information about file and its userToLesson
      */
-    public HomeworkFile upload(MultipartFile multipartFile, UserToLesson userToLesson) {
+    public HomeworkFile uploadHomework(MultipartFile multipartFile, UserToLesson userToLesson) {
         var homework = homeworkFileRepository.get(userToLesson);
         HomeworkFile homeworkFile;
 

@@ -5,6 +5,7 @@ import com.nazar.grynko.learningcourses.dto.hoeworkfile.HomeworkFileDto;
 import com.nazar.grynko.learningcourses.mapper.HomeworkFileMapper;
 import com.nazar.grynko.learningcourses.service.internal.HomeworkInternalService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class HomeworkService {
@@ -26,4 +27,5 @@ public class HomeworkService {
     public FileDto download(Long id) {
         return homeworkInternalService.download(id);
     }
+
 }

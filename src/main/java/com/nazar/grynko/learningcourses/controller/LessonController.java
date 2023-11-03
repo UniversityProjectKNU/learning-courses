@@ -5,10 +5,7 @@ import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoSave;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.simple.SimpleDto;
-import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDtoUpdate;
-import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
-import com.nazar.grynko.learningcourses.service.ChapterService;
 import com.nazar.grynko.learningcourses.service.LessonService;
 import com.nazar.grynko.learningcourses.service.UserToLessonService;
 import org.springframework.core.io.ByteArrayResource;
@@ -18,8 +15,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
 import java.security.Principal;
-import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("learning-courses/api/v1/lessons")
@@ -58,19 +53,19 @@ public class LessonController {
         return ResponseEntity.ok(lessonService.update(lessonDto, lessonId));
     }
 
+    //TODO improve finishLesson
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/lesson/finish")
     ResponseEntity<LessonDto> finishLesson(@RequestParam Long lessonId) {
         return ResponseEntity.ok(lessonService.finish(lessonId));
     }
 
+    @GetMapping("/lesson/files/file/info")
+    public ResponseEntity<HomeworkFileDto> getHomeworkInfo(@RequestParam Long lessonId, @RequestParam Long userId) {
+        return ResponseEntity.ok(userToLessonService.getFileInfo(lessonId, userId));
+    }
 
-    ///////////////////////////////////////////////////////////////////////////
-
-
-
-    //TODO when file's size is bigger then we can allow
-    @PostMapping("/lesson/files/upload")
+    @PostMapping("/lesson/files")
     public ResponseEntity<HomeworkFileDto> upload(@RequestParam Long lessonId, @RequestBody MultipartFile file, Principal principal) {
         if (lessonService.isFinished(lessonId)) {
             throw new InvalidPathException("You cannot upload file in finished lesson");
@@ -79,22 +74,9 @@ public class LessonController {
         return ResponseEntity.ok(userToLessonService.upload(lessonId, principal.getName(), file));
     }
 
-    //TODO delete
-    @GetMapping("/lesson/files/info")
-    public ResponseEntity<HomeworkFileDto> getFileInfo(@RequestParam Long lessonId, Principal principal) {
-        return ResponseEntity.ok(userToLessonService.getFileInfo(lessonId, principal.getName()));
-    }
-
-    @GetMapping("/lesson/files/info/{userId}")
-    public ResponseEntity<HomeworkFileDto> getStudentFileInfo(@RequestParam Long lessonId, @RequestParam Long userId) {
-        return ResponseEntity.ok(userToLessonService.getFileInfo(lessonId, userId));
-    }
-
-    //TODO download file by userId and lessonId
-    //TODO download file bu fileId
     @GetMapping("/lesson/files/file")
-    public ResponseEntity<ByteArrayResource> download(@RequestParam Long lessonId, Principal principal) {
-        var fileDto = userToLessonService.download(lessonId, principal.getName());
+    public ResponseEntity<ByteArrayResource> download(@RequestParam Long lessonId, @RequestParam Long userId) {
+        var fileDto = userToLessonService.download(lessonId, userId);
         var data = fileDto.getData();
 
         return ResponseEntity
@@ -105,7 +87,7 @@ public class LessonController {
                 .body(new ByteArrayResource(data));
     }
 
-    @DeleteMapping("/lesson/files/delete")
+    @DeleteMapping("/lesson/files/file")
     public ResponseEntity<SimpleDto<String>> delete(@RequestParam Long lessonId, Principal principal) {
         if (lessonService.isFinished(lessonId)) {
             throw new InvalidPathException("You cannot upload file in finished lesson");
@@ -115,25 +97,15 @@ public class LessonController {
         return ResponseEntity.ok(new SimpleDto<>("Ok"));
     }
 
-//    @GetMapping("/{courseId}/lessons/{lessonId}/users/{userId}")
-//    ResponseEntity<UserToLessonDto> getStudentLessonInfo(@PathVariable Long courseId, @PathVariable Long lessonId,
-//                                                         @PathVariable Long userId) {
-//        if (!lessonService.hasWithCourse(lessonId, courseId)) {
-//            throw new InvalidPathException(String.format("Lesson %d in course %d doesn't exist", lessonId, courseId));
-//        }
-//        return ResponseEntity.ok(lessonService.getStudentLessonInfo(lessonId, userId));
-//    }
-//
-//    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
-//    @PutMapping("/{courseId}/lessons/{lessonId}/users/{userId}")
-//    ResponseEntity<UserToLessonDto> updateUsersLessonInfo(@PathVariable Long courseId,
-//                                                          @PathVariable Long lessonId,
-//                                                          @PathVariable Long userId,
-//                                                          @RequestBody UserToCourseDtoUpdate userToCourseDto) {
-//        if (!lessonService.hasWithCourse(lessonId, courseId)) {
-//            throw new InvalidPathException(String.format("Lesson %d in course %d doesn't exist", lessonId, courseId));
-//        }
-//        return ResponseEntity.ok(lessonService.updateUserToLesson(lessonId, userId, userToCourseDto));
-//    }
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
+    @DeleteMapping("/lesson/files/file")
+    public ResponseEntity<SimpleDto<String>> delete(@RequestParam Long lessonId, @RequestParam Long userId) {
+        if (lessonService.isFinished(lessonId)) {
+            throw new InvalidPathException("You cannot upload file in finished lesson");
+        }
+
+        userToLessonService.delete(lessonId, userId);
+        return ResponseEntity.ok(new SimpleDto<>("Ok"));
+    }
 
 }

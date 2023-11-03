@@ -54,11 +54,11 @@ public class UserToLessonInternalService {
         var userToLesson = get(login, lessonId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        return homeworkInternalService.upload(file, userToLesson);
+        return homeworkInternalService.uploadHomework(file, userToLesson);
     }
 
-    public FileDto download(Long lessonId, String login) {
-        var userToLesson = get(login, lessonId)
+    public FileDto download(Long lessonId, Long userId) {
+        var userToLesson = get(userId, lessonId)
                 .orElseThrow(IllegalArgumentException::new);
 
         return homeworkInternalService.download(userToLesson);
@@ -66,6 +66,13 @@ public class UserToLessonInternalService {
 
     public void delete(Long lessonId, String login) {
         var userToLesson = get(login, lessonId)
+                .orElseThrow(IllegalArgumentException::new);
+
+        homeworkInternalService.delete(userToLesson);
+    }
+
+    public void delete(Long lessonId, Long userId) {
+        var userToLesson = get(userId, lessonId)
                 .orElseThrow(IllegalArgumentException::new);
 
         homeworkInternalService.delete(userToLesson);

@@ -23,11 +23,6 @@ public class UserToLessonService {
         this.homeworkFileMapper = homeworkFileMapper;
     }
 
-    public HomeworkFileDto getFileInfo(Long lessonId, String login) {
-        var entity = userToLessonInternalService.getFileInfo(lessonId, login);
-        return homeworkFileMapper.toDto(entity);
-    }
-
     public HomeworkFileDto getFileInfo(Long lessonId, Long studentId) {
         var entity = userToLessonInternalService.getFileInfo(lessonId, studentId);
         return homeworkFileMapper.toDto(entity);
@@ -38,12 +33,16 @@ public class UserToLessonService {
         return homeworkFileMapper.toDto(entity);
     }
 
-    public FileDto download(Long lessonId, String login) {
-        return userToLessonInternalService.download(lessonId, login);
+    public FileDto download(Long lessonId, Long userId) {
+        return userToLessonInternalService.download(lessonId, userId);
     }
 
     public void delete(Long lessonId, String login) {
         userToLessonInternalService.delete(lessonId, login);
+    }
+
+    public void delete(Long lessonId, Long userId) {
+        userToLessonInternalService.delete(lessonId, userId);
     }
 
     public List<UserToLesson> getAll(Long courseId, String login) {
