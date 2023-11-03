@@ -18,6 +18,7 @@ import java.io.Serializable;
 @Accessors(chain = true)
 public class UserToCourseInfoDto implements Serializable {
 
+    private Long id;
     private Float mark;
     @JsonProperty("isPassed")
     private Boolean isPassed;

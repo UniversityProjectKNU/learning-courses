@@ -19,13 +19,13 @@ public class SelfController {
         this.userService = userService;
     }
 
-    @GetMapping("/self")
+    @GetMapping
     ResponseEntity<UserDto> getSelf(Principal principal) {
         return ResponseEntity.ok(userService.get(principal.getName())
                 .orElseThrow(InvalidPathException::new));
     }
 
-    @PutMapping("/self/update")
+    @PutMapping
     ResponseEntity<UserDto> updateSelf(@RequestBody UserDtoUpdate dtoUpdate, Principal principal) {
         return ResponseEntity.ok(userService.updateSelf(dtoUpdate, principal.getName()));
     }

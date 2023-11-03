@@ -4,75 +4,44 @@ import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateDto;
 import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateDtoSave;
 import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateDtoUpdate;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
-import com.nazar.grynko.learningcourses.service.ChapterTemplateService;
 import com.nazar.grynko.learningcourses.service.LessonTemplateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
-import java.util.List;
 
 @RestController
-@RequestMapping("learning-courses/api/v1/courses-templates/{courseTemplateId}/chapters-templates/{chapterTemplateId}/lessons-templates")
+@RequestMapping("learning-courses/api/v1/templates/lessons")
 @RolesAllowed({"INSTRUCTOR", "ADMIN"})
 public class LessonTemplateController {
 
     private final LessonTemplateService lessonTemplateService;
-    private final ChapterTemplateService chapterTemplateService;
 
     @Autowired
-    public LessonTemplateController(LessonTemplateService lessonTemplateService, ChapterTemplateService chapterTemplateService) {
+    public LessonTemplateController(LessonTemplateService lessonTemplateService) {
         this.lessonTemplateService = lessonTemplateService;
-        this.chapterTemplateService = chapterTemplateService;
     }
 
-    @GetMapping("/{id}")
-    ResponseEntity<LessonTemplateDto> one(@PathVariable Long id, @PathVariable Long chapterTemplateId,
-                                          @PathVariable Long courseTemplateId) {
-        if (!lessonTemplateService.hasWithCourseTemplate(id, chapterTemplateId, courseTemplateId)) {
-            throw new InvalidPathException();
-        }
-
-        return ResponseEntity.ok(lessonTemplateService.get(id)
+    @GetMapping("/lesson")
+    ResponseEntity<LessonTemplateDto> one(@RequestParam Long lessonTemplateId) {
+        return ResponseEntity.ok(lessonTemplateService.get(lessonTemplateId)
                 .orElseThrow(InvalidPathException::new));
     }
 
-    @GetMapping
-    ResponseEntity<List<LessonTemplateDto>> allInChapter(@PathVariable Long chapterTemplateId, @PathVariable Long courseTemplateId) {
-        if (!chapterTemplateService.hasWithCourseTemplate(chapterTemplateId, courseTemplateId)) {
-            throw new InvalidPathException();
-        }
-
-        return ResponseEntity.ok(lessonTemplateService.getAllInChapterTemplate(chapterTemplateId));
-    }
-
-    @DeleteMapping("/{id}")
-    void delete(@PathVariable Long id, @PathVariable Long chapterTemplateId, @PathVariable Long courseTemplateId) {
-        if (!lessonTemplateService.hasWithCourseTemplate(id, chapterTemplateId, courseTemplateId)) {
-            throw new InvalidPathException();
-        }
-
-        lessonTemplateService.delete(id);
+    @DeleteMapping("/lesson")
+    void delete(@RequestParam Long lessonTemplateId) {
+        lessonTemplateService.delete(lessonTemplateId);
     }
 
     @PostMapping
-    ResponseEntity<LessonTemplateDto> save(@RequestBody LessonTemplateDtoSave lessonTemplateDtoSave, @PathVariable Long chapterTemplateId,
-                           @PathVariable Long courseTemplateId) {
-        if (!chapterTemplateService.hasWithCourseTemplate(chapterTemplateId, courseTemplateId)) {
-            throw new InvalidPathException();
-        }
-
+    ResponseEntity<LessonTemplateDto> save(@RequestParam Long chapterTemplateId, @RequestBody LessonTemplateDtoSave lessonTemplateDtoSave) {
         return ResponseEntity.ok(lessonTemplateService.save(lessonTemplateDtoSave, chapterTemplateId));
     }
 
-    @PutMapping("/{id}")
-    ResponseEntity<LessonTemplateDto> update(@RequestBody LessonTemplateDtoUpdate lessonTemplateDto, @PathVariable Long id,
-                             @PathVariable Long chapterTemplateId, @PathVariable Long courseTemplateId) {
-        if (!lessonTemplateDto.getId().equals(id) || !lessonTemplateService.hasWithCourseTemplate(id, chapterTemplateId, courseTemplateId)) {
-            throw new InvalidPathException();
-        }
-
+    @PutMapping("/lesson")
+    ResponseEntity<LessonTemplateDto> update(@RequestParam Long lessonTemplateId, @RequestBody LessonTemplateDtoUpdate lessonTemplateDto) {
+        lessonTemplateDto.setId(lessonTemplateId);
         return ResponseEntity.ok(lessonTemplateService.update(lessonTemplateDto));
     }
 

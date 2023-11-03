@@ -15,8 +15,11 @@ import com.nazar.grynko.learningcourses.service.internal.UserToCourseInternalSer
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
 
 @Component
 public class CourseService {
@@ -44,9 +47,10 @@ public class CourseService {
                 .flatMap(val -> Optional.of(courseMapper.toDto(val)));
     }
 
-    public List<CourseDto> getAll() {
+    public List<CourseDto> getAll(Boolean isActive) {
         return courseInternalService.getAll()
                 .stream()
+                .filter(c -> isNull(isActive) || !c.getIsFinished().equals(isActive))
                 .map(courseMapper::toDto)
                 .collect(Collectors.toList());
     }

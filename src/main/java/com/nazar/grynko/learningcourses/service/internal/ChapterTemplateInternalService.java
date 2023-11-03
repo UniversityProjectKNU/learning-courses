@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Objects.isNull;
+
 @Service
 public class ChapterTemplateInternalService {
 
@@ -57,11 +59,11 @@ public class ChapterTemplateInternalService {
     }
 
     private void fillNullFields(ChapterTemplate source, ChapterTemplate destination) {
-        if (destination.getId() == null) destination.setId(source.getId());
-        if (destination.getTitle() == null) destination.setTitle(source.getTitle());
-        if (destination.getDescription() == null) destination.setDescription(source.getDescription());
-        if (destination.getNumber() == null) destination.setNumber(source.getNumber());
-        if (destination.getCourseTemplate() == null) destination.setCourseTemplate(source.getCourseTemplate());
+        if (isNull(destination.getId())) destination.setId(source.getId());
+        if (isNull(destination.getTitle())) destination.setTitle(source.getTitle());
+        if (isNull(destination.getDescription())) destination.setDescription(source.getDescription());
+        if (isNull(destination.getNumber())) destination.setNumber(source.getNumber());
+        if (isNull(destination.getCourseTemplate())) destination.setCourseTemplate(source.getCourseTemplate());
     }
 
 }

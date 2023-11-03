@@ -8,7 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+
+import static java.util.Objects.isNull;
 
 @Service
 public class LessonTemplateInternalService {
@@ -64,10 +67,12 @@ public class LessonTemplateInternalService {
     }
 
     private void fillNullFields(LessonTemplate source, LessonTemplate destination) {
-        if (destination.getId() == null) destination.setId(source.getId());
-        if (destination.getTitle() == null) destination.setTitle(source.getTitle());
-        if (destination.getDescription() == null) destination.setDescription(source.getDescription());
-        if (destination.getNumber() == null) destination.setNumber(source.getNumber());
-        if (destination.getChapterTemplate() == null) destination.setChapterTemplate(source.getChapterTemplate());
+        if (isNull(destination.getId())) destination.setId(source.getId());
+        if (isNull(destination.getTitle())) destination.setTitle(source.getTitle());
+        if (isNull(destination.getDescription())) destination.setDescription(source.getDescription());
+        if (isNull(destination.getNumber())) destination.setNumber(source.getNumber());
+        if (isNull(destination.getMaxMark())) destination.setMaxMark(source.getMaxMark());
+        if (isNull(destination.getSuccessMark())) destination.setSuccessMark(source.getSuccessMark());
+        if (isNull(destination.getChapterTemplate())) destination.setChapterTemplate(source.getChapterTemplate());
     }
 }

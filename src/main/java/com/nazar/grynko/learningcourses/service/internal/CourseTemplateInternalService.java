@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Objects.isNull;
+
 @Service
 public class CourseTemplateInternalService {
 
@@ -44,9 +46,9 @@ public class CourseTemplateInternalService {
     }
 
     private void fillNullFields(CourseTemplate source, CourseTemplate destination) {
-        if (destination.getId() == null) destination.setId(source.getId());
-        if (destination.getTitle() == null) destination.setTitle(source.getTitle());
-        if (destination.getDescription() == null) destination.setDescription(source.getDescription());
+        if (isNull(destination.getId())) destination.setId(source.getId());
+        if (isNull(destination.getTitle())) destination.setTitle(source.getTitle());
+        if (isNull(destination.getDescription())) destination.setDescription(source.getDescription());
     }
 
 }

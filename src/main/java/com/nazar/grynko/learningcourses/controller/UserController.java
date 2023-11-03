@@ -27,9 +27,9 @@ public class UserController {
         this.roleService = roleService;
     }
 
-    @GetMapping("/{id}")
-    ResponseEntity<UserDto> one(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.get(id)
+    @GetMapping("/user")
+    ResponseEntity<UserDto> one(@RequestParam Long userId) {
+        return ResponseEntity.ok(userService.get(userId)
                 .orElseThrow(InvalidPathException::new));
     }
 
@@ -38,29 +38,31 @@ public class UserController {
         return ResponseEntity.ok(userService.getAll());
     }
 
-    @DeleteMapping("/{id}")
-    void delete(@PathVariable Long id) {
-        userService.delete(id);
+    @DeleteMapping("/user")
+    void delete(@RequestParam Long userId) {
+        userService.delete(userId);
     }
 
-    @PutMapping("/{id}")
-    ResponseEntity<UserDto> update(@RequestBody UserDtoUpdate dtoUpdate, @PathVariable Long id) {
-        if (!dtoUpdate.getId().equals(id)) {
+    @PutMapping("/user")
+    ResponseEntity<UserDto> update(@RequestBody UserDtoUpdate dtoUpdate, @RequestParam Long userId) {
+        if (!dtoUpdate.getId().equals(userId)) {
             throw new IllegalArgumentException();
         }
-        return ResponseEntity.ok(userService.update(dtoUpdate, id));
+        return ResponseEntity.ok(userService.update(dtoUpdate, userId));
     }
 
-    @GetMapping("/{id}/role")
-    ResponseEntity<RoleDto> getUsersRole(@PathVariable Long id) {
-        userService.get(id).orElseThrow(InvalidPathException::new);
-        return ResponseEntity.ok(roleService.getUsersRoles(id));
+    @GetMapping("/user/role")
+    ResponseEntity<RoleDto> getUsersRole(@RequestParam Long userId) {
+        userService.get(userId).orElseThrow(InvalidPathException::new);
+        return ResponseEntity.ok(roleService.getUsersRoles(userId));
     }
 
-    @PutMapping("/{id}/role")
-    ResponseEntity<RoleDto> updateRole(@RequestBody UserRoleUpdateDto role, @PathVariable Long id) {
-        userService.get(id).orElseThrow(InvalidPathException::new);
-        return ResponseEntity.ok(roleService.updateRole(role, id));
+    @PutMapping("/user/role")
+    ResponseEntity<RoleDto> updateRole(@RequestParam Long userId, @RequestBody UserRoleUpdateDto role) {
+        userService.get(userId).orElseThrow(InvalidPathException::new);
+        return ResponseEntity.ok(roleService.updateRole(role, userId));
     }
+
+    //TODO create instructor by admin (create user in general)
 
 }

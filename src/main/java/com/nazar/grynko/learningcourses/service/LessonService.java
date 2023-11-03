@@ -75,7 +75,7 @@ public class LessonService {
                 .collect(Collectors.toList());
     }
 
-    public List<UserToLessonDto> getAllUserToLessonForCourse(Long courseId, String login) {
+    public List<UserToLessonDto> getAllUsersLessonsForCourse(Long courseId, String login) {
         return userToLessonInternalService.getAllByUserLoginAndCourseId(login, courseId)
                 .stream()
                 .map(userToLessonMapper::toDto)

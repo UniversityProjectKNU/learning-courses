@@ -3,8 +3,10 @@ package com.nazar.grynko.learningcourses.controller;
 import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateDto;
 import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateDtoSave;
 import com.nazar.grynko.learningcourses.dto.chaptertemplate.ChapterTemplateDtoUpdate;
+import com.nazar.grynko.learningcourses.dto.lessontemplate.LessonTemplateDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.ChapterTemplateService;
+import com.nazar.grynko.learningcourses.service.LessonTemplateService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,52 +14,44 @@ import javax.annotation.security.RolesAllowed;
 import java.util.List;
 
 @RestController
-@RequestMapping("learning-courses/api/v1/courses-templates/{courseTemplateId}/chapters-templates/")
+@RequestMapping("learning-courses/api/v1/templates/chapters")
 @RolesAllowed({"INSTRUCTOR", "ADMIN"})
 public class ChapterTemplateController {
 
     private final ChapterTemplateService chapterTemplateService;
+    private final LessonTemplateService lessonTemplateService;
 
-    public ChapterTemplateController(ChapterTemplateService chapterTemplateService) {
+    public ChapterTemplateController(ChapterTemplateService chapterTemplateService,
+                                     LessonTemplateService lessonTemplateService) {
         this.chapterTemplateService = chapterTemplateService;
+        this.lessonTemplateService = lessonTemplateService;
     }
 
-    @GetMapping("/{id}")
-    ResponseEntity<ChapterTemplateDto> one(@PathVariable Long id, @PathVariable Long courseTemplateId) {
-        if (!chapterTemplateService.hasWithCourseTemplate(id, courseTemplateId)) {
-            throw new InvalidPathException();
-        }
-
-        return ResponseEntity.ok(chapterTemplateService.get(id)
+    @GetMapping("/chapter")
+    ResponseEntity<ChapterTemplateDto> one(@RequestParam Long chapterTemplateId) {
+        return ResponseEntity.ok(chapterTemplateService.get(chapterTemplateId)
                 .orElseThrow(InvalidPathException::new));
     }
 
-    @GetMapping
-    ResponseEntity<List<ChapterTemplateDto>> allInCourse(@PathVariable Long courseTemplateId) {
-        return ResponseEntity.ok(chapterTemplateService.getAllInCourseTemplate(courseTemplateId));
+    @GetMapping("/chapter/lessons")
+    ResponseEntity<List<LessonTemplateDto>> allLessonsInChapterTemplate(@RequestParam Long chapterTemplateId) {
+        return ResponseEntity.ok(lessonTemplateService.getAllInChapterTemplate(chapterTemplateId));
     }
 
-    @DeleteMapping("/{id}")
-    void delete(@PathVariable Long id, @PathVariable Long courseTemplateId) {
-        if (!chapterTemplateService.hasWithCourseTemplate(id, courseTemplateId)) {
-            throw new InvalidPathException();
-        }
-
-        chapterTemplateService.delete(id);
+    @DeleteMapping("/chapter")
+    void delete(@RequestParam Long chapterTemplateId) {
+        chapterTemplateService.delete(chapterTemplateId);
     }
 
     @PostMapping
-    ResponseEntity<ChapterTemplateDto> save(@RequestBody ChapterTemplateDtoSave chapterTemplateDtoSave, @PathVariable Long courseTemplateId) {
+    ResponseEntity<ChapterTemplateDto> save(@RequestParam Long courseTemplateId, @RequestBody ChapterTemplateDtoSave chapterTemplateDtoSave) {
         return ResponseEntity.ok(chapterTemplateService.save(chapterTemplateDtoSave, courseTemplateId));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/chapter")
     ResponseEntity<ChapterTemplateDto> update(@RequestBody ChapterTemplateDtoUpdate chapterTemplateDto,
-                              @PathVariable Long id, @PathVariable Long courseTemplateId) {
-        if (!chapterTemplateDto.getId().equals(id) || !chapterTemplateService.hasWithCourseTemplate(id, courseTemplateId)) {
-            throw new IllegalArgumentException();
-        }
-
+                              @RequestParam Long chapterTemplateId) {
+        chapterTemplateDto.setId(chapterTemplateId);
         return ResponseEntity.ok(chapterTemplateService.update(chapterTemplateDto));
     }
 

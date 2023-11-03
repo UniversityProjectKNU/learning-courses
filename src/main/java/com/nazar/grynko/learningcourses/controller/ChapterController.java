@@ -3,66 +3,58 @@ package com.nazar.grynko.learningcourses.controller;
 import com.nazar.grynko.learningcourses.dto.chapter.ChapterDto;
 import com.nazar.grynko.learningcourses.dto.chapter.ChapterDtoSave;
 import com.nazar.grynko.learningcourses.dto.chapter.ChapterDtoUpdate;
+import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.ChapterService;
+import com.nazar.grynko.learningcourses.service.LessonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
-@RequestMapping("learning-courses/api/v1/courses/{courseId}/chapters")
+@RequestMapping("learning-courses/api/v1/chapters")
 public class ChapterController {
 
     private final ChapterService chapterService;
+    private final LessonService lessonService;
 
     @Autowired
-    public ChapterController(ChapterService chapterService) {
+    public ChapterController(ChapterService chapterService,
+                             LessonService lessonService) {
         this.chapterService = chapterService;
+        this.lessonService = lessonService;
     }
 
-    @GetMapping("/{id}")
-    ResponseEntity<ChapterDto> one(@PathVariable Long id, @PathVariable Long courseId) {
-        if (!chapterService.hasWithCourse(id, courseId)) {
-            throw new InvalidPathException();
-        }
-
-        return ResponseEntity.ok(chapterService.get(id)
+    @GetMapping("/chapter")
+    ResponseEntity<ChapterDto> one(@RequestParam Long chapterId) {
+        return ResponseEntity.ok(chapterService.get(chapterId)
                 .orElseThrow(InvalidPathException::new));
     }
 
-    @GetMapping
-    ResponseEntity<List<ChapterDto>> allInCourse(@PathVariable Long courseId) {
-        return ResponseEntity.ok(chapterService.getAllInCourse(courseId));
+    @GetMapping("/chapter/lessons")
+    ResponseEntity<List<LessonDto>> allLessonsInChapter(@RequestParam Long chapterId) {
+        return ResponseEntity.ok(lessonService.getAllInChapter(chapterId));
     }
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
-    @DeleteMapping("/{id}")
-    void delete(@PathVariable Long id, @PathVariable Long courseId) {
-        if (!chapterService.hasWithCourse(id, courseId)) {
-            throw new InvalidPathException();
-        }
-
-        chapterService.delete(id);
+    @DeleteMapping("/chapter")
+    void delete(@RequestParam Long chapterId) {
+        chapterService.delete(chapterId);
     }
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PostMapping
-    ResponseEntity<ChapterDto> save(@RequestBody ChapterDtoSave chapterDto, @PathVariable Long courseId) {
+    ResponseEntity<ChapterDto> save(@RequestParam Long courseId, @RequestBody ChapterDtoSave chapterDto) {
         return ResponseEntity.ok(chapterService.save(chapterDto, courseId));
     }
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
-    @PutMapping("/{id}")
-    ResponseEntity<ChapterDto> update(@RequestBody ChapterDtoUpdate chapterDto, @PathVariable Long id, @PathVariable Long courseId) {
-        if (!chapterService.hasWithCourse(id, courseId) || !Objects.equals(chapterDto.getId(), id)) {
-            throw new InvalidPathException();
-        }
-
-        return ResponseEntity.ok(chapterService.update(chapterDto, id));
+    @PutMapping("/chapter")
+    ResponseEntity<ChapterDto> update(@RequestBody ChapterDtoUpdate chapterDto, @RequestParam Long chapterId) {
+        return ResponseEntity.ok(chapterService.update(chapterDto, chapterId));
     }
 
 }
