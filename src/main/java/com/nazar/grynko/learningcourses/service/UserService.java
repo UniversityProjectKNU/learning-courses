@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.service;
 
+import com.nazar.grynko.learningcourses.dto.role.UserRoleUpdateDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDtoUpdate;
 import com.nazar.grynko.learningcourses.mapper.UserMapper;
@@ -62,6 +63,11 @@ public class UserService {
 
     public UserDto save(User user) {
         user = userInternalService.save(user);
+        return userMapper.toDto(user);
+    }
+
+    public UserDto updateRole(UserRoleUpdateDto roleUpdate, Long userId) {
+        var user = userInternalService.updateRole(roleUpdate.getType(), userId);
         return userMapper.toDto(user);
     }
 

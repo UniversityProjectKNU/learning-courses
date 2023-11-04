@@ -1,6 +1,5 @@
 package com.nazar.grynko.learningcourses.security;
 
-import com.nazar.grynko.learningcourses.service.internal.RoleInternalService;
 import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,11 +14,9 @@ import java.util.stream.Stream;
 public class JwtUserDetailsService implements UserDetailsService {
 
     private final UserInternalService userInternalService;
-    private final RoleInternalService roleInternalService;
 
-    public JwtUserDetailsService(UserInternalService userInternalService, RoleInternalService roleInternalService) {
+    public JwtUserDetailsService(UserInternalService userInternalService) {
         this.userInternalService = userInternalService;
-        this.roleInternalService = roleInternalService;
     }
 
     @Override
@@ -28,7 +25,7 @@ public class JwtUserDetailsService implements UserDetailsService {
                 .getByLogin(login)
                 .orElseThrow(() -> new UsernameNotFoundException(String.format("User with login %s doesn't exist", login)));
 
-        var authorities = Stream.of(roleInternalService.getUsersRole(user.getId()))
+        var authorities = Stream.of(user.getRole())
                 .map(type -> new SimpleGrantedAuthority(type.toString()))
                 .collect(Collectors.toList());
 

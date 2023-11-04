@@ -1,5 +1,7 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
+import com.nazar.grynko.learningcourses.exception.InvalidPathException;
+import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.model.User;
 import com.nazar.grynko.learningcourses.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +13,13 @@ import java.util.Optional;
 @Service
 public class UserInternalService {
 
+    private final UserToCourseInternalService userToCourseInternalService;
     private final UserRepository userRepository;
 
     @Autowired
-    public UserInternalService(UserRepository userRepository) {
+    public UserInternalService(UserToCourseInternalService userToCourseInternalService,
+                               UserRepository userRepository) {
+        this.userToCourseInternalService = userToCourseInternalService;
         this.userRepository = userRepository;
     }
 
@@ -58,5 +63,29 @@ public class UserInternalService {
 
     public User save(User entity) {
         return userRepository.save(entity);
+    }
+
+    //TODO invalidate token after role is changed
+    public User updateRole(RoleType role, Long userId) {
+        if (hasUserActiveCourses(userId)) {
+            throw new IllegalArgumentException("Cannot update user's roles since user has active courses");
+        }
+
+        User user = get(userId)
+                .orElseThrow(InvalidPathException::new)
+                .setRole(role);
+        user = update(user);
+
+        return user;
+    }
+
+    private boolean hasUserActiveCourses(Long userId) {
+        var activeCoursesAmount = userToCourseInternalService
+                .getAllByUserId(userId)
+                .stream()
+                .filter(userToCourse -> !userToCourse.getCourse().getIsFinished())
+                .count();
+
+        return activeCoursesAmount > 0;
     }
 }

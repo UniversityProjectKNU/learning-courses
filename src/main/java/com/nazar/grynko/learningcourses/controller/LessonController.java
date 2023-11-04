@@ -87,7 +87,8 @@ public class LessonController {
                 .body(new ByteArrayResource(data));
     }
 
-    @DeleteMapping("/lesson/files/file")
+    //TODO implement this method for student only
+/*    @DeleteMapping("/lesson/files/file")
     public ResponseEntity<SimpleDto<String>> delete(@RequestParam Long lessonId, Principal principal) {
         if (lessonService.isFinished(lessonId)) {
             throw new InvalidPathException("You cannot upload file in finished lesson");
@@ -95,9 +96,9 @@ public class LessonController {
 
         userToLessonService.delete(lessonId, principal.getName());
         return ResponseEntity.ok(new SimpleDto<>("Ok"));
-    }
+    }*/
 
-    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
+    //@RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @DeleteMapping("/lesson/files/file")
     public ResponseEntity<SimpleDto<String>> delete(@RequestParam Long lessonId, @RequestParam Long userId) {
         if (lessonService.isFinished(lessonId)) {

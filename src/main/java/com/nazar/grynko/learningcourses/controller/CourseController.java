@@ -82,7 +82,6 @@ public class CourseController {
         return ResponseEntity.ok(courseService.update(courseDto, courseId));
     }
 
-    //TODO if course is finished - no actions with it
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/course/finish")
     ResponseEntity<CourseDto> finish(@RequestParam Long courseId) {

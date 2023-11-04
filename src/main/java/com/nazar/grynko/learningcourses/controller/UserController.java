@@ -6,7 +6,6 @@ import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDtoCreate;
 import com.nazar.grynko.learningcourses.dto.user.UserDtoUpdate;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
-import com.nazar.grynko.learningcourses.service.RoleService;
 import com.nazar.grynko.learningcourses.service.SecurityService;
 import com.nazar.grynko.learningcourses.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -22,14 +21,11 @@ public class UserController {
 
     private final UserService userService;
     private final SecurityService securityService;
-    private final RoleService roleService;
 
     public UserController(UserService userService,
-                          SecurityService securityService,
-                          RoleService roleService) {
+                          SecurityService securityService) {
         this.userService = userService;
         this.securityService = securityService;
-        this.roleService = roleService;
     }
 
     @GetMapping("/user")
@@ -61,16 +57,10 @@ public class UserController {
         return ResponseEntity.ok(userService.update(dtoUpdate, userId));
     }
 
-    @GetMapping("/user/role")
-    ResponseEntity<RoleDto> getUsersRole(@RequestParam Long userId) {
-        userService.get(userId).orElseThrow(InvalidPathException::new);
-        return ResponseEntity.ok(roleService.getUsersRoles(userId));
-    }
-
     @PutMapping("/user/role")
-    ResponseEntity<RoleDto> updateRole(@RequestParam Long userId, @RequestBody UserRoleUpdateDto role) {
+    ResponseEntity<UserDto> updateRole(@RequestParam Long userId, @RequestBody UserRoleUpdateDto role) {
         userService.get(userId).orElseThrow(InvalidPathException::new);
-        return ResponseEntity.ok(roleService.updateRole(role, userId));
+        return ResponseEntity.ok(userService.updateRole(role, userId));
     }
 
 }
