@@ -10,7 +10,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -83,10 +82,17 @@ public class JwtProvider {
         return expiration.before(new Date());
     }
 
-    //TODO check if roles are the same (maybe we need it after admin changed someone's roles)
+    private boolean sameAuthorities(String token, UserDetails userDetails) {
+        // in case if authorities are changed during the session
+        return userDetails.getAuthorities()
+                .stream()
+                .map(a -> ROLE_PREFIX + a.getAuthority())
+                .anyMatch(a -> extractAuthorities(token).stream().anyMatch(au -> Objects.equals(a, au.getAuthority())));
+    }
+
     public Boolean validateToken(String token, UserDetails userDetails) {
         var userLogin = extractLogin(token);
-        return userLogin.equals(userDetails.getUsername()) && !isExpired(token);
+        return userLogin.equals(userDetails.getUsername()) && !isExpired(token) && sameAuthorities(token, userDetails);
     }
 
     UsernamePasswordAuthenticationToken getAuthenticationToken(String token, UserDetails userDetails) {

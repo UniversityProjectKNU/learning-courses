@@ -2,6 +2,7 @@ package com.nazar.grynko.learningcourses.security;
 
 import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -24,16 +25,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtUserDetailsService jwtUserDetailsService;
 
 
-    public JwtAuthenticationFilter(JwtProvider jwtProvider, JwtUserDetailsService jwtUserDetailsService) {
+    public JwtAuthenticationFilter(JwtProvider jwtProvider,
+                                   JwtUserDetailsService jwtUserDetailsService) {
         this.jwtProvider = jwtProvider;
         this.jwtUserDetailsService = jwtUserDetailsService;
     }
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
-        var header = request.getHeader(AUTHORIZATION_HEADER);
+    protected void doFilterInternal(HttpServletRequest req,
+                                    @NonNull HttpServletResponse resp,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
+        var header = req.getHeader(AUTHORIZATION_HEADER);
 
         if (header != null && header.startsWith(TOKEN_PREFIX)) {
             var jwtToken = header.replace(TOKEN_PREFIX, "").trim();
@@ -53,6 +55,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         }
 
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(req, resp);
     }
 }

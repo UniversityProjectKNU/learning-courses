@@ -10,15 +10,23 @@ import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.security.JwtProvider;
 import com.nazar.grynko.learningcourses.security.JwtUserDetailsService;
 import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.nonNull;
 
 @Service
 public class SecurityService {
+
+    @Value("${security.authorization.header}")
+    private String AUTHORIZATION_HEADER;
 
     private final JwtUserDetailsService jwtUserDetailsService;
     private final JwtProvider jwtProvider;
@@ -83,4 +91,18 @@ public class SecurityService {
         return userMapper.toDto(user);
     }
 
+    public void logout(HttpServletRequest req, HttpServletResponse resp) {
+        var cookies = req.getCookies();
+
+        if (nonNull(cookies)) {
+            for (var c: cookies) {
+                if (AUTHORIZATION_HEADER.equals(c.getName())) {
+                    c.setValue("");
+                    c.setMaxAge(0);
+                    resp.addCookie(c);
+                    break;
+                }
+            }
+        }
+    }
 }

@@ -65,7 +65,6 @@ public class UserInternalService {
         return userRepository.save(entity);
     }
 
-    //TODO invalidate token after role is changed
     public User updateRole(RoleType role, Long userId) {
         if (hasUserActiveCourses(userId)) {
             throw new IllegalArgumentException("Cannot update user's roles since user has active courses");
