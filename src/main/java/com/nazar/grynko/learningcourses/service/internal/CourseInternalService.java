@@ -5,6 +5,7 @@ import com.nazar.grynko.learningcourses.model.Course;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.model.User;
 import com.nazar.grynko.learningcourses.model.UserToCourse;
+import com.nazar.grynko.learningcourses.repository.CourseOwnerRepository;
 import com.nazar.grynko.learningcourses.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class CourseInternalService {
     private final UserToCourseInternalService userToCourseInternalService;
     private final UserToLessonInternalService userToLessonInternalService;
     private final CourseRepository courseRepository;
+    private final CourseOwnerRepository courseOwnerRepository;
 
     @Value("${max.courses.number.at.time}")
     private Integer MAX_COURSES_NUMBER;
@@ -40,7 +42,8 @@ public class CourseInternalService {
                                  LessonInternalService lessonInternalService,
                                  CourseMapper courseMapper,
                                  UserToCourseInternalService userToCourseInternalService,
-                                 UserToLessonInternalService userToLessonInternalService) {
+                                 UserToLessonInternalService userToLessonInternalService,
+                                 CourseOwnerRepository courseOwnerRepository) {
         this.courseRepository = courseRepository;
         this.courseTemplateInternalService = courseTemplateInternalService;
         this.lessonTemplateInternalService = lessonTemplateInternalService;
@@ -50,6 +53,7 @@ public class CourseInternalService {
         this.courseMapper = courseMapper;
         this.userToCourseInternalService = userToCourseInternalService;
         this.userToLessonInternalService = userToLessonInternalService;
+        this.courseOwnerRepository = courseOwnerRepository;
     }
 
     public Optional<Course> get(Long id) {
@@ -113,9 +117,9 @@ public class CourseInternalService {
         return entity;
     }
 
-    public Course save(Course entity) {
+/*    public Course save(Course entity) {
         return courseRepository.save(entity);
-    }
+    }*/
 
     public Course update(Course course) {
         var dbCourse = courseRepository.findById(course.getId())
@@ -160,6 +164,10 @@ public class CourseInternalService {
         return userToCourseInternalService.save(entity);
     }
 
+    public void removeFromCourse(Long courseId, Long userId) {
+
+    }
+
     private boolean isValidAmountOfCourses(User user) {
         var courses = userToCourseInternalService.getAllByUserId(user.getId());
         var activeCoursesAmount = (int) courses.stream()
@@ -186,9 +194,8 @@ public class CourseInternalService {
         return courses.collect(Collectors.toList());
     }
 
-    public UserToCourse getUsersCourseInfo(Long id, Long userId) {
-        return userToCourseInternalService.getByUserIdAndCourseId(userId, id)
-                .orElseThrow(() -> new IllegalArgumentException("User doesn't have this course"));
+    public User getCourseOwner(Long courseId) {
+        return courseOwnerRepository.getCourseOwnerByCourseId(courseId).getUser();
     }
 
     private void fillNullFields(Course source, Course destination) {

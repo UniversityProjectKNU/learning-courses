@@ -123,4 +123,9 @@ public class CourseController {
         return ResponseEntity.ok(courseService.updateUserToCourse(courseId, userId, userToCourseDto));
     }
 
+    @GetMapping("/course/users/owner")
+    ResponseEntity<?> getCourseOwner(@RequestParam Long courseId) {
+        return ResponseEntity.ok(courseService.getCourseOwner(courseId));
+    }
+
 }

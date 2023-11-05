@@ -1,6 +1,8 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
 import com.nazar.grynko.learningcourses.model.CourseTemplate;
+import com.nazar.grynko.learningcourses.model.User;
+import com.nazar.grynko.learningcourses.repository.CourseTemplateOwnerRepository;
 import com.nazar.grynko.learningcourses.repository.CourseTemplateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,10 +16,13 @@ import static java.util.Objects.isNull;
 public class CourseTemplateInternalService {
 
     private final CourseTemplateRepository courseTemplateRepository;
+    private final CourseTemplateOwnerRepository courseTemplateOwnerRepository;
 
     @Autowired
-    public CourseTemplateInternalService(CourseTemplateRepository courseTemplateRepository) {
+    public CourseTemplateInternalService(CourseTemplateRepository courseTemplateRepository,
+                                         CourseTemplateOwnerRepository courseTemplateOwnerRepository) {
         this.courseTemplateRepository = courseTemplateRepository;
+        this.courseTemplateOwnerRepository = courseTemplateOwnerRepository;
     }
 
     public Optional<CourseTemplate> get(Long id) {
@@ -51,4 +56,7 @@ public class CourseTemplateInternalService {
         if (isNull(destination.getDescription())) destination.setDescription(source.getDescription());
     }
 
+    public User getCourseTemplateOwner(Long courseTemplateId) {
+        return courseTemplateOwnerRepository.getCourseTemplateOwnerByCourseTemplateId(courseTemplateId).getUser();
+    }
 }

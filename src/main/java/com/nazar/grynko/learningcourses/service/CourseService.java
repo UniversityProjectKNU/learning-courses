@@ -1,12 +1,13 @@
 package com.nazar.grynko.learningcourses.service;
 
 import com.nazar.grynko.learningcourses.dto.course.CourseDto;
-import com.nazar.grynko.learningcourses.dto.course.CourseDtoSave;
 import com.nazar.grynko.learningcourses.dto.course.CourseDtoUpdate;
+import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDto;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseInfoDto;
 import com.nazar.grynko.learningcourses.mapper.CourseMapper;
+import com.nazar.grynko.learningcourses.mapper.UserMapper;
 import com.nazar.grynko.learningcourses.mapper.UserToCourseMapper;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.service.internal.CourseInternalService;
@@ -28,17 +29,20 @@ public class CourseService {
     private final UserToCourseInternalService userToCourseInternalService;
     private final CourseMapper courseMapper;
     private final UserToCourseMapper userToCourseMapper;
+    private final UserMapper userMapper;
 
     public CourseService(CourseInternalService courseInternalService,
                          UserInternalService userInternalService,
                          UserToCourseInternalService userToCourseInternalService,
                          CourseMapper courseMapper,
-                         UserToCourseMapper userToCourseMapper) {
+                         UserToCourseMapper userToCourseMapper,
+                         UserMapper userMapper) {
         this.courseInternalService = courseInternalService;
         this.userInternalService = userInternalService;
         this.userToCourseInternalService = userToCourseInternalService;
         this.courseMapper = courseMapper;
         this.userToCourseMapper = userToCourseMapper;
+        this.userMapper = userMapper;
     }
 
     public Optional<CourseDto> get(Long id) {
@@ -106,7 +110,8 @@ public class CourseService {
     public UserToCourseDto getUsersCourseInfo(Long id, String login) {
         var userId = userInternalService.getByLogin(login).orElseThrow(IllegalArgumentException::new).getId();
 
-        var userToCourse = courseInternalService.getUsersCourseInfo(id, userId);
+        var userToCourse = userToCourseInternalService.getByUserIdAndCourseId(userId, id)
+                .orElseThrow(() -> new IllegalArgumentException("User doesn't have this course"));
         return userToCourseMapper.toDto(userToCourse);
     }
 
@@ -114,7 +119,8 @@ public class CourseService {
         userInternalService.get(userId)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("User %d doesn't exist", userId)));
 
-        var userToCourse = courseInternalService.getUsersCourseInfo(id, userId);
+        var userToCourse = userToCourseInternalService.getByUserIdAndCourseId(userId, id)
+                .orElseThrow(() -> new IllegalArgumentException("User doesn't have this course"));
         return userToCourseMapper.toDto(userToCourse);
     }
 
@@ -129,6 +135,11 @@ public class CourseService {
                 .orElseThrow(() -> new IllegalArgumentException(String.format("Course %d doesn't exist", id)));
         var entity = courseInternalService.finish(id);
         return courseMapper.toDto(entity);
+    }
+
+    public UserDto getCourseOwner(Long courseId) {
+        var owner = courseInternalService.getCourseOwner(courseId);
+        return userMapper.toDto(owner);
     }
 
 }

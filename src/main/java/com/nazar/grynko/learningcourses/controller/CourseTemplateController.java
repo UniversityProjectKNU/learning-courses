@@ -85,4 +85,9 @@ public class CourseTemplateController {
         return ResponseEntity.ok(courseService.create(courseTemplateId, principal.getName()));
     }
 
+    @GetMapping("/course/users/owner")
+    ResponseEntity<?> getCourseTemplateOwner(@RequestParam Long courseTemplateId) {
+        return ResponseEntity.ok(courseTemplateService.getCourseTemplateOwner(courseTemplateId));
+    }
+
 }

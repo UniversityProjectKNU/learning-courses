@@ -27,7 +27,7 @@ public class CourseOwner {
             nullable = false,
             foreignKey = @ForeignKey(name = "fk_course_owners_to_course_template_id")
     )
-    private Course courseTemplate;
+    private Course course;
 
     @OneToOne
     @JoinColumn(
