@@ -3,11 +3,13 @@ package com.nazar.grynko.learningcourses.service.internal;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.model.UserToCourse;
 import com.nazar.grynko.learningcourses.model.UserToLesson;
+import com.nazar.grynko.learningcourses.repository.CourseOwnerRepository;
 import com.nazar.grynko.learningcourses.repository.LessonRepository;
 import com.nazar.grynko.learningcourses.repository.UserToCourseRepository;
 import com.nazar.grynko.learningcourses.repository.UserToLessonRepository;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -19,13 +21,16 @@ public class UserToCourseInternalService {
     private final UserToCourseRepository userToCourseRepository;
     private final UserToLessonRepository userToLessonRepository;
     private final LessonRepository lessonRepository;
+    private final CourseOwnerRepository courseOwnerRepository;
 
     public UserToCourseInternalService(UserToCourseRepository userToCourseRepository,
                                        UserToLessonRepository userToLessonRepository,
-                                       LessonRepository lessonRepository) {
+                                       LessonRepository lessonRepository,
+                                       CourseOwnerRepository courseOwnerRepository) {
         this.userToCourseRepository = userToCourseRepository;
         this.userToLessonRepository = userToLessonRepository;
         this.lessonRepository = lessonRepository;
+        this.courseOwnerRepository = courseOwnerRepository;
     }
 
     public UserToCourse save(UserToCourse entity) {
@@ -91,4 +96,17 @@ public class UserToCourseInternalService {
         userToCourseRepository.saveAll(usersToCourses.values());
     }
 
+    @Transactional
+    public void removeUserFromCourse(Long courseId, Long userId) {
+        userToCourseRepository.getByUserIdAndCourseId(userId, courseId)
+                .orElseThrow(() -> new IllegalArgumentException("There is no user with such course."));
+
+        var courseOwner = courseOwnerRepository.getCourseOwnerByCourseId(courseId);
+        if (courseOwner.getUser().getId().equals(userId)) {
+            throw new IllegalArgumentException("Cannot remove course owner from their course.");
+        }
+
+        userToCourseRepository.deleteByCourseIdAndUserId(courseId, userId);
+        userToLessonRepository.deleteAllByUserIdAndLessonChapterCourseId(userId, courseId);
+    }
 }

@@ -13,13 +13,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("learning-courses/api/v1/my")
-public class UserCourseController {
+public class MyController {
 
     private final CourseService courseService;
     private final LessonService lessonService;
 
-    public UserCourseController(CourseService courseService,
-                                LessonService lessonService) {
+    public MyController(CourseService courseService,
+                        LessonService lessonService) {
         this.courseService = courseService;
         this.lessonService = lessonService;
     }

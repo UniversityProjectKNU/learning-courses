@@ -142,4 +142,7 @@ public class CourseService {
         return userMapper.toDto(owner);
     }
 
+    public void removeUserFromCourse(Long courseId, Long userId) {
+        userToCourseInternalService.removeUserFromCourse(courseId, userId);
+    }
 }

@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+//TODO doesn't catch other exceptions
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler {

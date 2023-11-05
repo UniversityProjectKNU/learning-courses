@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,6 +42,7 @@ public class Lesson {
             nullable = false,
             foreignKey = @ForeignKey(name = "fk_lessons_chapter_id")
     )
+    @JsonIgnore
     private Chapter chapter;
 
 }

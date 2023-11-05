@@ -4,6 +4,7 @@ import com.nazar.grynko.learningcourses.dto.chapter.ChapterDto;
 import com.nazar.grynko.learningcourses.dto.course.CourseDto;
 import com.nazar.grynko.learningcourses.dto.course.CourseDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
+import com.nazar.grynko.learningcourses.dto.simple.SimpleDto;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDto;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseInfoDto;
@@ -98,29 +99,40 @@ public class CourseController {
 
     @RolesAllowed("ADMIN")
     @PostMapping("/course/users/enroll")
-    ResponseEntity<UserToCourseDto> enrollWithoutApproval(@RequestParam Long courseId, @RequestParam Long userId) {
+    ResponseEntity<UserToCourseDto> enrollWithoutApproval(@RequestParam Long courseId,
+                                                          @RequestParam Long userId) {
         return ResponseEntity.ok(courseService.enroll(courseId, userId));
     }
 
     // It meant to return information for all users and only small part of it (only users), but it was very handy for general use.
     // Probably we should separate getAllUsersForCourse and getAllUsersToCourseInfo
     @GetMapping("/course/users/info")
-    ResponseEntity<List<UserToCourseInfoDto>> allInfoOfUsersInCourse(@RequestParam Long courseId, @RequestParam(required = false) RoleType roleType) {
+    ResponseEntity<List<UserToCourseInfoDto>> allInfoOfUsersInCourse(@RequestParam Long courseId,
+                                                                     @RequestParam(required = false) RoleType roleType) {
         return ResponseEntity.ok(courseService.getAllUserToCourseInfoForCourse(courseId, roleType));
     }
 
     @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @GetMapping("/course/users/user/info")
-    ResponseEntity<UserToCourseDto> getUsersCourseInfo(@RequestParam Long courseId, @RequestParam Long userId) {
+    ResponseEntity<UserToCourseDto> getUsersCourseInfo(@RequestParam Long courseId,
+                                                       @RequestParam Long userId) {
         return ResponseEntity.ok(courseService.getUsersCourseInfo(courseId, userId));
     }
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/course/users/user/info")
     ResponseEntity<UserToCourseDto> updateUsersCourseInfo(@RequestParam Long courseId,
-                                            @RequestParam Long userId,
-                                            @RequestBody UserToCourseDtoUpdate userToCourseDto) {
+                                                          @RequestParam Long userId,
+                                                          @RequestBody UserToCourseDtoUpdate userToCourseDto) {
         return ResponseEntity.ok(courseService.updateUserToCourse(courseId, userId, userToCourseDto));
+    }
+
+    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
+    @DeleteMapping("/course/users/user")
+    ResponseEntity<?> removeUserFromCourse(@RequestParam Long courseId,
+                                           @RequestParam Long userId) {
+        courseService.removeUserFromCourse(courseId, userId);
+        return ResponseEntity.ok(new SimpleDto<>("OK"));
     }
 
     @GetMapping("/course/users/owner")
