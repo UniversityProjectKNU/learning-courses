@@ -1,7 +1,6 @@
 package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.dto.chapter.ChapterDto;
-import com.nazar.grynko.learningcourses.dto.chapter.ChapterDtoSave;
 import com.nazar.grynko.learningcourses.dto.chapter.ChapterDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
@@ -45,11 +44,11 @@ public class ChapterController {
         chapterService.delete(chapterId);
     }
 
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
+/*    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PostMapping
     ResponseEntity<ChapterDto> save(@RequestParam Long courseId, @RequestBody ChapterDtoSave chapterDto) {
         return ResponseEntity.ok(chapterService.save(chapterDto, courseId));
-    }
+    }*/
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/chapter")

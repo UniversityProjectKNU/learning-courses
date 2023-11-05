@@ -2,7 +2,6 @@ package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.dto.chapter.ChapterDto;
 import com.nazar.grynko.learningcourses.dto.course.CourseDto;
-import com.nazar.grynko.learningcourses.dto.course.CourseDtoSave;
 import com.nazar.grynko.learningcourses.dto.course.CourseDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDto;
@@ -66,11 +65,11 @@ public class CourseController {
         courseService.delete(courseId);
     }
 
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
+    /*@RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PostMapping
-    ResponseEntity<CourseDto> save(@RequestBody CourseDtoSave courseDto) {
-        return ResponseEntity.ok(courseService.save(courseDto));
-    }
+    ResponseEntity<CourseDto> save(@RequestBody CourseDtoSave courseDto, Principal principal) {
+        return ResponseEntity.ok(courseService.save(courseDto*//*, principal.getName()*//*));
+    }*/
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/course")
@@ -90,16 +89,17 @@ public class CourseController {
 
     //TODO instructor enroll
     //approval
-    @RolesAllowed("STUDENT")
+    @RolesAllowed("STUDENT, INSTRUCOR")
     @PostMapping("/course/enroll")
     ResponseEntity<UserToCourseDto> enroll(@RequestParam Long courseId, Principal principal) {
-        return ResponseEntity.ok(courseService.enroll(courseId, principal.getName()));
+        //return ResponseEntity.ok(courseService.enroll(courseId, principal.getName()));
+        return null;
     }
 
     @RolesAllowed("ADMIN")
     @PostMapping("/course/users/enroll")
     ResponseEntity<UserToCourseDto> enrollWithoutApproval(@RequestParam Long courseId, @RequestParam Long userId) {
-        return ResponseEntity.ok(courseService.enrollWithoutApproval(courseId, userId));
+        return ResponseEntity.ok(courseService.enroll(courseId, userId));
     }
 
     // It meant to return information for all users and only small part of it (only users), but it was very handy for general use.

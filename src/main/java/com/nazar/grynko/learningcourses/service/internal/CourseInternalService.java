@@ -125,51 +125,20 @@ public class CourseInternalService {
     }
 
     @Transactional
-    public UserToCourse enroll(Long courseId, String login) {
-        var user = userInternalService.getByLogin(login).orElseThrow(
+    public UserToCourse enroll(Long courseId, Long userId) {
+        var user = userInternalService.get(userId).orElseThrow(
                 () -> new IllegalArgumentException("User doesn't exist"));
-        var course = get(courseId).orElseThrow(
-                () -> new IllegalArgumentException("Course doesn't exist"));
 
-
-        var optional = userToCourseInternalService.getByUserIdAndCourseId(user.getId(), courseId);
-        if (optional.isPresent()) {
-            throw new IllegalArgumentException(String.format(
-                    "User (%s) %d was already assign to the course %d", user.getRole().name(), user.getId(), courseId));
-        }
-        if (!isValidAmountOfCourses(user)) {
-            throw new IllegalStateException(
-                    String.format("User %d already has max amount of courses (%d)", user.getId(), MAX_COURSES_NUMBER));
-        }
-
-        var entity = new UserToCourse()
-                .setUser(user)
-                .setCourse(course)
-                .setMark(0f)
-                .setIsPassed(false);
-
-        entity = userToCourseInternalService.save(entity);
-        lessonInternalService.enroll(user, course.getId());
-
-        return entity;
-    }
-
-    public UserToCourse enrollWithoutApproval(Long courseId, Long userId) {
-        var user = userInternalService.get(userId).orElseThrow(IllegalAccessError::new);
-
-        if (user.getRole().equals(RoleType.STUDENT)) {
-            return enroll(courseId, user.getLogin());
-        } else if (user.getRole().equals(RoleType.ADMIN)) {
+        if (user.getRole().equals(RoleType.ADMIN)) {
             throw new IllegalArgumentException("You cannot enroll ADMIN to course");
         }
 
-        var optional = userToCourseInternalService.getByUserIdAndCourseId(userId, courseId);
-        if (optional.isPresent()) {
-            throw new IllegalArgumentException(String.format(
-                    "User (%s) %d was already assign to the course %d", user.getRole().name(), userId, courseId));
-        }
+        userToCourseInternalService.getByUserIdAndCourseId(userId, courseId)
+                .orElseThrow(() -> new IllegalArgumentException(String.format(
+                        "User (%s) %d was already assign to the course %d", user.getRole().name(), userId, courseId)));
 
-        var course = get(courseId).orElseThrow(IllegalArgumentException::new);
+        var course = get(courseId).orElseThrow(
+                () -> new IllegalArgumentException("Course doesn't exist"));
 
         var entity = new UserToCourse()
                 .setUser(user)
@@ -177,6 +146,17 @@ public class CourseInternalService {
                 .setMark(0f)
                 .setIsPassed(false);
 
+        if (user.getRole().equals(RoleType.STUDENT)) {
+            if (!isValidAmountOfCourses(user)) {
+                throw new IllegalStateException(
+                        String.format("User %d already has max amount of courses (%d)", user.getId(), MAX_COURSES_NUMBER));
+            }
+
+            entity = userToCourseInternalService.save(entity);
+            lessonInternalService.enroll(user, course.getId());
+
+            return entity;
+        }
         return userToCourseInternalService.save(entity);
     }
 

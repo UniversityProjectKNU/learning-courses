@@ -63,22 +63,17 @@ public class CourseService {
         return courseMapper.toDto(course);
     }
 
-    public CourseDto save(CourseDtoSave dto) {
+/*    public CourseDto save(CourseDtoSave dto) {
         var entity = courseMapper.fromDtoSave(dto);
         entity.setIsFinished(false);
 
         return courseMapper.toDto(courseInternalService.save(entity));
-    }
+    }*/
 
     public CourseDto update(CourseDtoUpdate dto, Long courseId) {
         var entity = courseMapper.fromDtoUpdate(dto).setId(courseId);
         entity = courseInternalService.update(entity);
         return courseMapper.toDto(entity);
-    }
-
-    public UserToCourseDto enroll(Long id, String login) {
-        var entity = courseInternalService.enroll(id, login);
-        return userToCourseMapper.toDto(entity);
     }
 
     public List<UserToCourseInfoDto> getAllUserToCourseInfoForCourse(Long id, RoleType roleType) {
@@ -96,8 +91,8 @@ public class CourseService {
                 .collect(Collectors.toList());
     }
 
-    public UserToCourseDto enrollWithoutApproval(Long courseId, Long userId) {
-        var userToCourse = courseInternalService.enrollWithoutApproval(courseId, userId);
+    public UserToCourseDto enroll(Long courseId, Long userId) {
+        var userToCourse = courseInternalService.enroll(courseId, userId);
         return userToCourseMapper.toDto(userToCourse);
     }
 

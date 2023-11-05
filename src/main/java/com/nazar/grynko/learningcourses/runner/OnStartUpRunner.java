@@ -35,10 +35,10 @@ public class OnStartUpRunner implements CommandLineRunner {
         var courseDto = courseService.create(1L, instructor1Dto.getLogin());
 
         var student1Dto = userService.get(4L).orElseThrow(IllegalArgumentException::new);
-        courseService.enroll(courseDto.getId(), student1Dto.getLogin());
+        courseService.enroll(courseDto.getId(), student1Dto.getId());
 
         var student2Dto = userService.get(5L).orElseThrow(IllegalArgumentException::new);
-        courseService.enroll(courseDto.getId(), student2Dto.getLogin());
+        courseService.enroll(courseDto.getId(), student2Dto.getId());
 
 
         var student1Lessons = userToLessonRepository.getAllByUserLoginAndCourseId(student1Dto.getLogin(), courseDto.getId());
