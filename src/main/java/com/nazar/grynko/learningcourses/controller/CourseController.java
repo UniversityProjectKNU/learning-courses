@@ -96,11 +96,10 @@ public class CourseController {
         return ResponseEntity.ok(courseService.enroll(courseId, principal.getName()));
     }
 
-    //TODO enroll someone as ADMIN without approval
     @RolesAllowed("ADMIN")
-    @PutMapping("/course/users/instructors")
-    ResponseEntity<UserToCourseDto> assignInstructor(@RequestParam Long courseId, @RequestParam Long instructorId) {
-        return ResponseEntity.ok(courseService.assignInstructor(courseId, instructorId));
+    @PostMapping("/course/users/enroll")
+    ResponseEntity<UserToCourseDto> enrollWithoutApproval(@RequestParam Long courseId, @RequestParam Long userId) {
+        return ResponseEntity.ok(courseService.enrollWithoutApproval(courseId, userId));
     }
 
     // It meant to return information for all users and only small part of it (only users), but it was very handy for general use.

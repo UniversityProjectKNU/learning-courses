@@ -15,7 +15,6 @@ import com.nazar.grynko.learningcourses.service.internal.UserToCourseInternalSer
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -97,8 +96,8 @@ public class CourseService {
                 .collect(Collectors.toList());
     }
 
-    public UserToCourseDto assignInstructor(Long id, Long instructorId) {
-        var userToCourse = courseInternalService.assignInstructor(id, instructorId);
+    public UserToCourseDto enrollWithoutApproval(Long courseId, Long userId) {
+        var userToCourse = courseInternalService.enrollWithoutApproval(courseId, userId);
         return userToCourseMapper.toDto(userToCourse);
     }
 

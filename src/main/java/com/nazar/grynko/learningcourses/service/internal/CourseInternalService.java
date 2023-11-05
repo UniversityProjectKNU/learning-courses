@@ -1,7 +1,10 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
 import com.nazar.grynko.learningcourses.mapper.CourseMapper;
-import com.nazar.grynko.learningcourses.model.*;
+import com.nazar.grynko.learningcourses.model.Course;
+import com.nazar.grynko.learningcourses.model.RoleType;
+import com.nazar.grynko.learningcourses.model.User;
+import com.nazar.grynko.learningcourses.model.UserToCourse;
 import com.nazar.grynko.learningcourses.repository.CourseRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -128,6 +131,12 @@ public class CourseInternalService {
         var course = get(courseId).orElseThrow(
                 () -> new IllegalArgumentException("Course doesn't exist"));
 
+
+        var optional = userToCourseInternalService.getByUserIdAndCourseId(user.getId(), courseId);
+        if (optional.isPresent()) {
+            throw new IllegalArgumentException(String.format(
+                    "User (%s) %d was already assign to the course %d", user.getRole().name(), user.getId(), courseId));
+        }
         if (!isValidAmountOfCourses(user)) {
             throw new IllegalStateException(
                     String.format("User %d already has max amount of courses (%d)", user.getId(), MAX_COURSES_NUMBER));
@@ -145,20 +154,22 @@ public class CourseInternalService {
         return entity;
     }
 
-    public UserToCourse assignInstructor(Long id, Long instructorId) {
-        var user = userInternalService.get(instructorId).orElseThrow(IllegalAccessError::new);
+    public UserToCourse enrollWithoutApproval(Long courseId, Long userId) {
+        var user = userInternalService.get(userId).orElseThrow(IllegalAccessError::new);
 
-        if (user.getRole().equals(RoleType.INSTRUCTOR)) {
-            throw new IllegalArgumentException("Cannot assign not instructor");
+        if (user.getRole().equals(RoleType.STUDENT)) {
+            return enroll(courseId, user.getLogin());
+        } else if (user.getRole().equals(RoleType.ADMIN)) {
+            throw new IllegalArgumentException("You cannot enroll ADMIN to course");
         }
 
-        var optional = userToCourseInternalService.getByUserIdAndCourseId(instructorId, id);
+        var optional = userToCourseInternalService.getByUserIdAndCourseId(userId, courseId);
         if (optional.isPresent()) {
             throw new IllegalArgumentException(String.format(
-                    "Instructor %d was already assign to the course %d", instructorId, id));
+                    "User (%s) %d was already assign to the course %d", user.getRole().name(), userId, courseId));
         }
 
-        var course = get(id).orElseThrow(IllegalArgumentException::new);
+        var course = get(courseId).orElseThrow(IllegalArgumentException::new);
 
         var entity = new UserToCourse()
                 .setUser(user)
