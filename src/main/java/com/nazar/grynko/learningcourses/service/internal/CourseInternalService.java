@@ -1,12 +1,10 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
 import com.nazar.grynko.learningcourses.mapper.CourseMapper;
-import com.nazar.grynko.learningcourses.model.Course;
-import com.nazar.grynko.learningcourses.model.RoleType;
-import com.nazar.grynko.learningcourses.model.User;
-import com.nazar.grynko.learningcourses.model.UserToCourse;
+import com.nazar.grynko.learningcourses.model.*;
 import com.nazar.grynko.learningcourses.repository.CourseOwnerRepository;
 import com.nazar.grynko.learningcourses.repository.CourseRepository;
+import com.nazar.grynko.learningcourses.repository.EnrollRequestRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +12,9 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Service
 public class CourseInternalService {
@@ -28,6 +29,7 @@ public class CourseInternalService {
     private final UserToLessonInternalService userToLessonInternalService;
     private final CourseRepository courseRepository;
     private final CourseOwnerRepository courseOwnerRepository;
+    private final EnrollRequestRepository enrollRequestRepository;
 
     @Value("${max.courses.number.at.time}")
     private Integer MAX_COURSES_NUMBER;
@@ -43,7 +45,8 @@ public class CourseInternalService {
                                  CourseMapper courseMapper,
                                  UserToCourseInternalService userToCourseInternalService,
                                  UserToLessonInternalService userToLessonInternalService,
-                                 CourseOwnerRepository courseOwnerRepository) {
+                                 CourseOwnerRepository courseOwnerRepository,
+                                 EnrollRequestRepository enrollRequestRepository) {
         this.courseRepository = courseRepository;
         this.courseTemplateInternalService = courseTemplateInternalService;
         this.lessonTemplateInternalService = lessonTemplateInternalService;
@@ -54,6 +57,7 @@ public class CourseInternalService {
         this.userToCourseInternalService = userToCourseInternalService;
         this.userToLessonInternalService = userToLessonInternalService;
         this.courseOwnerRepository = courseOwnerRepository;
+        this.enrollRequestRepository = enrollRequestRepository;
     }
 
     public Optional<Course> get(Long id) {
@@ -164,10 +168,6 @@ public class CourseInternalService {
         return userToCourseInternalService.save(entity);
     }
 
-    public void removeFromCourse(Long courseId, Long userId) {
-
-    }
-
     private boolean isValidAmountOfCourses(User user) {
         var courses = userToCourseInternalService.getAllByUserId(user.getId());
         var activeCoursesAmount = (int) courses.stream()
@@ -205,8 +205,44 @@ public class CourseInternalService {
         if (destination.getIsFinished() == null) destination.setIsFinished(source.getIsFinished());
     }
 
-    public boolean courseExists(Long id) {
-        return get(id).isPresent();
+    public EnrollRequest sendEnrollRequest(Long courseId, String login) {
+        var enrollRequest = enrollRequestRepository.getByCourseIdAndUserLoginAndIsActiveTrue(courseId, login);
+        if (nonNull(enrollRequest)) {
+            throw new IllegalArgumentException("User already has active request");
+        }
+
+        var user = userInternalService.getByLogin(login).orElseThrow(IllegalArgumentException::new);
+        var course = get(courseId).orElseThrow(IllegalArgumentException::new);
+
+        enrollRequest = new EnrollRequest()
+                .setUser(user)
+                .setCourse(course)
+                .setIsActive(true)
+                .setIsApproved(false);
+
+        return enrollRequestRepository.save(enrollRequest);
     }
 
+    public List<EnrollRequest> getAllEnrollRequestsForCourse(Long courseId, Boolean isActive) {
+        if (isNull(isActive)) {
+            return enrollRequestRepository.getAllByCourseId(courseId);
+        }
+        return enrollRequestRepository.getAllByCourseIdAndIsActive(courseId, isActive);
+    }
+
+    public UserToCourse approveEnrollRequest(Long enrollRequestId, Boolean isApproved) {
+        var enrollRequest = enrollRequestRepository.findById(enrollRequestId)
+                .orElseThrow(() -> new IllegalArgumentException("No such enroll request."));
+
+        enrollRequest.setIsActive(false)
+                .setIsApproved(isApproved);
+
+        enrollRequestRepository.save(enrollRequest);
+
+        if (!isApproved) {
+            return null;
+        }
+
+        return enroll(enrollRequest.getCourse().getId(), enrollRequest.getUser().getId());
+    }
 }

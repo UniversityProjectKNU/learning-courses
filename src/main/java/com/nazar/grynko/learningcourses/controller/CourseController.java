@@ -88,17 +88,28 @@ public class CourseController {
         return ResponseEntity.ok(courseService.finish(courseId));
     }
 
-    //TODO instructor enroll
-    //approval
-    @RolesAllowed("STUDENT, INSTRUCOR")
-    @PostMapping("/course/enroll")
-    ResponseEntity<UserToCourseDto> enroll(@RequestParam Long courseId, Principal principal) {
-        //return ResponseEntity.ok(courseService.enroll(courseId, principal.getName()));
-        return null;
+    @RolesAllowed({"STUDENT", "INSTRUCTOR"})
+    @PostMapping("/course/enrolls")
+    ResponseEntity<?> sendEnrollRequest(@RequestParam Long courseId, Principal principal) {
+        return ResponseEntity.ok(courseService.sendEnrollRequest(courseId, principal.getName()));
+    }
+
+    @RolesAllowed({"STUDENT", "INSTRUCTOR"})
+    @GetMapping("/course/enrolls")
+    ResponseEntity<?> getAllEnrollRequests(@RequestParam Long courseId,
+                                           @RequestParam(required = false) Boolean isActive) {
+        return ResponseEntity.ok(courseService.getAllEnrollRequests(courseId, isActive));
+    }
+
+    @RolesAllowed({"STUDENT", "INSTRUCTOR"})
+    @PutMapping("/course/enrolls/enroll")
+    ResponseEntity<?> canApproveEnrollRequest(@RequestParam Long enrollRequestId,
+                                              @RequestParam Boolean isApproved) {
+        return ResponseEntity.ok(courseService.approveEnrollRequest(enrollRequestId, isApproved));
     }
 
     @RolesAllowed("ADMIN")
-    @PostMapping("/course/users/enroll")
+    @PostMapping("/course/users/enrolls")
     ResponseEntity<UserToCourseDto> enrollWithoutApproval(@RequestParam Long courseId,
                                                           @RequestParam Long userId) {
         return ResponseEntity.ok(courseService.enroll(courseId, userId));

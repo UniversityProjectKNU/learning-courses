@@ -2,13 +2,12 @@ package com.nazar.grynko.learningcourses.service;
 
 import com.nazar.grynko.learningcourses.dto.course.CourseDto;
 import com.nazar.grynko.learningcourses.dto.course.CourseDtoUpdate;
+import com.nazar.grynko.learningcourses.dto.enroll.EnrollRequestDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDto;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseInfoDto;
-import com.nazar.grynko.learningcourses.mapper.CourseMapper;
-import com.nazar.grynko.learningcourses.mapper.UserMapper;
-import com.nazar.grynko.learningcourses.mapper.UserToCourseMapper;
+import com.nazar.grynko.learningcourses.mapper.*;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.service.internal.CourseInternalService;
 import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
@@ -30,19 +29,22 @@ public class CourseService {
     private final CourseMapper courseMapper;
     private final UserToCourseMapper userToCourseMapper;
     private final UserMapper userMapper;
+    private final EnrollRequestMapper enrollRequestMapper;
 
     public CourseService(CourseInternalService courseInternalService,
                          UserInternalService userInternalService,
                          UserToCourseInternalService userToCourseInternalService,
                          CourseMapper courseMapper,
                          UserToCourseMapper userToCourseMapper,
-                         UserMapper userMapper) {
+                         UserMapper userMapper,
+                         EnrollRequestMapper enrollRequestMapper) {
         this.courseInternalService = courseInternalService;
         this.userInternalService = userInternalService;
         this.userToCourseInternalService = userToCourseInternalService;
         this.courseMapper = courseMapper;
         this.userToCourseMapper = userToCourseMapper;
         this.userMapper = userMapper;
+        this.enrollRequestMapper = enrollRequestMapper;
     }
 
     public Optional<CourseDto> get(Long id) {
@@ -144,5 +146,22 @@ public class CourseService {
 
     public void removeUserFromCourse(Long courseId, Long userId) {
         userToCourseInternalService.removeUserFromCourse(courseId, userId);
+    }
+
+    public EnrollRequestDto sendEnrollRequest(Long courseId, String login) {
+        var entity = courseInternalService.sendEnrollRequest(courseId, login);
+        return enrollRequestMapper.toDto(entity);
+    }
+
+    public List<EnrollRequestDto> getAllEnrollRequests(Long courseId, Boolean isActive) {
+        return courseInternalService.getAllEnrollRequestsForCourse(courseId, isActive)
+                .stream()
+                .map(enrollRequestMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public UserToCourseDto approveEnrollRequest(Long enrollRequestId, Boolean isApproved) {
+        var entity = courseInternalService.approveEnrollRequest(enrollRequestId, isApproved);
+        return userToCourseMapper.toDto(entity);
     }
 }
