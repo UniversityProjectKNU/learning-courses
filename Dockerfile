@@ -18,4 +18,5 @@ COPY --from=builder /app/target/*.jar /app.jar
 RUN apt-get update && apt-get install -y default-mysql-client
 
 # Виконуємо команду для запуску додатку
+EXPOSE 8080
 CMD ["java", "-jar", "/app.jar"]
