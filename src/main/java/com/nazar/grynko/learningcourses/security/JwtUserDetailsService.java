@@ -29,11 +29,11 @@ public class JwtUserDetailsService implements UserDetailsService {
                 .map(type -> new SimpleGrantedAuthority(type.toString()))
                 .collect(Collectors.toList());
 
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getLogin())
-                .password(user.getPassword())
-                .authorities(authorities)
-                .build();
+        return new MyUserDetails()
+                .setId(user.getId())
+                .setUsername(user.getLogin())
+                .setPassword(user.getPassword())
+                .setAuthorities(authorities);
     }
 
 }

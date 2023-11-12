@@ -42,7 +42,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             try {
                 var login = jwtProvider.extractLogin(jwtToken);
-                var userDetails = jwtUserDetailsService.loadUserByUsername(login);
+                var userDetails = (MyUserDetails) jwtUserDetailsService.loadUserByUsername(login);
 
                 if (!jwtProvider.validateToken(jwtToken, userDetails)) {
                     throw new JwtException(String.format("Token %s is invalid", jwtToken));

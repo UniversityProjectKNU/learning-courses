@@ -9,6 +9,7 @@ import com.nazar.grynko.learningcourses.mapper.UserMapper;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.security.JwtProvider;
 import com.nazar.grynko.learningcourses.security.JwtUserDetailsService;
+import com.nazar.grynko.learningcourses.security.MyUserDetails;
 import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -47,7 +48,7 @@ public class SecurityService {
     }
 
     public UserSecurityDto signIn(SignInDto signInDto) {
-        var userDetails = jwtUserDetailsService.loadUserByUsername(signInDto.getLogin());
+        var userDetails = (MyUserDetails) jwtUserDetailsService.loadUserByUsername(signInDto.getLogin());
 
         if (!passwordEncoder.matches(signInDto.getPassword(), userDetails.getPassword())) {
             throw new BadCredentialsException("Password is incorrect");
@@ -59,6 +60,7 @@ public class SecurityService {
                 .get(0);
 
         return new UserSecurityDto()
+                .setId(userDetails.getId())
                 .setLogin(signInDto.getLogin())
                 .setToken(jwtProvider.generateToken(userDetails))
                 .setRole(RoleType.valueOf(roleValue));

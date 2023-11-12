@@ -14,6 +14,7 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class UserSecurityDto {
 
+    private Long id;
     private String login;
     private RoleType role;
     private String token;
