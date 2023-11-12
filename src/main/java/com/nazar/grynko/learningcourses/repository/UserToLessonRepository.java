@@ -24,6 +24,12 @@ public interface UserToLessonRepository extends JpaRepository<UserToLesson, Long
     @Query("select utl from UserToLesson utl where utl.lesson.chapter.course.id = :courseId")
     List<UserToLesson> getAllByCourseId(Long courseId);
 
+    @Query("select u from UserToLesson u where u.lesson.chapter.id = :chapterId and u.user.login = :login")
+    List<UserToLesson> getAllInChapterByChapterIdAndLogin(Long chapterId, String login);
+
+    @Query("select u from UserToLesson u where u.lesson.chapter.id = :chapterId")
+    List<UserToLesson> getAllInChapterByChapterId(Long chapterId);
+
     /*
     Why this doesn't work: @Query("delete from UserToLesson utl where utl.lesson.chapter.course.id = :courseId and utl.user.id = :userId")
     */

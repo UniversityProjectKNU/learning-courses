@@ -3,6 +3,7 @@ package com.nazar.grynko.learningcourses.controller;
 import com.nazar.grynko.learningcourses.dto.chapter.ChapterDto;
 import com.nazar.grynko.learningcourses.dto.chapter.ChapterDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
+import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.ChapterService;
 import com.nazar.grynko.learningcourses.service.LessonService;
@@ -36,6 +37,11 @@ public class ChapterController {
     @GetMapping("/chapter/lessons")
     ResponseEntity<List<LessonDto>> allLessonsInChapter(@RequestParam Long chapterId) {
         return ResponseEntity.ok(lessonService.getAllInChapter(chapterId));
+    }
+
+    @GetMapping("/chapter/users")
+    ResponseEntity<List<UserToLessonDto>> allUsersToLessonsInChapter(@RequestParam Long chapterId) {
+        return ResponseEntity.ok(lessonService.getAllUserToLessonInChapter(chapterId));
     }
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})

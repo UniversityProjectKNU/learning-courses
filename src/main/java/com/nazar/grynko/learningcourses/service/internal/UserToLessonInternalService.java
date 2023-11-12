@@ -112,4 +112,12 @@ public class UserToLessonInternalService {
     public List<UserToLesson> getAllByUserLoginAndCourseId(String login, Long courseId) {
         return userToLessonRepository.getAllByUserLoginAndCourseId(login, courseId);
     }
+
+    public List<UserToLesson> getAllInChapterByChapterIdAndLogin(Long chapterId, String login) {
+        return userToLessonRepository.getAllInChapterByChapterIdAndLogin(chapterId, login);
+    }
+
+    public List<UserToLesson> getAllInChapterByChapterId(Long chapterId) {
+        return userToLessonRepository.getAllInChapterByChapterId(chapterId);
+    }
 }
