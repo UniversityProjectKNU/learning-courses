@@ -77,20 +77,22 @@ public class UserToCourseInternalService {
                 .collect(Collectors.toMap(UserToCourse::getUser, Function.identity()));
 
         var successMark = lessonRepository.getSuccessMarkForCourse(courseId);
-
         for (var user : usersToLessons.keySet()) {
             var lessons = usersToLessons.get(user);
 
             int sum = lessons.stream()
                     .map(UserToLesson::getMark)
                     .reduce(0, Integer::sum);
+
+            var passedAll = lessons.stream().map(UserToLesson::getIsPassed).reduce(true, (a, b) -> a && b);
+
             int n = lessons.size();
 
-            var mark = (sum * 1f / n);
+            var mark = sum * 1f; //(sum * 1f / n);
 
             var userToCourse = usersToCourses.get(user);
             userToCourse.setMark(mark)
-                    .setIsPassed(Double.compare(mark, successMark) >= 0);
+                    .setIsPassed(passedAll && Double.compare(mark, successMark) >= 0);
         }
 
         userToCourseRepository.saveAll(usersToCourses.values());

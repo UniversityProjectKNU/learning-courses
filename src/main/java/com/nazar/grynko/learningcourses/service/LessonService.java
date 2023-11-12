@@ -5,8 +5,10 @@ import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoSave;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDto;
+import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDtoUpdate;
 import com.nazar.grynko.learningcourses.mapper.LessonMapper;
 import com.nazar.grynko.learningcourses.mapper.UserToLessonMapper;
+import com.nazar.grynko.learningcourses.model.UserToLesson;
 import com.nazar.grynko.learningcourses.service.internal.ChapterInternalService;
 import com.nazar.grynko.learningcourses.service.internal.CourseInternalService;
 import com.nazar.grynko.learningcourses.service.internal.LessonInternalService;
@@ -130,9 +132,9 @@ public class LessonService {
         return lessonMapper.toDto(entity);
     }
 
-    public UserToLessonDto updateUserToLesson(Long id, Long userId, UserToCourseDtoUpdate dto) {
+    public UserToLessonDto updateUserToLesson(Long lessonId, Long userId, UserToLessonDtoUpdate dto) {
         var entity = userToLessonMapper.fromDtoUpdate(dto);
-        entity = userToLessonInternalService.update(userId, id, entity);
+        entity = userToLessonInternalService.update(userId, lessonId, entity);
         return userToLessonMapper.toDto(entity);
     }
 

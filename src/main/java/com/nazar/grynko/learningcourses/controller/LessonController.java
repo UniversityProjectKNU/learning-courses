@@ -5,6 +5,7 @@ import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.simple.SimpleDto;
 import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDto;
+import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDtoUpdate;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.LessonService;
 import com.nazar.grynko.learningcourses.service.UserToLessonService;
@@ -36,10 +37,18 @@ public class LessonController {
     }
 
     @GetMapping("/lesson/users/user")
-    ResponseEntity<UserToLessonDto> getLessonInfo(
+    ResponseEntity<UserToLessonDto> getUsersLessonInfo(
             @RequestParam Long lessonId,
             @RequestParam Long userId) {
         return ResponseEntity.ok(lessonService.getUsersLessonInfo(lessonId, userId));
+    }
+
+    @PutMapping("/lesson/users/user")
+    ResponseEntity<UserToLessonDto> updateUsersLessonInfo(
+            @RequestParam Long lessonId,
+            @RequestParam Long userId,
+            @RequestBody UserToLessonDtoUpdate userToLessonDtoUpdate) {
+        return ResponseEntity.ok(lessonService.updateUserToLesson(lessonId, userId, userToLessonDtoUpdate));
     }
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})

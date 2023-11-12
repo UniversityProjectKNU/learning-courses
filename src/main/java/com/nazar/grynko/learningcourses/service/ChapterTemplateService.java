@@ -23,13 +23,13 @@ public class ChapterTemplateService {
         this.chapterTemplateMapper = chapterTemplateMapper;
     }
 
-    public Optional<ChapterTemplateDto> get(Long id) {
-        return chapterTemplateInternalService.get(id)
+    public Optional<ChapterTemplateDto> get(Long chapterTemplateId) {
+        return chapterTemplateInternalService.get(chapterTemplateId)
                 .flatMap(val -> Optional.of(chapterTemplateMapper.toDto(val)));
     }
 
-    public void delete(Long id) {
-        chapterTemplateInternalService.delete(id);
+    public void delete(Long chapterTemplateId) {
+        chapterTemplateInternalService.delete(chapterTemplateId);
     }
 
     public ChapterTemplateDto save(ChapterTemplateDtoSave dto, Long courseTemplateId) {

@@ -21,10 +21,10 @@ public interface LessonRepository extends JpaRepository<Lesson, Long> {
     @Query("select l from Lesson l where l.chapter.course.id = ?1")
     List<Lesson> getAllInCourse(Long courseId);
 
-    @Query("select avg (l.successMark) from Lesson l where l.chapter.course.id = :courseId")
+    @Query("select sum (l.successMark) from Lesson l where l.chapter.course.id = :courseId")
     Float getSuccessMarkForCourse(Long courseId);
 
-    @Query("select avg (l.maxMark) from Lesson l where l.chapter.course.id = :courseId")
+    @Query("select sum (l.maxMark) from Lesson l where l.chapter.course.id = :courseId")
     Float getMaxMarkForCourse(Long courseId);
 
 }

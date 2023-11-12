@@ -1,7 +1,7 @@
 package com.nazar.grynko.learningcourses.mapper;
 
-import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDto;
+import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDtoUpdate;
 import com.nazar.grynko.learningcourses.model.UserToLesson;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ public class UserToLessonMapper {
         return modelMapper.map(entity, UserToLessonDto.class);
     }
 
-    public UserToLesson fromDtoUpdate(UserToCourseDtoUpdate dto) {
+    public UserToLesson fromDtoUpdate(UserToLessonDtoUpdate dto) {
         return modelMapper.map(dto, UserToLesson.class);
     }
 }

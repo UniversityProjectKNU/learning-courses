@@ -28,8 +28,8 @@ public class ChapterTemplateInternalService {
         return chapterTemplateRepository.findById(id);
     }
 
-    public void delete(Long id) {
-        var entity = chapterTemplateRepository.findById(id)
+    public void delete(Long chapterTemplateId) {
+        var entity = chapterTemplateRepository.findById(chapterTemplateId)
                 .orElseThrow(IllegalArgumentException::new);
         chapterTemplateRepository.delete(entity);
     }
