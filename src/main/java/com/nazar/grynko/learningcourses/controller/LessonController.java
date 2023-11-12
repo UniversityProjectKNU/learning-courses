@@ -82,7 +82,7 @@ public class LessonController {
                 .ok()
                 .contentLength(data.length)
                 .header("Content-type", "application/octet-stream")
-                .header("Content-disposition", "attachment; filename=\"" + fileDto.getTitle() + "\"")
+                .header("Content-disposition", "attachment; filename=\"" + fileDto.getS3Name() + "\"")
                 .body(new ByteArrayResource(data));
     }
 

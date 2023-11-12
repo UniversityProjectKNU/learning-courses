@@ -3,8 +3,6 @@ package com.nazar.grynko.learningcourses.service;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.util.IOUtils;
-import com.nazar.grynko.learningcourses.dto.hoeworkfile.HomeworkFileDto;
-import com.nazar.grynko.learningcourses.model.HomeworkFile;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,28 +16,28 @@ import static java.util.Objects.isNull;
 
 @Service
 @Slf4j
-public class FileService {
+public class S3FileService {
 
     @Value("${cloud.aws.bucket.name}")
     private String bucketName;
 
     private final AmazonS3 s3Client;
 
-    public FileService(AmazonS3 s3Client) {
+    public S3FileService(AmazonS3 s3Client) {
         this.s3Client = s3Client;
     }
 
-    public String upload(MultipartFile multipartFile) {
-        var fileName = formatFileName(multipartFile.getOriginalFilename());
+    public String uploadToS3(MultipartFile multipartFile) {
+        var s3FileName = formatS3FileName(multipartFile.getOriginalFilename());
         var file = convertFile(multipartFile);
 
-        s3Client.putObject(new PutObjectRequest(bucketName, fileName, file));
+        s3Client.putObject(new PutObjectRequest(bucketName, s3FileName, file));
 
         if (file.delete()) {
             log.info("{} file was deleted", file.getName());
         }
 
-        return fileName;
+        return s3FileName;
     }
 
     public byte[] download(String fileName) {
@@ -55,8 +53,8 @@ public class FileService {
         return content;
     }
 
-    public void delete(String fileName) {
-        s3Client.deleteObject(bucketName, fileName);
+    public void deleteFromS3(String s3FileName) {
+        s3Client.deleteObject(bucketName, s3FileName);
     }
 
     private File convertFile(MultipartFile multipartFile) {
@@ -75,7 +73,7 @@ public class FileService {
         return file;
     }
 
-    private String formatFileName(String fileName) {
+    private String formatS3FileName(String fileName) {
         var newName = System.currentTimeMillis() + "_" + fileName;
         return newName.replace(" ", "_");
     }

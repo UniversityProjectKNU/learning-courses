@@ -15,6 +15,7 @@ public class HomeworkFileDto {
 
     private Long id;
     private String title;
+    private String s3Name;
     private Long size;
 
 }

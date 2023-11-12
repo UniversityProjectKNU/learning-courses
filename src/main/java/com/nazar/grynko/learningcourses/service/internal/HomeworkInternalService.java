@@ -4,18 +4,18 @@ import com.nazar.grynko.learningcourses.dto.hoeworkfile.FileDto;
 import com.nazar.grynko.learningcourses.model.HomeworkFile;
 import com.nazar.grynko.learningcourses.model.UserToLesson;
 import com.nazar.grynko.learningcourses.repository.HomeworkFileRepository;
-import com.nazar.grynko.learningcourses.service.FileService;
+import com.nazar.grynko.learningcourses.service.S3FileService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class HomeworkInternalService {
 
-    private final FileService fileService;
+    private final S3FileService s3FileService;
     private final HomeworkFileRepository homeworkFileRepository;
 
-    public HomeworkInternalService(FileService fileService, HomeworkFileRepository homeworkFileRepository) {
-        this.fileService = fileService;
+    public HomeworkInternalService(S3FileService s3FileService, HomeworkFileRepository homeworkFileRepository) {
+        this.s3FileService = s3FileService;
         this.homeworkFileRepository = homeworkFileRepository;
     }
 
@@ -33,16 +33,18 @@ public class HomeworkInternalService {
 
         if (homework.isPresent()) {
             homeworkFile = homework.get();
-            fileService.delete(homeworkFile.getTitle());
+            s3FileService.deleteFromS3(homeworkFile.getS3Name());
         } else {
             homeworkFile = new HomeworkFile()
                     .setUserToLesson(userToLesson);
         }
 
-        var title = fileService.upload(multipartFile);
+        var s3Name = s3FileService.uploadToS3(multipartFile);
 
-        homeworkFile.setTitle(title)
+        homeworkFile.setS3Name(s3Name)
+                .setTitle(multipartFile.getOriginalFilename())
                 .setSize(multipartFile.getSize());
+
         homeworkFile = homeworkFileRepository.save(homeworkFile);
 
         return homeworkFile;
@@ -55,22 +57,28 @@ public class HomeworkInternalService {
         return downloadInternal(homework);
     }
 
-    public FileDto download(Long id) {
-        var homework = get(id);
+    public FileDto download(Long fileId) {
+        var homework = get(fileId);
         return downloadInternal(homework);
     }
 
     private FileDto downloadInternal(HomeworkFile file) {
-        var title = file.getTitle();
+        var s3Name = file.getS3Name();
 
         return new FileDto()
-                .setData(fileService.download(title))
-                .setTitle(title);
+                .setTitle(file.getTitle())
+                .setData(s3FileService.download(s3Name))
+                .setS3Name(s3Name);
     }
 
     public void delete(UserToLesson userToLesson) {
         var homework = homeworkFileRepository.get(userToLesson).orElseThrow(IllegalArgumentException::new);
-        fileService.delete(homework.getTitle());
+        s3FileService.deleteFromS3(homework.getS3Name());
+        deleteFromDatabase(homework);
+    }
+
+    private void deleteFromDatabase(HomeworkFile homework) {
+        homeworkFileRepository.delete(homework);
     }
 
     public HomeworkFile get(UserToLesson userToLesson) {

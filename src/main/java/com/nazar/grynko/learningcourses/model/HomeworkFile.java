@@ -22,6 +22,8 @@ public class HomeworkFile {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name="s3_name", nullable = false)
+    private String s3Name;
     @Column(nullable = false)
     private String title;
     @Column(nullable = false)

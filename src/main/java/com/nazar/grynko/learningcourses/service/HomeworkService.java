@@ -24,8 +24,8 @@ public class HomeworkService {
         return homeworkFileMapper.toDto(entity);
     }
 
-    public FileDto download(Long id) {
-        return homeworkInternalService.download(id);
+    public FileDto download(Long fileId) {
+        return homeworkInternalService.download(fileId);
     }
 
 }

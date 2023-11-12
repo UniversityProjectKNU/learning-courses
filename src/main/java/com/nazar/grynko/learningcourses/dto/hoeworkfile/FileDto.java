@@ -14,6 +14,7 @@ import lombok.experimental.Accessors;
 public class FileDto {
 
     private String title;
+    private String s3Name;
     private byte[] data;
 
 }
