@@ -100,6 +100,11 @@ public class CourseInternalService {
 
         userToCourseInternalService.save(userToCourse);
 
+        var courseOwner = new CourseOwner()
+                .setCourse(course)
+                .setUser(user);
+        courseOwnerRepository.save(courseOwner);
+
         return course;
     }
 
@@ -141,9 +146,10 @@ public class CourseInternalService {
             throw new IllegalArgumentException("You cannot enroll ADMIN to course");
         }
 
-        userToCourseInternalService.getByUserIdAndCourseId(userId, courseId)
-                .orElseThrow(() -> new IllegalArgumentException(String.format(
-                        "User (%s) %d was already assign to the course %d", user.getRole().name(), userId, courseId)));
+        userToCourseInternalService.getByUserIdAndCourseId(userId, courseId).ifPresent(utc -> {
+            throw new IllegalArgumentException(String.format(
+                    "User (%s) %d was already assign to the course %d", user.getRole().name(), userId, courseId));
+        });
 
         var course = get(courseId).orElseThrow(
                 () -> new IllegalArgumentException("Course doesn't exist"));

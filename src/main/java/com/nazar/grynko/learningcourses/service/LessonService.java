@@ -82,9 +82,29 @@ public class LessonService {
                 .collect(Collectors.toList());
     }
 
-    public UserToLessonDto getUsersLessonInfo(Long id, String login) {
+    public List<UserToLessonDto> getAllLessonsOfOneUserInChapter(Long chapterId, String login) {
+        return userToLessonInternalService.getAllInChapterByChapterIdAndLogin(chapterId, login)
+                .stream()
+                .map(userToLessonMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserToLessonDto> getAllUserToLessonInChapter(Long chapterId) {
+        return userToLessonInternalService.getAllInChapterByChapterId(chapterId)
+                .stream()
+                .map(userToLessonMapper::toDto)
+                .collect(Collectors.toList());
+    }
+
+    public UserToLessonDto getUsersLessonInfoByLogin(Long id, String login) {
         var userToLesson = userToLessonInternalService.get(login, id)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("User doesn't have lesson %d", id)));
+        return userToLessonMapper.toDto(userToLesson);
+    }
+
+    public UserToLessonDto getUsersLessonInfo(Long lessonId, Long userId) {
+        var userToLesson = userToLessonInternalService.get(userId, lessonId)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("User doesn't have lesson %d", lessonId)));
         return userToLessonMapper.toDto(userToLesson);
     }
 
@@ -108,14 +128,6 @@ public class LessonService {
         var entity = lessonMapper.fromDtoUpdate(dto).setId(id);
         entity = lessonInternalService.update(entity);
         return lessonMapper.toDto(entity);
-    }
-
-    public boolean hasWithChapter(Long id, Long chapterId, Long courseId) {
-        return lessonInternalService.hasWithChapter(id, chapterId, courseId);
-    }
-
-    public boolean hasWithCourse(Long id, Long courseId) {
-        return lessonInternalService.hasWithCourse(id, courseId);
     }
 
     public UserToLessonDto updateUserToLesson(Long id, Long userId, UserToCourseDtoUpdate dto) {

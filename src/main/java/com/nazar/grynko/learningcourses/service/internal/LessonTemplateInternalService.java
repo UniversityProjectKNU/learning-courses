@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import static java.util.Objects.isNull;
@@ -18,12 +17,15 @@ public class LessonTemplateInternalService {
 
     private final LessonTemplateRepository lessonTemplateRepository;
     private final ChapterTemplateInternalService chapterTemplateInternalService;
+    private final CourseTemplateInternalService courseTemplateInternalService;
 
     @Autowired
     public LessonTemplateInternalService(LessonTemplateRepository lessonTemplateRepository,
-                                         ChapterTemplateInternalService chapterTemplateInternalService) {
+                                         ChapterTemplateInternalService chapterTemplateInternalService,
+                                         CourseTemplateInternalService courseTemplateInternalService) {
         this.lessonTemplateRepository = lessonTemplateRepository;
         this.chapterTemplateInternalService = chapterTemplateInternalService;
+        this.courseTemplateInternalService = courseTemplateInternalService;
     }
 
     public Optional<LessonTemplate> get(Long id) {
@@ -51,11 +53,13 @@ public class LessonTemplateInternalService {
 
     public List<LessonTemplate> getAllInChapterTemplate(Long chapterTemplateId) {
         chapterTemplateInternalService.get(chapterTemplateId)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException("No chapter template with id: " + chapterTemplateId));
         return lessonTemplateRepository.getLessonTemplatesByChapterTemplateId(chapterTemplateId);
     }
 
     public List<LessonTemplate> getAllInCourseTemplate(Long courseTemplateId) {
+        courseTemplateInternalService.get(courseTemplateId)
+                .orElseThrow(() -> new IllegalArgumentException("No course template with id: " + courseTemplateId));
         return lessonTemplateRepository.getAllInCourse(courseTemplateId);
     }
 

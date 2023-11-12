@@ -56,7 +56,7 @@ public class CourseController {
     }
 
     @GetMapping("/course/chapters")
-    ResponseEntity<List<ChapterDto>> allInCourse(@RequestParam Long courseId) {
+    ResponseEntity<List<ChapterDto>> allChaptersInCourse(@RequestParam Long courseId) {
         return ResponseEntity.ok(chapterService.getAllInCourse(courseId));
     }
 
@@ -108,7 +108,7 @@ public class CourseController {
         return ResponseEntity.ok(courseService.approveEnrollRequest(enrollRequestId, isApproved));
     }
 
-    @RolesAllowed("ADMIN")
+    //@RolesAllowed("ADMIN")
     @PostMapping("/course/users/enrolls")
     ResponseEntity<UserToCourseDto> enrollWithoutApproval(@RequestParam Long courseId,
                                                           @RequestParam Long userId) {
@@ -117,21 +117,21 @@ public class CourseController {
 
     // It meant to return information for all users and only small part of it (only users), but it was very handy for general use.
     // Probably we should separate getAllUsersForCourse and getAllUsersToCourseInfo
-    @GetMapping("/course/users/info")
+    @GetMapping("/course/users")
     ResponseEntity<List<UserToCourseInfoDto>> allInfoOfUsersInCourse(@RequestParam Long courseId,
                                                                      @RequestParam(required = false) RoleType roleType) {
         return ResponseEntity.ok(courseService.getAllUserToCourseInfoForCourse(courseId, roleType));
     }
 
     @RolesAllowed({"ADMIN", "INSTRUCTOR"})
-    @GetMapping("/course/users/user/info")
+    @GetMapping("/course/users/user")
     ResponseEntity<UserToCourseDto> getUsersCourseInfo(@RequestParam Long courseId,
                                                        @RequestParam Long userId) {
         return ResponseEntity.ok(courseService.getUsersCourseInfo(courseId, userId));
     }
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
-    @PutMapping("/course/users/user/info")
+    @PutMapping("/course/users/user")
     ResponseEntity<UserToCourseDto> updateUsersCourseInfo(@RequestParam Long courseId,
                                                           @RequestParam Long userId,
                                                           @RequestBody UserToCourseDtoUpdate userToCourseDto) {

@@ -18,7 +18,8 @@ public class ChapterTemplateInternalService {
     private final CourseTemplateInternalService courseTemplateInternalService;
 
     @Autowired
-    public ChapterTemplateInternalService(ChapterTemplateRepository chapterTemplateRepository, CourseTemplateInternalService courseTemplateInternalService) {
+    public ChapterTemplateInternalService(ChapterTemplateRepository chapterTemplateRepository,
+                                          CourseTemplateInternalService courseTemplateInternalService) {
         this.chapterTemplateRepository = chapterTemplateRepository;
         this.courseTemplateInternalService = courseTemplateInternalService;
     }
@@ -49,6 +50,8 @@ public class ChapterTemplateInternalService {
     }
 
     public List<ChapterTemplate> getAllInCourseTemplate(Long courseTemplateId) {
+        courseTemplateInternalService.get(courseTemplateId)
+                .orElseThrow(() -> new IllegalArgumentException("No course template with id: " + courseTemplateId));
         return chapterTemplateRepository.getChapterTemplatesByCourseTemplateId(courseTemplateId);
     }
 

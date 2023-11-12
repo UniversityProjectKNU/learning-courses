@@ -30,21 +30,28 @@ public class MyController {
         return ResponseEntity.ok(courseService.getUsersCourses(principal.getName(), isFinished));
     }
 
-    @GetMapping("/courses/course/info")
+    @GetMapping("/courses/course")
     ResponseEntity<UserToCourseDto> getCourseInfo(@RequestParam Long courseId, Principal principal) {
             return ResponseEntity.ok(courseService.getUsersCourseInfo(courseId, principal.getName()));
     }
 
-    @GetMapping("/lessons")
+    @GetMapping("/courses/course/lessons")
     ResponseEntity<List<UserToLessonDto>> getAllUsersLessonsForCourse(@RequestParam Long courseId, Principal principal) {
         return ResponseEntity.ok(lessonService.getAllUsersLessonsForCourse(courseId, principal.getName()));
     }
 
-    @GetMapping("/lessons/lesson/info")
+    @GetMapping("/chapters/chapter/lessons")
+    ResponseEntity<List<UserToLessonDto>> getAllUsersLessonsInChapter(
+            @RequestParam Long chapterId,
+            Principal principal) {
+        return ResponseEntity.ok(lessonService.getAllLessonsOfOneUserInChapter(chapterId, principal.getName()));
+    }
+
+    @GetMapping("/lessons/lesson")
     ResponseEntity<UserToLessonDto> getLessonInfo(
                                     @RequestParam Long lessonId,
                                     Principal principal) {
-        return ResponseEntity.ok(lessonService.getUsersLessonInfo(lessonId, principal.getName()));
+        return ResponseEntity.ok(lessonService.getUsersLessonInfoByLogin(lessonId, principal.getName()));
     }
 
 }

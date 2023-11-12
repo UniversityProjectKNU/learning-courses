@@ -17,7 +17,8 @@ public class ChapterTemplateService {
     private final ChapterTemplateInternalService chapterTemplateInternalService;
     private final ChapterTemplateMapper chapterTemplateMapper;
 
-    public ChapterTemplateService(ChapterTemplateInternalService chapterTemplateInternalService, ChapterTemplateMapper chapterTemplateMapper) {
+    public ChapterTemplateService(ChapterTemplateInternalService chapterTemplateInternalService,
+                                  ChapterTemplateMapper chapterTemplateMapper) {
         this.chapterTemplateInternalService = chapterTemplateInternalService;
         this.chapterTemplateMapper = chapterTemplateMapper;
     }
@@ -46,10 +47,6 @@ public class ChapterTemplateService {
     public List<ChapterTemplateDto> getAllInCourseTemplate(Long courseTemplateId) {
         var chapterTemplates = chapterTemplateInternalService.getAllInCourseTemplate(courseTemplateId);
         return chapterTemplates.stream().map(chapterTemplateMapper::toDto).collect(Collectors.toList());
-    }
-
-    public boolean hasWithCourseTemplate(Long chapterTemplateId, Long courseTemplateId) {
-        return chapterTemplateInternalService.hasWithCourseTemplate(chapterTemplateId, courseTemplateId);
     }
 
 }

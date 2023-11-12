@@ -4,6 +4,7 @@ import com.nazar.grynko.learningcourses.dto.hoeworkfile.HomeworkFileDto;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.simple.SimpleDto;
+import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDto;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.LessonService;
 import com.nazar.grynko.learningcourses.service.UserToLessonService;
@@ -34,6 +35,13 @@ public class LessonController {
                 .orElseThrow(InvalidPathException::new));
     }
 
+    @GetMapping("/lesson/users/user")
+    ResponseEntity<UserToLessonDto> getLessonInfo(
+            @RequestParam Long lessonId,
+            @RequestParam Long userId) {
+        return ResponseEntity.ok(lessonService.getUsersLessonInfo(lessonId, userId));
+    }
+
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @DeleteMapping("/lesson")
     void delete(@RequestParam Long lessonId) {
@@ -52,7 +60,6 @@ public class LessonController {
         return ResponseEntity.ok(lessonService.update(lessonDto, lessonId));
     }
 
-    //TODO improve finishLesson
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/lesson/finish")
     ResponseEntity<LessonDto> finishLesson(@RequestParam Long lessonId) {

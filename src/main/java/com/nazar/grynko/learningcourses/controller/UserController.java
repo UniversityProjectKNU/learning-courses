@@ -1,6 +1,5 @@
 package com.nazar.grynko.learningcourses.controller;
 
-import com.nazar.grynko.learningcourses.dto.role.RoleDto;
 import com.nazar.grynko.learningcourses.dto.role.UserRoleUpdateDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDtoCreate;
@@ -28,6 +27,7 @@ public class UserController {
         this.securityService = securityService;
     }
 
+    @RolesAllowed({"INSTRUCTOR", "STUDENT"})
     @GetMapping("/user")
     ResponseEntity<UserDto> one(@RequestParam Long userId) {
         return ResponseEntity.ok(userService.get(userId)
