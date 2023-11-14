@@ -27,7 +27,7 @@ public class UserController {
         this.securityService = securityService;
     }
 
-    @RolesAllowed({"INSTRUCTOR", "STUDENT"})
+    @RolesAllowed({"ADMIN", "INSTRUCTOR", "STUDENT"})
     @GetMapping("/user")
     ResponseEntity<UserDto> one(@RequestParam Long userId) {
         return ResponseEntity.ok(userService.get(userId)
@@ -39,7 +39,7 @@ public class UserController {
         return ResponseEntity.ok(userService.getAll());
     }
 
-    @PostMapping("/user")
+    @PostMapping
     ResponseEntity<UserDto> createUser(@RequestBody UserDtoCreate dto) {
         return ResponseEntity.ok(securityService.createUser(dto));
     }
