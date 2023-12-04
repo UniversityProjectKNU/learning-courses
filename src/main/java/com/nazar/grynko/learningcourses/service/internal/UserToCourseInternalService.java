@@ -49,6 +49,10 @@ public class UserToCourseInternalService {
         return userToCourseRepository.getByUserIdAndCourseId(userId, courseId);
     }
 
+    public Optional<UserToCourse> getByUserLoginAndCourseId(String login, Long courseId) {
+        return userToCourseRepository.getByUserLoginAndCourseId(login, courseId);
+    }
+
     public UserToCourse update(Long userId, Long courseId, UserToCourse entity) {
         var dbEntity = userToCourseRepository.getByUserIdAndCourseId(userId, courseId)
                 .orElseThrow(IllegalArgumentException::new);

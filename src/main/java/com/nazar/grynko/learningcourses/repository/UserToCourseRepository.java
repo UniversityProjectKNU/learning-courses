@@ -20,4 +20,5 @@ public interface UserToCourseRepository extends JpaRepository<UserToCourse, Long
     @Modifying
     void deleteByCourseIdAndUserId(Long courseId, Long userId);
 
+    Optional<UserToCourse> getByUserLoginAndCourseId(String login, Long courseId);
 }

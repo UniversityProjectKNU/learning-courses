@@ -212,10 +212,16 @@ public class CourseInternalService {
     }
 
     public EnrollRequest sendEnrollRequest(Long courseId, String login) {
+        userToCourseInternalService.getByUserLoginAndCourseId(login, courseId).ifPresent(
+                (userToCourse) -> {
+                    throw new IllegalArgumentException("User is already enrolled");
+                });
+
         var enrollRequest = enrollRequestRepository.getByCourseIdAndUserLoginAndIsActiveTrue(courseId, login);
         if (nonNull(enrollRequest)) {
             throw new IllegalArgumentException("User already has active request");
         }
+
 
         var user = userInternalService.getByLogin(login).orElseThrow(IllegalArgumentException::new);
         var course = get(courseId).orElseThrow(IllegalArgumentException::new);
