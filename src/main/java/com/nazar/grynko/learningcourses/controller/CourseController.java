@@ -94,14 +94,14 @@ public class CourseController {
         return ResponseEntity.ok(courseService.sendEnrollRequest(courseId, principal.getName()));
     }
 
-    @RolesAllowed({"STUDENT", "INSTRUCTOR"})
+    @RolesAllowed({"STUDENT", "INSTRUCTOR", "ADMIN"})
     @GetMapping("/course/enrolls")
     ResponseEntity<?> getAllEnrollRequests(@RequestParam Long courseId,
                                            @RequestParam(required = false) Boolean isActive) {
         return ResponseEntity.ok(courseService.getAllEnrollRequests(courseId, isActive));
     }
 
-    @RolesAllowed({"STUDENT", "INSTRUCTOR"})
+    @RolesAllowed({"STUDENT", "INSTRUCTOR", "ADMIN"})
     @PutMapping("/course/enrolls/enroll")
     ResponseEntity<?> canApproveEnrollRequest(@RequestParam Long enrollRequestId,
                                               @RequestParam Boolean isApproved) {
@@ -113,6 +113,13 @@ public class CourseController {
     ResponseEntity<UserToCourseDto> enrollWithoutApproval(@RequestParam Long courseId,
                                                           @RequestParam Long userId) {
         return ResponseEntity.ok(courseService.enroll(courseId, userId));
+    }
+
+    @RolesAllowed({"STUDENT", "INSTRUCTOR"})
+    @GetMapping("/course/users/enrolls/enroll")
+    ResponseEntity<?> getUsersActiveEnrollRequestForCourse(@RequestParam Long userId,
+                                                           @RequestParam Long courseId) {
+        return ResponseEntity.ok(courseService.getUsersActiveEnrollRequest(userId, courseId));
     }
 
     // It meant to return information for all users and only small part of it (only users), but it was very handy for general use.

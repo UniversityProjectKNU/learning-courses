@@ -11,7 +11,9 @@ public interface EnrollRequestRepository extends JpaRepository<EnrollRequest, Lo
 
     EnrollRequest getByCourseIdAndUserLoginAndIsActiveTrue(Long courseId, String login);
 
-    List<EnrollRequest> getAllByCourseId(Long corseId);
+    EnrollRequest getByCourseIdAndUserIdAndIsActiveTrue(Long courseId, Long userId);
+
+    List<EnrollRequest> getAllByCourseId(Long courseId);
 
     List<EnrollRequest> getAllByCourseIdAndIsActive(Long courseId, Boolean isActive);
 

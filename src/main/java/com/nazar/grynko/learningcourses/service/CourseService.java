@@ -164,4 +164,9 @@ public class CourseService {
         var entity = courseInternalService.approveEnrollRequest(enrollRequestId, isApproved);
         return userToCourseMapper.toDto(entity);
     }
+
+    public EnrollRequestDto getUsersActiveEnrollRequest(Long userId, Long courseId) {
+        var entity = courseInternalService.getUsersActiveEnrollRequest(userId, courseId);
+        return enrollRequestMapper.toDto(entity);
+    }
 }
