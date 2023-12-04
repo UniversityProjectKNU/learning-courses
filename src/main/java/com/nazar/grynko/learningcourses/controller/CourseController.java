@@ -117,9 +117,9 @@ public class CourseController {
 
     @RolesAllowed({"STUDENT", "INSTRUCTOR"})
     @GetMapping("/course/users/enrolls/enroll")
-    ResponseEntity<?> getUsersActiveEnrollRequestForCourse(@RequestParam Long userId,
+    ResponseEntity<?> getUsersLastEnrollRequestForCourse(@RequestParam Long userId,
                                                            @RequestParam Long courseId) {
-        return ResponseEntity.ok(courseService.getUsersActiveEnrollRequest(userId, courseId));
+        return ResponseEntity.ok(courseService.getUsersLastEnrollRequest(userId, courseId));
     }
 
     // It meant to return information for all users and only small part of it (only users), but it was very handy for general use.

@@ -165,8 +165,8 @@ public class CourseService {
         return userToCourseMapper.toDto(entity);
     }
 
-    public EnrollRequestDto getUsersActiveEnrollRequest(Long userId, Long courseId) {
-        var entity = courseInternalService.getUsersActiveEnrollRequest(userId, courseId);
+    public EnrollRequestDto getUsersLastEnrollRequest(Long userId, Long courseId) {
+        var entity = courseInternalService.getUsersLastEnrollRequest(userId, courseId);
         return enrollRequestMapper.toDto(entity);
     }
 }

@@ -12,6 +12,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+
 @Service
 public class UserToLessonService {
 
@@ -25,7 +28,7 @@ public class UserToLessonService {
 
     public HomeworkFileDto getFileInfo(Long lessonId, Long studentId) {
         var entity = userToLessonInternalService.getFileInfo(lessonId, studentId);
-        return homeworkFileMapper.toDto(entity);
+        return nonNull(entity) ? homeworkFileMapper.toDto(entity) : null;
     }
 
     public HomeworkFileDto upload(Long lessonId, String login, MultipartFile file) {

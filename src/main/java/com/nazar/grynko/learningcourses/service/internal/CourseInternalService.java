@@ -252,7 +252,7 @@ public class CourseInternalService {
         return enroll(enrollRequest.getCourse().getId(), enrollRequest.getUser().getId());
     }
 
-    public EnrollRequest getUsersActiveEnrollRequest(Long userId, Long courseId) {
-        return enrollRequestRepository.getByCourseIdAndUserIdAndIsActiveTrue(courseId, userId);
+    public EnrollRequest getUsersLastEnrollRequest(Long userId, Long courseId) {
+        return enrollRequestRepository.getLastByCourseIdAndUserId(courseId, userId);
     }
 }

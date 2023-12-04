@@ -44,8 +44,11 @@ public class UserToLessonInternalService {
     }
 
     public HomeworkFile getFileInfo(Long lessonId, Long studentId) {
-        var userToLesson = get(studentId, lessonId)
-                .orElseThrow(IllegalArgumentException::new);
+        var optional = get(studentId, lessonId);
+        if (optional.isEmpty()) {
+            return null;
+        }
+        var userToLesson = optional.get();
 
         return homeworkInternalService.get(userToLesson);
     }
