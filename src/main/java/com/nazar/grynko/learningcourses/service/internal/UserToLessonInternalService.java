@@ -123,4 +123,8 @@ public class UserToLessonInternalService {
     public List<UserToLesson> getAllInChapterByChapterId(Long chapterId) {
         return userToLessonRepository.getAllInChapterByChapterId(chapterId);
     }
+
+    public List<UserToLesson> getAllUserToLessonInfoForLesson(Long lessonId) {
+        return userToLessonRepository.getAllByLessonId(lessonId);
+    }
 }

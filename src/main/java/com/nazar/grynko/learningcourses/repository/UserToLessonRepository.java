@@ -36,4 +36,6 @@ public interface UserToLessonRepository extends JpaRepository<UserToLesson, Long
     @Modifying
     void deleteAllByUserIdAndLessonChapterCourseId(Long userId, Long courseId);
 
+    @Query("select utl from UserToLesson utl where utl.lesson.id = :lessonId")
+    List<UserToLesson> getAllByLessonId(Long lessonId);
 }

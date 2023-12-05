@@ -152,4 +152,11 @@ public class LessonService {
     public boolean isFinished(Long id) {
         return lessonInternalService.get(id).orElseThrow(IllegalArgumentException::new).getIsFinished();
     }
+
+    public List<UserToLessonDto> getAllUserToLessonInfoForLesson(Long lessonId) {
+        return userToLessonInternalService.getAllUserToLessonInfoForLesson(lessonId)
+                .stream()
+                .map(userToLessonMapper::toDto)
+                .collect(Collectors.toList());
+    }
 }

@@ -4,6 +4,7 @@ import com.nazar.grynko.learningcourses.dto.hoeworkfile.HomeworkFileDto;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.simple.SimpleDto;
+import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseInfoDto;
 import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDto;
 import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDtoUpdate;
 import com.nazar.grynko.learningcourses.exception.InvalidPathException;
@@ -16,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("learning-courses/api/v1/lessons")
@@ -34,6 +36,11 @@ public class LessonController {
     ResponseEntity<LessonDto> one(@RequestParam Long lessonId) {
         return ResponseEntity.ok(lessonService.get(lessonId)
                 .orElseThrow(InvalidPathException::new));
+    }
+
+    @GetMapping("/lesson/users")
+    ResponseEntity<List<UserToLessonDto>> getAllUsersLessonsInfo(@RequestParam Long lessonId) {
+        return ResponseEntity.ok(lessonService.getAllUserToLessonInfoForLesson(lessonId));
     }
 
     @GetMapping("/lesson/users/user")
