@@ -1,10 +1,5 @@
 package com.nazar.grynko.learningcourses.controller;
 
-import com.nazar.grynko.learningcourses.dto.security.SignInDto;
-import com.nazar.grynko.learningcourses.dto.security.SignUpDto;
-import com.nazar.grynko.learningcourses.dto.user.UserDto;
-import com.nazar.grynko.learningcourses.dto.user.UserSecurityDto;
-import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.security.JwtAuthenticationFilter;
 import com.nazar.grynko.learningcourses.service.SecurityService;
 import org.junit.jupiter.api.Test;
@@ -15,6 +10,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import static com.nazar.grynko.learningcourses.util.MockEntities.*;
 import static com.nazar.grynko.learningcourses.util.MockUtil.toJsonString;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -37,37 +33,6 @@ public class SecurityControllerTest {
 
     @MockBean
     private JwtAuthenticationFilter filter;
-
-    private SignInDto mockSignInDto() {
-        return new SignInDto()
-                .setLogin("test.user@gmail.com")
-                .setPassword("test.password");
-    }
-
-    private SignUpDto mockSignUpDto() {
-        return new SignUpDto()
-                .setLogin("test.user@gmail.com")
-                .setPassword("test.password")
-                .setFirstName("testFirstName")
-                .setLastName("testLastName");
-    }
-
-    private UserSecurityDto mockUserSecurityDto() {
-        return new UserSecurityDto()
-                .setId(100L)
-                .setRole(RoleType.STUDENT)
-                .setLogin("test.user@gmail.com")
-                .setToken("token");
-    }
-
-    private UserDto mockUserDto() {
-        return new UserDto()
-                .setId(100L)
-                .setRole(RoleType.STUDENT)
-                .setLogin("test.user@gmail.com")
-                .setFirstName("testFirstName")
-                .setLastName("testLastName");
-    }
 
     @Test
     void signIn_200_checkResult() throws Exception {

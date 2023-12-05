@@ -34,8 +34,7 @@ public class LessonController {
 
     @GetMapping("/lesson")
     ResponseEntity<LessonDto> one(@RequestParam Long lessonId) {
-        return ResponseEntity.ok(lessonService.get(lessonId)
-                .orElseThrow(InvalidPathException::new));
+        return ResponseEntity.ok(lessonService.get(lessonId));
     }
 
     @GetMapping("/lesson/users")
@@ -89,10 +88,6 @@ public class LessonController {
 
     @PostMapping("/lesson/files")
     public ResponseEntity<HomeworkFileDto> upload(@RequestParam Long lessonId, @RequestBody MultipartFile file, Principal principal) {
-        if (lessonService.isFinished(lessonId)) {
-            throw new InvalidPathException("You cannot upload file in finished lesson");
-        }
-
         return ResponseEntity.ok(userToLessonService.upload(lessonId, principal.getName(), file));
     }
 
@@ -105,7 +100,7 @@ public class LessonController {
                 .ok()
                 .contentLength(data.length)
                 .header("Content-type", "application/octet-stream")
-                .header("Content-disposition", "attachment; filename=\"" + fileDto.getS3Name() + "\"")
+                .header("Content-disposition", "attachment; filename=\"" + fileDto.getTitle() + "\"")
                 .body(new ByteArrayResource(data));
     }
 
@@ -123,10 +118,6 @@ public class LessonController {
     //@RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @DeleteMapping("/lesson/files/file")
     public ResponseEntity<SimpleDto<String>> delete(@RequestParam Long lessonId, @RequestParam Long userId) {
-        if (lessonService.isFinished(lessonId)) {
-            throw new InvalidPathException("You cannot upload file in finished lesson");
-        }
-
         userToLessonService.delete(lessonId, userId);
         return ResponseEntity.ok(new SimpleDto<>("Ok"));
     }

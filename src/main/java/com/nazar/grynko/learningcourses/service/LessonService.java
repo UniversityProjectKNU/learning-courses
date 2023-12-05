@@ -45,9 +45,10 @@ public class LessonService {
         this.userToLessonMapper = userToLessonMapper;
     }
 
-    public Optional<LessonDto> get(Long id) {
-        return lessonInternalService.get(id)
-                .flatMap(val -> Optional.of(lessonMapper.toDto(val)));
+    public LessonDto get(Long lessonId) {
+        var entity = lessonInternalService.get(lessonId)
+                .orElseThrow(() -> new IllegalArgumentException(String.format("Lesson %d doesn't exist", lessonId)));
+        return lessonMapper.toDto(entity);
     }
 
     public List<LessonDto> getAllInChapter(Long chapterId) {

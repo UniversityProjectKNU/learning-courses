@@ -1,9 +1,11 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
 import com.nazar.grynko.learningcourses.dto.hoeworkfile.FileDto;
+import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.model.HomeworkFile;
 import com.nazar.grynko.learningcourses.model.Lesson;
 import com.nazar.grynko.learningcourses.model.UserToLesson;
+import com.nazar.grynko.learningcourses.repository.LessonRepository;
 import com.nazar.grynko.learningcourses.repository.UserToLessonRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,11 +18,14 @@ import java.util.stream.Collectors;
 public class UserToLessonInternalService {
 
     private final UserToLessonRepository userToLessonRepository;
+    private final LessonRepository lessonRepository;
     private final HomeworkInternalService homeworkInternalService;
 
     public UserToLessonInternalService(UserToLessonRepository userToLessonRepository,
+                                       LessonRepository lessonRepository,
                                        HomeworkInternalService homeworkInternalService) {
         this.userToLessonRepository = userToLessonRepository;
+        this.lessonRepository = lessonRepository;
         this.homeworkInternalService = homeworkInternalService;
     }
 
@@ -54,6 +59,10 @@ public class UserToLessonInternalService {
     }
 
     public HomeworkFile upload(Long lessonId, String login, MultipartFile file) {
+        var lesson = lessonRepository.findById(lessonId).orElseThrow(IllegalArgumentException::new);
+        if (lesson.getIsFinished()) {
+            throw new InvalidPathException("You cannot upload file in finished lesson");
+        }
         var userToLesson = get(login, lessonId)
                 .orElseThrow(IllegalArgumentException::new);
 
@@ -75,6 +84,11 @@ public class UserToLessonInternalService {
     }
 
     public void delete(Long lessonId, Long userId) {
+        var lesson = lessonRepository.findById(lessonId).orElseThrow(IllegalArgumentException::new);
+        if (lesson.getIsFinished()) {
+            throw new InvalidPathException("You cannot upload file in finished lesson");
+        }
+
         var userToLesson = get(userId, lessonId)
                 .orElseThrow(IllegalArgumentException::new);
 
