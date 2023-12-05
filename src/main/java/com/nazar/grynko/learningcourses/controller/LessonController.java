@@ -4,10 +4,8 @@ import com.nazar.grynko.learningcourses.dto.hoeworkfile.HomeworkFileDto;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.simple.SimpleDto;
-import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseInfoDto;
 import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDto;
 import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDtoUpdate;
-import com.nazar.grynko.learningcourses.exception.InvalidPathException;
 import com.nazar.grynko.learningcourses.service.LessonService;
 import com.nazar.grynko.learningcourses.service.UserToLessonService;
 import org.springframework.core.io.ByteArrayResource;
@@ -88,12 +86,12 @@ public class LessonController {
 
     @PostMapping("/lesson/files")
     public ResponseEntity<HomeworkFileDto> upload(@RequestParam Long lessonId, @RequestBody MultipartFile file, Principal principal) {
-        return ResponseEntity.ok(userToLessonService.upload(lessonId, principal.getName(), file));
+        return ResponseEntity.ok(userToLessonService.uploadFile(lessonId, principal.getName(), file));
     }
 
     @GetMapping("/lesson/files/file")
     public ResponseEntity<ByteArrayResource> download(@RequestParam Long lessonId, @RequestParam Long userId) {
-        var fileDto = userToLessonService.download(lessonId, userId);
+        var fileDto = userToLessonService.downloadFile(lessonId, userId);
         var data = fileDto.getData();
 
         return ResponseEntity
@@ -118,7 +116,7 @@ public class LessonController {
     //@RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @DeleteMapping("/lesson/files/file")
     public ResponseEntity<SimpleDto<String>> delete(@RequestParam Long lessonId, @RequestParam Long userId) {
-        userToLessonService.delete(lessonId, userId);
+        userToLessonService.deleteFile(lessonId, userId);
         return ResponseEntity.ok(new SimpleDto<>("Ok"));
     }
 

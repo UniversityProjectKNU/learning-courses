@@ -8,7 +8,7 @@ import com.nazar.grynko.learningcourses.dto.security.SignUpDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.dto.user.UserSecurityDto;
 import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDto;
-import com.nazar.grynko.learningcourses.model.RoleType;
+import com.nazar.grynko.learningcourses.model.*;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
@@ -16,9 +16,26 @@ import java.security.Principal;
 
 public interface MockEntities {
 
+    ///////////////////////////////////////////////////
+    // MOCK_OTHER
+    ///////////////////////////////////////////////////
+
     static Principal mockPrincipal() {
         return () -> "test.login@gmail.com";
     }
+
+    static MockMultipartFile mockMultipartFile() {
+        return new MockMultipartFile(
+                "test",
+                "test.txt",
+                MediaType.TEXT_PLAIN_VALUE,
+                "Test text.".getBytes()
+        );
+    }
+
+    ///////////////////////////////////////////////////
+    // MOCK_DTO
+    ///////////////////////////////////////////////////
 
     static SignInDto mockSignInDto() {
         return new SignInDto()
@@ -86,13 +103,26 @@ public interface MockEntities {
                 .setTitle("testTitle");
     }
 
-    static MockMultipartFile mockMultipartFile() {
-        return new MockMultipartFile(
-                "test",
-                "test.txt",
-                MediaType.TEXT_PLAIN_VALUE,
-                "Test text.".getBytes()
-        );
+    ///////////////////////////////////////////////////
+    // MOCK_ENTITY
+    ///////////////////////////////////////////////////
+
+    static HomeworkFile mockHomeWorkFile() {
+        return new HomeworkFile()
+                .setId(100L)
+                .setUserToLesson(new UserToLesson())
+                .setSize(100L)
+                .setS3Name("test.s3Name")
+                .setTitle("testTitle");
+    }
+
+    static UserToLesson mockUsersToLesson() {
+        return new UserToLesson()
+                .setId(100L)
+                .setUser(new User())
+                .setLesson(new Lesson())
+                .setIsPassed(false)
+                .setMark(10);
     }
 
 }

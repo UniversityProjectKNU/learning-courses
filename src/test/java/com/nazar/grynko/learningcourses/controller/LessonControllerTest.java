@@ -118,7 +118,7 @@ public class LessonControllerTest {
 
     @Test
     void upload_200_checkResult() throws Exception {
-        when(userToLessonService.upload(any(), any(), any())).thenReturn(mockHomeworkFileDto());
+        when(userToLessonService.uploadFile(any(), any(), any())).thenReturn(mockHomeworkFileDto());
         this.mockMvc.perform(multipart(BASE_URL + "/lesson/files")
                         .file(mockMultipartFile())
                         .principal(mockPrincipal())
@@ -129,7 +129,7 @@ public class LessonControllerTest {
 
     @Test
     void upload_400_errorWithFile() throws Exception {
-        when(userToLessonService.upload(any(), any(), any())).thenThrow(new IllegalArgumentException());
+        when(userToLessonService.uploadFile(any(), any(), any())).thenThrow(new IllegalArgumentException());
         this.mockMvc.perform(multipart(BASE_URL + "/lesson/files")
                         .file(mockMultipartFile())
                         .principal(mockPrincipal())
@@ -140,7 +140,7 @@ public class LessonControllerTest {
 
     @Test
     void download_200_checkResult() throws Exception {
-        when(userToLessonService.download(any(), any())).thenReturn(mockFileDto());
+        when(userToLessonService.downloadFile(any(), any())).thenReturn(mockFileDto());
         this.mockMvc.perform(get(BASE_URL + "/lesson/files/file")
                         .param("lessonId", "1")
                         .param("userId", "1"))
@@ -152,7 +152,7 @@ public class LessonControllerTest {
 
     @Test
     void download_400_errorWithFile() throws Exception {
-        when(userToLessonService.download(any(), any())).thenThrow(new IllegalArgumentException());
+        when(userToLessonService.downloadFile(any(), any())).thenThrow(new IllegalArgumentException());
         this.mockMvc.perform(get(BASE_URL + "/lesson/files/file")
                         .param("lessonId", "1")
                         .param("userId", "1"))
@@ -171,7 +171,7 @@ public class LessonControllerTest {
 
     @Test
     void delete_400_errorWithFile() throws Exception {
-        doThrow(new RuntimeException()).when(userToLessonService).delete(any(), anyLong());
+        doThrow(new RuntimeException()).when(userToLessonService).deleteFile(any(), anyLong());
         this.mockMvc.perform(delete(BASE_URL + "/lesson/files/file")
                         .param("lessonId", "1")
                         .param("userId", "1"))

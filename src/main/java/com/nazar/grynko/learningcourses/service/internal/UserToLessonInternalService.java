@@ -45,7 +45,7 @@ public class UserToLessonInternalService {
         var userToLesson = get(login, lessonId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        return homeworkInternalService.get(userToLesson);
+        return homeworkInternalService.getFile(userToLesson);
     }
 
     public HomeworkFile getFileInfo(Long lessonId, Long studentId) {
@@ -55,10 +55,10 @@ public class UserToLessonInternalService {
         }
         var userToLesson = optional.get();
 
-        return homeworkInternalService.get(userToLesson);
+        return homeworkInternalService.getFile(userToLesson);
     }
 
-    public HomeworkFile upload(Long lessonId, String login, MultipartFile file) {
+    public HomeworkFile uploadFile(Long lessonId, String login, MultipartFile file) {
         var lesson = lessonRepository.findById(lessonId).orElseThrow(IllegalArgumentException::new);
         if (lesson.getIsFinished()) {
             throw new InvalidPathException("You cannot upload file in finished lesson");
@@ -66,24 +66,24 @@ public class UserToLessonInternalService {
         var userToLesson = get(login, lessonId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        return homeworkInternalService.uploadHomework(file, userToLesson);
+        return homeworkInternalService.uploadFile(file, userToLesson);
     }
 
-    public FileDto download(Long lessonId, Long userId) {
+    public FileDto downloadFile(Long lessonId, Long userId) {
         var userToLesson = get(userId, lessonId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        return homeworkInternalService.download(userToLesson);
+        return homeworkInternalService.downloadFile(userToLesson);
     }
 
-    public void delete(Long lessonId, String login) {
+    public void deleteFile(Long lessonId, String login) {
         var userToLesson = get(login, lessonId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        homeworkInternalService.delete(userToLesson);
+        homeworkInternalService.deleteFile(userToLesson);
     }
 
-    public void delete(Long lessonId, Long userId) {
+    public void deleteFile(Long lessonId, Long userId) {
         var lesson = lessonRepository.findById(lessonId).orElseThrow(IllegalArgumentException::new);
         if (lesson.getIsFinished()) {
             throw new InvalidPathException("You cannot upload file in finished lesson");
@@ -92,7 +92,7 @@ public class UserToLessonInternalService {
         var userToLesson = get(userId, lessonId)
                 .orElseThrow(IllegalArgumentException::new);
 
-        homeworkInternalService.delete(userToLesson);
+        homeworkInternalService.deleteFile(userToLesson);
     }
 
     public List<Lesson> getAllLessonsByUserLoginAndCourseId(String login, Long courseId) {

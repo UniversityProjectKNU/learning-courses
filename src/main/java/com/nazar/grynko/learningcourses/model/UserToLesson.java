@@ -1,9 +1,6 @@
 package com.nazar.grynko.learningcourses.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import javax.persistence.*;

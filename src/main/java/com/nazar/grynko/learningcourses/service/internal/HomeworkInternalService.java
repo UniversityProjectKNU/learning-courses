@@ -14,7 +14,8 @@ public class HomeworkInternalService {
     private final S3FileService s3FileService;
     private final HomeworkFileRepository homeworkFileRepository;
 
-    public HomeworkInternalService(S3FileService s3FileService, HomeworkFileRepository homeworkFileRepository) {
+    public HomeworkInternalService(S3FileService s3FileService,
+                                   HomeworkFileRepository homeworkFileRepository) {
         this.s3FileService = s3FileService;
         this.homeworkFileRepository = homeworkFileRepository;
     }
@@ -27,7 +28,7 @@ public class HomeworkInternalService {
      * @param userToLesson  is entity from {@link HomeworkFileRepository} database with user and lesson
      * @return entity with meta information about file and its userToLesson
      */
-    public HomeworkFile uploadHomework(MultipartFile multipartFile, UserToLesson userToLesson) {
+    public HomeworkFile uploadFile(MultipartFile multipartFile, UserToLesson userToLesson) {
         var homework = homeworkFileRepository.get(userToLesson);
         HomeworkFile homeworkFile;
 
@@ -50,15 +51,17 @@ public class HomeworkInternalService {
         return homeworkFile;
     }
 
-    public FileDto download(UserToLesson userToLesson) {
+    public FileDto downloadFile(UserToLesson userToLesson) {
         var homework = homeworkFileRepository.get(userToLesson)
                 .orElseThrow(IllegalArgumentException::new);
 
         return downloadInternal(homework);
     }
 
-    public FileDto download(Long fileId) {
-        var homework = get(fileId);
+    public FileDto downloadFile(Long fileId) {
+        var homework = homeworkFileRepository.findById(fileId)
+                .orElseThrow(IllegalArgumentException::new);
+
         return downloadInternal(homework);
     }
 
@@ -71,7 +74,7 @@ public class HomeworkInternalService {
                 .setS3Name(s3Name);
     }
 
-    public void delete(UserToLesson userToLesson) {
+    public void deleteFile(UserToLesson userToLesson) {
         var homework = homeworkFileRepository.get(userToLesson).orElseThrow(IllegalArgumentException::new);
         s3FileService.deleteFromS3(homework.getS3Name());
         deleteFromDatabase(homework);
@@ -81,11 +84,11 @@ public class HomeworkInternalService {
         homeworkFileRepository.delete(homework);
     }
 
-    public HomeworkFile get(UserToLesson userToLesson) {
+    public HomeworkFile getFile(UserToLesson userToLesson) {
         return homeworkFileRepository.get(userToLesson).orElse(null);
     }
 
-    public HomeworkFile get(Long id) {
+    public HomeworkFile getFile(Long id) {
         return homeworkFileRepository.findById(id).orElse(null);
     }
 
