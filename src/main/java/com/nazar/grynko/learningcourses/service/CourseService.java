@@ -126,9 +126,9 @@ public class CourseService {
         return userToCourseMapper.toDto(userToCourse);
     }
 
-    public UserToCourseDto updateUserToCourse(Long id, Long userId, UserToCourseDtoUpdate dto) {
-        var entity = userToCourseMapper.fromDtoUpdate(dto).setId(id);
-        entity = userToCourseInternalService.update(userId, id, entity);
+    public UserToCourseDto updateUserToCourse(Long courseId, Long userId, UserToCourseDtoUpdate dto) {
+        var entity = userToCourseMapper.fromDtoUpdate(dto);
+        entity = userToCourseInternalService.update(userId, courseId, entity);
         return userToCourseMapper.toDto(entity);
     }
 

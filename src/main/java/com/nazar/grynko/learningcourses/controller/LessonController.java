@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 
@@ -41,17 +42,15 @@ public class LessonController {
     }
 
     @GetMapping("/lesson/users/user")
-    ResponseEntity<UserToLessonDto> getUsersLessonInfo(
-            @RequestParam Long lessonId,
-            @RequestParam Long userId) {
+    ResponseEntity<UserToLessonDto> getUsersLessonInfo(@RequestParam Long lessonId,
+                                                       @RequestParam Long userId) {
         return ResponseEntity.ok(lessonService.getUsersLessonInfo(lessonId, userId));
     }
 
     @PutMapping("/lesson/users/user")
-    ResponseEntity<UserToLessonDto> updateUsersLessonInfo(
-            @RequestParam Long lessonId,
-            @RequestParam Long userId,
-            @RequestBody UserToLessonDtoUpdate userToLessonDtoUpdate) {
+    ResponseEntity<UserToLessonDto> updateUsersLessonInfo(@RequestParam Long lessonId,
+                                                          @RequestParam Long userId,
+                                                          @Valid @RequestBody UserToLessonDtoUpdate userToLessonDtoUpdate) {
         return ResponseEntity.ok(lessonService.updateUserToLesson(lessonId, userId, userToLessonDtoUpdate));
     }
 
@@ -69,7 +68,8 @@ public class LessonController {
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/lesson")
-    ResponseEntity<LessonDto> update(@RequestParam Long lessonId, @RequestBody LessonDtoUpdate lessonDto) {
+    ResponseEntity<LessonDto> update(@RequestParam Long lessonId,
+                                     @Valid @RequestBody LessonDtoUpdate lessonDto) {
         return ResponseEntity.ok(lessonService.update(lessonDto, lessonId));
     }
 
@@ -80,17 +80,21 @@ public class LessonController {
     }
 
     @GetMapping("/lesson/files/file/info")
-    public ResponseEntity<HomeworkFileDto> getHomeworkInfo(@RequestParam Long lessonId, @RequestParam Long userId) {
+    public ResponseEntity<HomeworkFileDto> getHomeworkInfo(@RequestParam Long lessonId,
+                                                           @RequestParam Long userId) {
         return ResponseEntity.ok(userToLessonService.getFileInfo(lessonId, userId));
     }
 
     @PostMapping("/lesson/files")
-    public ResponseEntity<HomeworkFileDto> upload(@RequestParam Long lessonId, @RequestBody MultipartFile file, Principal principal) {
+    public ResponseEntity<HomeworkFileDto> upload(@RequestParam Long lessonId,
+                                                  @RequestBody MultipartFile file,
+                                                  Principal principal) {
         return ResponseEntity.ok(userToLessonService.uploadFile(lessonId, principal.getName(), file));
     }
 
     @GetMapping("/lesson/files/file")
-    public ResponseEntity<ByteArrayResource> download(@RequestParam Long lessonId, @RequestParam Long userId) {
+    public ResponseEntity<ByteArrayResource> download(@RequestParam Long lessonId,
+                                                      @RequestParam Long userId) {
         var fileDto = userToLessonService.downloadFile(lessonId, userId);
         var data = fileDto.getData();
 
@@ -115,7 +119,8 @@ public class LessonController {
 
     //@RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @DeleteMapping("/lesson/files/file")
-    public ResponseEntity<SimpleDto<String>> delete(@RequestParam Long lessonId, @RequestParam Long userId) {
+    public ResponseEntity<SimpleDto<String>> delete(@RequestParam Long lessonId,
+                                                    @RequestParam Long userId) {
         userToLessonService.deleteFile(lessonId, userId);
         return ResponseEntity.ok(new SimpleDto<>("Ok"));
     }

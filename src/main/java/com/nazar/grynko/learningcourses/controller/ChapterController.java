@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -58,7 +59,8 @@ public class ChapterController {
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/chapter")
-    ResponseEntity<ChapterDto> update(@RequestBody ChapterDtoUpdate chapterDto, @RequestParam Long chapterId) {
+    ResponseEntity<ChapterDto> update(@RequestParam Long chapterId,
+                                      @Valid @RequestBody ChapterDtoUpdate chapterDto) {
         return ResponseEntity.ok(chapterService.update(chapterDto, chapterId));
     }
 

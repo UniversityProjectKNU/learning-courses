@@ -18,9 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("learning-courses/api/v1/courses")
@@ -74,11 +74,8 @@ public class CourseController {
 
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/course")
-    ResponseEntity<CourseDto> update(@RequestBody CourseDtoUpdate courseDto, @RequestParam Long courseId) {
-        if (!Objects.equals(courseDto.getId(), courseId)) {
-            throw new InvalidPathException();
-        }
-
+    ResponseEntity<CourseDto> update(@RequestParam Long courseId,
+                                     @Valid @RequestBody CourseDtoUpdate courseDto) {
         return ResponseEntity.ok(courseService.update(courseDto, courseId));
     }
 
@@ -118,7 +115,7 @@ public class CourseController {
     @RolesAllowed({"STUDENT", "INSTRUCTOR"})
     @GetMapping("/course/users/enrolls/enroll")
     ResponseEntity<?> getUsersLastEnrollRequestForCourse(@RequestParam Long userId,
-                                                           @RequestParam Long courseId) {
+                                                         @RequestParam Long courseId) {
         return ResponseEntity.ok(courseService.getUsersLastEnrollRequest(userId, courseId));
     }
 
@@ -141,7 +138,7 @@ public class CourseController {
     @PutMapping("/course/users/user")
     ResponseEntity<UserToCourseDto> updateUsersCourseInfo(@RequestParam Long courseId,
                                                           @RequestParam Long userId,
-                                                          @RequestBody UserToCourseDtoUpdate userToCourseDto) {
+                                                          @Valid @RequestBody UserToCourseDtoUpdate userToCourseDto) {
         return ResponseEntity.ok(courseService.updateUserToCourse(courseId, userId, userToCourseDto));
     }
 

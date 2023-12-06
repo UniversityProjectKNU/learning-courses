@@ -38,8 +38,8 @@ public class ChapterTemplateService {
         return chapterTemplateMapper.toDto(entity);
     }
 
-    public ChapterTemplateDto update(ChapterTemplateDtoUpdate dto) {
-        var chapterTemplate = chapterTemplateMapper.fromDtoUpdate(dto);
+    public ChapterTemplateDto update(ChapterTemplateDtoUpdate dto, Long chapterTemplateId) {
+        var chapterTemplate = chapterTemplateMapper.fromDtoUpdate(dto).setId(chapterTemplateId);
         chapterTemplate = chapterTemplateInternalService.update(chapterTemplate);
         return chapterTemplateMapper.toDto(chapterTemplate);
     }

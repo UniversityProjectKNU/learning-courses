@@ -52,8 +52,8 @@ public class LessonTemplateService {
         lessonTemplateInternalService.delete(id);
     }
 
-    public LessonTemplateDto update(LessonTemplateDtoUpdate dto) {
-        var entity = lessonTemplateMapper.fromDtoUpdate(dto);
+    public LessonTemplateDto update(LessonTemplateDtoUpdate dto, Long lessonTemplateId) {
+        var entity = lessonTemplateMapper.fromDtoUpdate(dto).setId(lessonTemplateId);
         entity = lessonTemplateInternalService.update(entity);
         return lessonTemplateMapper.toDto(entity);
     }

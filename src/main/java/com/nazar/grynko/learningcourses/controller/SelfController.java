@@ -7,6 +7,7 @@ import com.nazar.grynko.learningcourses.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.security.Principal;
 
 @RestController
@@ -26,7 +27,8 @@ public class SelfController {
     }
 
     @PutMapping
-    ResponseEntity<UserDto> updateSelf(@RequestBody UserDtoUpdate dtoUpdate, Principal principal) {
+    ResponseEntity<UserDto> updateSelf(@Valid @RequestBody UserDtoUpdate dtoUpdate,
+                                       Principal principal) {
         return ResponseEntity.ok(userService.updateSelf(dtoUpdate, principal.getName()));
     }
 

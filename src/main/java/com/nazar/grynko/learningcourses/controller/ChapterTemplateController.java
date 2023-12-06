@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -44,15 +45,15 @@ public class ChapterTemplateController {
     }
 
     @PostMapping
-    ResponseEntity<ChapterTemplateDto> save(@RequestParam Long courseTemplateId, @RequestBody ChapterTemplateDtoSave chapterTemplateDtoSave) {
+    ResponseEntity<ChapterTemplateDto> save(@RequestParam Long courseTemplateId,
+                                            @Valid @RequestBody ChapterTemplateDtoSave chapterTemplateDtoSave) {
         return ResponseEntity.ok(chapterTemplateService.save(chapterTemplateDtoSave, courseTemplateId));
     }
 
     @PutMapping("/chapter")
-    ResponseEntity<ChapterTemplateDto> update(@RequestBody ChapterTemplateDtoUpdate chapterTemplateDto,
-                              @RequestParam Long chapterTemplateId) {
-        chapterTemplateDto.setId(chapterTemplateId);
-        return ResponseEntity.ok(chapterTemplateService.update(chapterTemplateDto));
+    ResponseEntity<ChapterTemplateDto> update(@RequestParam Long chapterTemplateId,
+                                              @Valid @RequestBody ChapterTemplateDtoUpdate chapterTemplateDto) {
+        return ResponseEntity.ok(chapterTemplateService.update(chapterTemplateDto, chapterTemplateId));
     }
 
 }

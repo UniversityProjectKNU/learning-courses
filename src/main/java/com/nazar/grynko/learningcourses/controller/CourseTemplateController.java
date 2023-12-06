@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
 
@@ -67,17 +68,14 @@ public class CourseTemplateController {
     }
 
     @PostMapping
-    ResponseEntity<CourseTemplateDto> save(@RequestBody CourseTemplateDtoSave courseTemplateDtoSave) {
+    ResponseEntity<CourseTemplateDto> save(@Valid @RequestBody CourseTemplateDtoSave courseTemplateDtoSave) {
         return ResponseEntity.ok(courseTemplateService.save(courseTemplateDtoSave));
     }
 
     @PutMapping("/course")
-    ResponseEntity<CourseTemplateDto> update(@RequestParam Long courseTemplateId, @RequestBody CourseTemplateDtoUpdate courseTemplateDto) {
-        if (!courseTemplateDto.getId().equals(courseTemplateId)) {
-            throw new IllegalArgumentException();
-        }
-
-        return ResponseEntity.ok(courseTemplateService.update(courseTemplateDto));
+    ResponseEntity<CourseTemplateDto> update(@RequestParam Long courseTemplateId,
+                                             @Valid @RequestBody CourseTemplateDtoUpdate courseTemplateDto) {
+        return ResponseEntity.ok(courseTemplateService.update(courseTemplateDto, courseTemplateId));
     }
 
     @PostMapping("/course/create-instance")

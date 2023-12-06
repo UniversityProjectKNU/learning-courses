@@ -51,8 +51,8 @@ public class CourseTemplateService {
         return courseTemplateMapper.toDto(entity);
     }
 
-    public CourseTemplateDto update(CourseTemplateDtoUpdate dto) {
-        var entity = courseTemplateMapper.fromDtoUpdate(dto);
+    public CourseTemplateDto update(CourseTemplateDtoUpdate dto, Long courseTemplateId) {
+        var entity = courseTemplateMapper.fromDtoUpdate(dto).setId(courseTemplateId);
         entity = courseTemplateInternalService.update(entity);
         return courseTemplateMapper.toDto(entity);
     }

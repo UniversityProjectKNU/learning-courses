@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -50,16 +51,14 @@ public class UserController {
     }
 
     @PutMapping("/user")
-    ResponseEntity<UserDto> update(@RequestBody UserDtoUpdate dtoUpdate, @RequestParam Long userId) {
-        if (!dtoUpdate.getId().equals(userId)) {
-            throw new IllegalArgumentException();
-        }
+    ResponseEntity<UserDto> update(@RequestParam Long userId,
+                                   @Valid @RequestBody UserDtoUpdate dtoUpdate) {
         return ResponseEntity.ok(userService.update(dtoUpdate, userId));
     }
 
     @PutMapping("/user/role")
-    ResponseEntity<UserDto> updateRole(@RequestParam Long userId, @RequestBody UserRoleUpdateDto role) {
-        userService.get(userId).orElseThrow(InvalidPathException::new);
+    ResponseEntity<UserDto> updateRole(@RequestParam Long userId,
+                                       @Valid @RequestBody UserRoleUpdateDto role) {
         return ResponseEntity.ok(userService.updateRole(role, userId));
     }
 

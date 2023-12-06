@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Getter
@@ -16,9 +18,15 @@ import java.io.Serializable;
 @Accessors(chain = true)
 public class CourseDtoUpdate implements Serializable {
 
-    private Long id;
+    @NotNull
+    @Size(min = 4, max = 128)
     private String title;
+
+    @NotNull
+    @Size(min = 4, max = 2048)
     private String description;
+
+    @NotNull
     @JsonProperty("isFinished")
     private Boolean isFinished;
 

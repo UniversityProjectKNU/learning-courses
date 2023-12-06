@@ -6,7 +6,6 @@ import com.nazar.grynko.learningcourses.dto.simple.SimpleDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.dto.user.UserSecurityDto;
 import com.nazar.grynko.learningcourses.service.SecurityService;
-import org.springframework.http.HttpRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("learning-courses/api/v1")
@@ -27,12 +27,12 @@ public class SecurityController {
     }
 
     @PostMapping("/sign-in")
-    public ResponseEntity<UserSecurityDto> signIn(@RequestBody SignInDto signInDto) {
+    public ResponseEntity<UserSecurityDto> signIn(@Valid @RequestBody SignInDto signInDto) {
         return ResponseEntity.ok(securityService.signIn(signInDto));
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<UserDto> signUp(@RequestBody SignUpDto signUpDto) {
+    public ResponseEntity<UserDto> signUp(@Valid @RequestBody SignUpDto signUpDto) {
         return ResponseEntity.ok(securityService.signUp(signUpDto));
     }
 

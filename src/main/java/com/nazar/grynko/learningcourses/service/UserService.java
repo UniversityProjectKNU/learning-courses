@@ -47,8 +47,7 @@ public class UserService {
     }
 
     public UserDto update(UserDtoUpdate dto, Long id) {
-        var user = userMapper.fromDtoUpdate(dto)
-                .setId(id);
+        var user = userMapper.fromDtoUpdate(dto).setId(id);
         user = userInternalService.update(user);
         return userMapper.toDto(user);
     }

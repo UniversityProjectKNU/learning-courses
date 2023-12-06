@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("learning-courses/api/v1/templates/lessons")
@@ -35,14 +36,15 @@ public class LessonTemplateController {
     }
 
     @PostMapping
-    ResponseEntity<LessonTemplateDto> save(@RequestParam Long chapterTemplateId, @RequestBody LessonTemplateDtoSave lessonTemplateDtoSave) {
+    ResponseEntity<LessonTemplateDto> save(@RequestParam Long chapterTemplateId,
+                                           @Valid @RequestBody LessonTemplateDtoSave lessonTemplateDtoSave) {
         return ResponseEntity.ok(lessonTemplateService.save(lessonTemplateDtoSave, chapterTemplateId));
     }
 
     @PutMapping("/lesson")
-    ResponseEntity<LessonTemplateDto> update(@RequestParam Long lessonTemplateId, @RequestBody LessonTemplateDtoUpdate lessonTemplateDto) {
-        lessonTemplateDto.setId(lessonTemplateId);
-        return ResponseEntity.ok(lessonTemplateService.update(lessonTemplateDto));
+    ResponseEntity<LessonTemplateDto> update(@RequestParam Long lessonTemplateId,
+                                             @Valid @RequestBody LessonTemplateDtoUpdate lessonTemplateDto) {
+        return ResponseEntity.ok(lessonTemplateService.update(lessonTemplateDto, lessonTemplateId));
     }
 
 }
