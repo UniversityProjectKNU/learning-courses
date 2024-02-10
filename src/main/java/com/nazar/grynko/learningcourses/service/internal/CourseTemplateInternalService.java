@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
+import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.model.CourseTemplate;
 import com.nazar.grynko.learningcourses.model.User;
 import com.nazar.grynko.learningcourses.repository.CourseTemplateOwnerRepository;
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.Objects.isNull;
 
@@ -18,6 +18,8 @@ public class CourseTemplateInternalService {
     private final CourseTemplateRepository courseTemplateRepository;
     private final CourseTemplateOwnerRepository courseTemplateOwnerRepository;
 
+    private static final String COURSE_TEMPLATE_MISSING_PATTERN = "Course template %d doesn't exist";
+
     @Autowired
     public CourseTemplateInternalService(CourseTemplateRepository courseTemplateRepository,
                                          CourseTemplateOwnerRepository courseTemplateOwnerRepository) {
@@ -25,17 +27,17 @@ public class CourseTemplateInternalService {
         this.courseTemplateOwnerRepository = courseTemplateOwnerRepository;
     }
 
-    public Optional<CourseTemplate> get(Long id) {
-        return courseTemplateRepository.findById(id);
+    public CourseTemplate get(Long courseTemplateId) {
+        return courseTemplateRepository.findById(courseTemplateId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(COURSE_TEMPLATE_MISSING_PATTERN, courseTemplateId)));
     }
 
     public List<CourseTemplate> getAll() {
         return courseTemplateRepository.findAll();
     }
 
-    public void delete(Long id) {
-        CourseTemplate entity = courseTemplateRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new);
+    public void delete(Long courseTemplateId) {
+        CourseTemplate entity = get(courseTemplateId);
         courseTemplateRepository.delete(entity);
     }
 
@@ -44,10 +46,15 @@ public class CourseTemplateInternalService {
     }
 
     public CourseTemplate update(CourseTemplate entity) {
-        CourseTemplate dbCourseTemplate = courseTemplateRepository.findById(entity.getId())
-                .orElseThrow(IllegalArgumentException::new);
+        CourseTemplate dbCourseTemplate = get(entity.getId());
         fillNullFields(dbCourseTemplate, entity);
+
         return courseTemplateRepository.save(entity);
+    }
+
+    public User getCourseTemplateOwner(Long courseTemplateId) {
+        throwIfMissingCourseTemplate(courseTemplateId);
+        return courseTemplateOwnerRepository.getCourseTemplateOwnerByCourseTemplateId(courseTemplateId).getUser();
     }
 
     private void fillNullFields(CourseTemplate source, CourseTemplate destination) {
@@ -56,7 +63,8 @@ public class CourseTemplateInternalService {
         if (isNull(destination.getDescription())) destination.setDescription(source.getDescription());
     }
 
-    public User getCourseTemplateOwner(Long courseTemplateId) {
-        return courseTemplateOwnerRepository.getCourseTemplateOwnerByCourseTemplateId(courseTemplateId).getUser();
+    public void throwIfMissingCourseTemplate(Long courseTemplateId) {
+        courseTemplateRepository.findById(courseTemplateId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(COURSE_TEMPLATE_MISSING_PATTERN, courseTemplateId)));
     }
 }

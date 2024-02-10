@@ -12,6 +12,6 @@ import java.util.Optional;
 public interface HomeworkFileRepository extends JpaRepository<HomeworkFile, Long> {
 
     @Query("select h from HomeworkFile h where h.userToLesson = ?1")
-    Optional<HomeworkFile> get(UserToLesson userToLesson);
+    Optional<HomeworkFile> getByUserToLesson(UserToLesson userToLesson);
 
 }

@@ -1,6 +1,6 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
-import com.nazar.grynko.learningcourses.exception.InvalidPathException;
+import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.model.ChapterTemplate;
 import com.nazar.grynko.learningcourses.model.LessonTemplate;
 import com.nazar.grynko.learningcourses.repository.LessonTemplateRepository;
@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.Objects.isNull;
 
@@ -17,57 +16,50 @@ public class LessonTemplateInternalService {
 
     private final LessonTemplateRepository lessonTemplateRepository;
     private final ChapterTemplateInternalService chapterTemplateInternalService;
-    private final CourseTemplateInternalService courseTemplateInternalService;
+
+    private static final String LESSON_TEMPLATE_MISSING_PATTERN = "Lesson template %d doesn't exist";
 
     @Autowired
     public LessonTemplateInternalService(LessonTemplateRepository lessonTemplateRepository,
-                                         ChapterTemplateInternalService chapterTemplateInternalService,
-                                         CourseTemplateInternalService courseTemplateInternalService) {
+                                         ChapterTemplateInternalService chapterTemplateInternalService) {
         this.lessonTemplateRepository = lessonTemplateRepository;
         this.chapterTemplateInternalService = chapterTemplateInternalService;
-        this.courseTemplateInternalService = courseTemplateInternalService;
     }
 
-    public Optional<LessonTemplate> get(Long id) {
-        return lessonTemplateRepository.findById(id);
+    public LessonTemplate get(Long lessonTemplateId) {
+        return lessonTemplateRepository.findById(lessonTemplateId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(LESSON_TEMPLATE_MISSING_PATTERN, lessonTemplateId)));
     }
 
-    public void delete(Long id) {
-        lessonTemplateRepository.deleteById(id);
+    public void delete(Long lessonTemplateId) {
+        lessonTemplateRepository.deleteById(lessonTemplateId);
     }
 
     public LessonTemplate save(LessonTemplate entity, Long chapterTemplateId) {
-        ChapterTemplate chapterTemplate = chapterTemplateInternalService.get(chapterTemplateId)
-                .orElseThrow(InvalidPathException::new);
+        ChapterTemplate chapterTemplate = chapterTemplateInternalService.get(chapterTemplateId);
         entity.setChapterTemplate(chapterTemplate);
 
         return lessonTemplateRepository.save(entity);
     }
 
     public LessonTemplate update(LessonTemplate entity) {
-        LessonTemplate dbLessonTemplate = lessonTemplateRepository.findById(entity.getId())
-                .orElseThrow(IllegalArgumentException::new);
+        LessonTemplate dbLessonTemplate = get(entity.getId());
         fillNullFields(dbLessonTemplate, entity);
+
         return lessonTemplateRepository.save(entity);
     }
 
     public List<LessonTemplate> getAllInChapterTemplate(Long chapterTemplateId) {
-        chapterTemplateInternalService.get(chapterTemplateId)
-                .orElseThrow(() -> new IllegalArgumentException("No chapter template with id: " + chapterTemplateId));
         return lessonTemplateRepository.getLessonTemplatesByChapterTemplateId(chapterTemplateId);
     }
 
     public List<LessonTemplate> getAllInCourseTemplate(Long courseTemplateId) {
-        courseTemplateInternalService.get(courseTemplateId)
-                .orElseThrow(() -> new IllegalArgumentException("No course template with id: " + courseTemplateId));
         return lessonTemplateRepository.getAllInCourse(courseTemplateId);
     }
 
-    public boolean hasWithCourseTemplate(Long id, Long chapterTemplateId, Long courseTemplateId) {
-        Optional<LessonTemplate> optional = lessonTemplateRepository
-                .getLessonTemplateByIdAndChapterTemplateIdAndChapterTemplateCourseTemplateId(id, chapterTemplateId, courseTemplateId);
-
-        return optional.isPresent();
+    public void throwIfMissingLessonTemplate(Long lessonTemplateId) {
+        lessonTemplateRepository.findById(lessonTemplateId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(LESSON_TEMPLATE_MISSING_PATTERN, lessonTemplateId)));
     }
 
     private void fillNullFields(LessonTemplate source, LessonTemplate destination) {

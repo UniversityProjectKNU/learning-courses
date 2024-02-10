@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -21,19 +20,21 @@ public class ChapterService {
     private final ChapterMapper chapterMapper;
 
     @Autowired
-    public ChapterService(ChapterInternalService chapterInternalService, CourseInternalService courseInternalService,
+    public ChapterService(ChapterInternalService chapterInternalService,
+                          CourseInternalService courseInternalService,
                           ChapterMapper chapterMapper) {
         this.chapterInternalService = chapterInternalService;
         this.courseInternalService = courseInternalService;
         this.chapterMapper = chapterMapper;
     }
 
-    public Optional<ChapterDto> get(Long id) {
-        return chapterInternalService.get(id)
-                .flatMap(val -> Optional.of(chapterMapper.toDto(val)));
+    public ChapterDto get(Long chapterId) {
+        var chapter = chapterInternalService.get(chapterId);
+        return chapterMapper.toDto(chapter);
     }
 
     public List<ChapterDto> getAllInCourse(Long courseId) {
+        courseInternalService.throwIfMissingCourse(courseId);
         return chapterInternalService.getAllInCourse(courseId)
                 .stream()
                 .map(chapterMapper::toDto)
@@ -45,12 +46,11 @@ public class ChapterService {
     }
 
     public ChapterDto save(ChapterDtoSave dto, Long courseId) {
-        var course = courseInternalService.get(courseId)
-                .orElseThrow(IllegalArgumentException::new);
+        var course = courseInternalService.get(courseId);
 
-        var entity = chapterMapper.fromDtoSave(dto);
-        entity.setCourse(course);
-        entity.setIsFinished(false);
+        var entity = chapterMapper.fromDtoSave(dto)
+                .setCourse(course)
+                .setIsFinished(false);
 
         entity = chapterInternalService.save(entity);
         return chapterMapper.toDto(entity);
@@ -62,7 +62,4 @@ public class ChapterService {
         return chapterMapper.toDto(entity);
     }
 
-    public boolean hasWithCourse(Long id, Long courseId) {
-        return chapterInternalService.hasWithCourse(id, courseId);
-    }
 }

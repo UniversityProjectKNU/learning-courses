@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
+import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.mapper.LessonMapper;
 import com.nazar.grynko.learningcourses.model.*;
 import com.nazar.grynko.learningcourses.repository.LessonRepository;
@@ -7,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class LessonInternalService {
@@ -17,16 +17,21 @@ public class LessonInternalService {
     private final LessonMapper lessonMapper;
     private final UserToLessonInternalService userToLessonInternalService;
 
-    public LessonInternalService(LessonRepository lessonRepository, LessonTemplateInternalService lessonTemplateInternalService,
-                                 LessonMapper lessonMapper, UserToLessonInternalService userToLessonInternalService) {
+    private static final String LESSON_MISSING_PATTERN = "Lesson %d doesn't exist";
+
+    public LessonInternalService(LessonRepository lessonRepository,
+                                 LessonTemplateInternalService lessonTemplateInternalService,
+                                 LessonMapper lessonMapper,
+                                 UserToLessonInternalService userToLessonInternalService) {
         this.lessonRepository = lessonRepository;
         this.lessonTemplateInternalService = lessonTemplateInternalService;
         this.lessonMapper = lessonMapper;
         this.userToLessonInternalService = userToLessonInternalService;
     }
 
-    public Optional<Lesson> get(Long id) {
-        return lessonRepository.findById(id);
+    public Lesson get(Long lessonId) {
+        return lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(LESSON_MISSING_PATTERN, lessonId)));
     }
 
     public List<Lesson> getAllInChapter(Long chapterId) {
@@ -34,7 +39,7 @@ public class LessonInternalService {
     }
 
     public void delete(Long id) {
-        var entity = get(id).orElseThrow(IllegalArgumentException::new);
+        var entity = get(id);
         lessonRepository.delete(entity);
     }
 
@@ -64,25 +69,34 @@ public class LessonInternalService {
     }
 
     public Lesson finish(Long lessonId) {
-        var lesson = get(lessonId).orElseThrow(IllegalArgumentException::new)
-                .setIsFinished(true);
+        var lesson = get(lessonId);
+        if (lesson.getIsFinished()) {
+            throw new IllegalStateException("Lesson is already finished");
+        }
+
+        lesson.setIsFinished(true);
         return lessonRepository.save(lesson);
     }
 
     public Lesson create(LessonTemplate template, Chapter chapter) {
-        var entity = lessonMapper.fromTemplate(template).setId(null);
-
-        entity.setChapter(chapter);
-        entity.setIsFinished(false);
+        var entity = lessonMapper.fromTemplate(template)
+                .setId(null)
+                .setChapter(chapter)
+                .setIsFinished(false);
 
         return lessonRepository.save(entity);
     }
 
     public Lesson update(Lesson entity) {
-        var dbLesson = lessonRepository.findById(entity.getId())
-                .orElseThrow(IllegalArgumentException::new);
+        var dbLesson = get(entity.getId());
         fillNullFields(dbLesson, entity);
+
         return lessonRepository.save(entity);
+    }
+
+    public void throwIfMissingLesson(Long lessonId) {
+        lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(LESSON_MISSING_PATTERN, lessonId)));
     }
 
     private void fillNullFields(Lesson source, Lesson destination) {
@@ -96,24 +110,8 @@ public class LessonInternalService {
         if (destination.getChapter() == null) destination.setChapter(source.getChapter());
     }
 
-    public boolean hasWithChapter(Long id, Long chapterId, Long courseId) {
-        return lessonRepository
-                .getLessonByIdAndChapterIdAndChapterCourseId(id, chapterId, courseId)
-                .isPresent();
-    }
-
-    public boolean hasWithCourse(Long id, Long courseId) {
-        return lessonRepository
-                .getLessonByIdAndCourseId(id, courseId)
-                .isPresent();
-    }
-
     public List<Lesson> getAllInCourse(Long courseId) {
         return lessonRepository.getAllInCourse(courseId);
-    }
-
-    public List<Lesson> getUsersLessonsForCourse(Long courseId, String login) {
-        return userToLessonInternalService.getAllLessonsByUserLoginAndCourseId(login, courseId);
     }
 
     public List<UserToLesson> enroll(User user, Long courseId) {

@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
+import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.mapper.ChapterMapper;
 import com.nazar.grynko.learningcourses.model.Chapter;
 import com.nazar.grynko.learningcourses.model.ChapterTemplate;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ChapterInternalService {
@@ -21,25 +21,30 @@ public class ChapterInternalService {
     private final LessonInternalService lessonInternalService;
     private final ChapterMapper chapterMapper;
 
+    private static final String CHAPTER_MISSING_PATTERN = "Chapter %d doesn't exist";
+
     @Autowired
-    public ChapterInternalService(ChapterRepository chapterRepository, ChapterTemplateInternalService chapterTemplateInternalService,
-                                  LessonInternalService lessonInternalService, ChapterMapper chapterMapper) {
+    public ChapterInternalService(ChapterRepository chapterRepository,
+                                  ChapterTemplateInternalService chapterTemplateInternalService,
+                                  LessonInternalService lessonInternalService,
+                                  ChapterMapper chapterMapper) {
         this.chapterRepository = chapterRepository;
         this.chapterTemplateInternalService = chapterTemplateInternalService;
         this.lessonInternalService = lessonInternalService;
         this.chapterMapper = chapterMapper;
     }
 
-    public Optional<Chapter> get(Long id) {
-        return chapterRepository.findById(id);
+    public Chapter get(Long chapterId) {
+        return chapterRepository.findById(chapterId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(CHAPTER_MISSING_PATTERN, chapterId)));
     }
 
     public Collection<Chapter> getAllInCourse(Long courseId) {
         return chapterRepository.findAllByCourseId(courseId);
     }
 
-    public void delete(Long id) {
-        var entity = get(id).orElseThrow(IllegalArgumentException::new);
+    public void delete(Long chapterId) {
+        var entity = get(chapterId);
         chapterRepository.delete(entity);
     }
 
@@ -61,10 +66,10 @@ public class ChapterInternalService {
     }
 
     public Chapter create(ChapterTemplate template, Course course) {
-        var entity = chapterMapper.fromTemplate(template).setId(null);
-
-        entity.setCourse(course);
-        entity.setIsFinished(false);
+        var entity = chapterMapper.fromTemplate(template)
+                .setId(null)
+                .setCourse(course)
+                .setIsFinished(false);
 
         entity = chapterRepository.save(entity);
 
@@ -89,10 +94,15 @@ public class ChapterInternalService {
     }
 
     public Chapter update(Chapter entity) {
-        var dbChapter = chapterRepository.findById(entity.getId())
-                .orElseThrow(IllegalArgumentException::new);
+        var dbChapter = get(entity.getId());
         fillNullFields(dbChapter, entity);
+
         return chapterRepository.save(entity);
+    }
+
+    public void throwIfMissingChapter(Long chapterId) {
+        chapterRepository.findById(chapterId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(CHAPTER_MISSING_PATTERN, chapterId)));
     }
 
     private void fillNullFields(Chapter source, Chapter destination) {
@@ -102,12 +112,5 @@ public class ChapterInternalService {
         if (destination.getNumber() == null) destination.setNumber(source.getNumber());
         if (destination.getIsFinished() == null) destination.setIsFinished(source.getIsFinished());
         if (destination.getCourse() == null) destination.setCourse(source.getCourse());
-    }
-
-    public boolean hasWithCourse(Long chapterId, Long courseId) {
-        var optional = chapterRepository
-                .getChapterByIdAndCourseId(chapterId, courseId);
-
-        return optional.isPresent();
     }
 }

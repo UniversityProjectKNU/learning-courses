@@ -22,8 +22,7 @@ public class JwtUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
         var user = userInternalService
-                .getByLogin(login)
-                .orElseThrow(() -> new UsernameNotFoundException(String.format("User with login %s doesn't exist", login)));
+                .getByLogin(login);
 
         var authorities = Stream.of(user.getRole())
                 .map(type -> new SimpleGrantedAuthority(type.toString()))

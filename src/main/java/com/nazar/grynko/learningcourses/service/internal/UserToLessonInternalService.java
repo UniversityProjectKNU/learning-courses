@@ -1,7 +1,7 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
 import com.nazar.grynko.learningcourses.dto.hoeworkfile.FileDto;
-import com.nazar.grynko.learningcourses.exception.InvalidPathException;
+import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.model.HomeworkFile;
 import com.nazar.grynko.learningcourses.model.Lesson;
 import com.nazar.grynko.learningcourses.model.UserToLesson;
@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,6 +19,9 @@ public class UserToLessonInternalService {
     private final UserToLessonRepository userToLessonRepository;
     private final LessonRepository lessonRepository;
     private final HomeworkInternalService homeworkInternalService;
+
+    private static final String USER_LESSON_WITH_LESSON_MISSING_PATTERS = "User %s with lesson %d doesn't exist";
+    private static final String USER_ID_WITH_LESSON_MISSING_PATTERS = "User %d with lesson %d doesn't exist";
 
     public UserToLessonInternalService(UserToLessonRepository userToLessonRepository,
                                        LessonRepository lessonRepository,
@@ -33,64 +35,54 @@ public class UserToLessonInternalService {
         return userToLessonRepository.save(entity);
     }
 
-    public Optional<UserToLesson> get(String login, Long lessonId) {
-        return userToLessonRepository.findByUserLoginAndLessonId(login, lessonId);
+    public UserToLesson get(String login, Long lessonId) {
+        return userToLessonRepository.findByUserLoginAndLessonId(login, lessonId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(USER_LESSON_WITH_LESSON_MISSING_PATTERS, login, lessonId)));
     }
 
-    public Optional<UserToLesson> get(Long userId, Long lessonId) {
-        return userToLessonRepository.findByUserIdAndLessonId(userId, lessonId);
-    }
-
-    public HomeworkFile getFileInfo(Long lessonId, String login) {
-        var userToLesson = get(login, lessonId)
-                .orElseThrow(IllegalArgumentException::new);
-
-        return homeworkInternalService.getFile(userToLesson);
+    public UserToLesson get(Long userId, Long lessonId) {
+        return userToLessonRepository.findByUserIdAndLessonId(userId, lessonId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(USER_ID_WITH_LESSON_MISSING_PATTERS, userId, lessonId)));
     }
 
     public HomeworkFile getFileInfo(Long lessonId, Long studentId) {
-        var optional = get(studentId, lessonId);
+        var optional = userToLessonRepository.findByUserIdAndLessonId(studentId, lessonId);
         if (optional.isEmpty()) {
             return null;
         }
-        var userToLesson = optional.get();
 
+        var userToLesson = optional.get();
         return homeworkInternalService.getFile(userToLesson);
     }
 
     public HomeworkFile uploadFile(Long lessonId, String login, MultipartFile file) {
-        var lesson = lessonRepository.findById(lessonId).orElseThrow(IllegalArgumentException::new);
+        var lesson = lessonRepository.findById(lessonId).orElseThrow(EntityNotFoundException::new); //todo refactor these methods
         if (lesson.getIsFinished()) {
-            throw new InvalidPathException("You cannot upload file in finished lesson");
+            throw new IllegalStateException("You cannot upload file in finished lesson");
         }
-        var userToLesson = get(login, lessonId)
-                .orElseThrow(IllegalArgumentException::new);
 
+        var userToLesson = get(login, lessonId);
         return homeworkInternalService.uploadFile(file, userToLesson);
     }
 
     public FileDto downloadFile(Long lessonId, Long userId) {
-        var userToLesson = get(userId, lessonId)
-                .orElseThrow(IllegalArgumentException::new);
-
+        var userToLesson = get(userId, lessonId);
         return homeworkInternalService.downloadFile(userToLesson);
     }
 
     public void deleteFile(Long lessonId, String login) {
-        var userToLesson = get(login, lessonId)
-                .orElseThrow(IllegalArgumentException::new);
+        var userToLesson = get(login, lessonId);
 
         homeworkInternalService.deleteFile(userToLesson);
     }
 
     public void deleteFile(Long lessonId, Long userId) {
-        var lesson = lessonRepository.findById(lessonId).orElseThrow(IllegalArgumentException::new);
+        var lesson = lessonRepository.findById(lessonId).orElseThrow(EntityNotFoundException::new); //todo refactor these methods
         if (lesson.getIsFinished()) {
-            throw new InvalidPathException("You cannot upload file in finished lesson");
+            throw new IllegalStateException("You cannot delete file in finished lesson");
         }
 
-        var userToLesson = get(userId, lessonId)
-                .orElseThrow(IllegalArgumentException::new);
+        var userToLesson = get(userId, lessonId);
 
         homeworkInternalService.deleteFile(userToLesson);
     }
@@ -103,19 +95,12 @@ public class UserToLessonInternalService {
     }
 
     public UserToLesson update(Long userId, Long lessonId, UserToLesson entity) {
-        var dbEntity = userToLessonRepository.findByUserIdAndLessonId(userId, lessonId)
-                .orElseThrow(IllegalArgumentException::new);
+        var dbEntity = get(userId, lessonId);
+
         fillNullFields(dbEntity, entity);
         entity.setId(dbEntity.getId());
-        return userToLessonRepository.save(entity);
-    }
 
-    private void fillNullFields(UserToLesson source, UserToLesson destination) {
-        if (destination.getId() == null) destination.setId(source.getId());
-        if (destination.getUser() == null) destination.setUser(source.getUser());
-        if (destination.getLesson() == null) destination.setLesson(source.getLesson());
-        if (destination.getIsPassed() == null) destination.setIsPassed(source.getIsPassed());
-        if (destination.getMark() == null) destination.setMark(source.getMark());
+        return userToLessonRepository.save(entity);
     }
 
     public void setIsPassedForLessonsInCourse(Long courseId) {
@@ -140,5 +125,13 @@ public class UserToLessonInternalService {
 
     public List<UserToLesson> getAllUserToLessonInfoForLesson(Long lessonId) {
         return userToLessonRepository.getAllByLessonId(lessonId);
+    }
+
+    private void fillNullFields(UserToLesson source, UserToLesson destination) {
+        if (destination.getId() == null) destination.setId(source.getId());
+        if (destination.getUser() == null) destination.setUser(source.getUser());
+        if (destination.getLesson() == null) destination.setLesson(source.getLesson());
+        if (destination.getIsPassed() == null) destination.setIsPassed(source.getIsPassed());
+        if (destination.getMark() == null) destination.setMark(source.getMark());
     }
 }

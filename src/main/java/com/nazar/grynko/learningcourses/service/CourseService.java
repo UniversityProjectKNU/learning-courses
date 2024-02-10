@@ -7,7 +7,10 @@ import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDto;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseDtoUpdate;
 import com.nazar.grynko.learningcourses.dto.usertocourse.UserToCourseInfoDto;
-import com.nazar.grynko.learningcourses.mapper.*;
+import com.nazar.grynko.learningcourses.mapper.CourseMapper;
+import com.nazar.grynko.learningcourses.mapper.EnrollRequestMapper;
+import com.nazar.grynko.learningcourses.mapper.UserMapper;
+import com.nazar.grynko.learningcourses.mapper.UserToCourseMapper;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.service.internal.CourseInternalService;
 import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
@@ -15,7 +18,6 @@ import com.nazar.grynko.learningcourses.service.internal.UserToCourseInternalSer
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -47,9 +49,9 @@ public class CourseService {
         this.enrollRequestMapper = enrollRequestMapper;
     }
 
-    public Optional<CourseDto> get(Long id) {
-        return courseInternalService.get(id)
-                .flatMap(val -> Optional.of(courseMapper.toDto(val)));
+    public CourseDto get(Long courseId) {
+        var entity = courseInternalService.get(courseId);
+        return courseMapper.toDto(entity);
     }
 
     public List<CourseDto> getAll(Boolean isActive) {
@@ -60,8 +62,8 @@ public class CourseService {
                 .collect(Collectors.toList());
     }
 
-    public void delete(Long id) {
-        courseInternalService.delete(id);
+    public void delete(Long courseId) {
+        courseInternalService.delete(courseId);
     }
 
     public CourseDto create(Long courseTemplateId, String login) {
@@ -77,74 +79,87 @@ public class CourseService {
     }*/
 
     public CourseDto update(CourseDtoUpdate dto, Long courseId) {
-        var entity = courseMapper.fromDtoUpdate(dto).setId(courseId);
+        var entity = courseMapper.fromDtoUpdate(dto)
+                .setId(courseId);
         entity = courseInternalService.update(entity);
         return courseMapper.toDto(entity);
     }
 
-    public List<UserToCourseInfoDto> getAllUserToCourseInfoForCourse(Long id, RoleType roleType) {
+    //todo
+    public List<UserToCourseInfoDto> getAllUserToCourseInfoForCourse(Long courseId, RoleType roleType) {
         if (roleType == RoleType.ADMIN) {
             throw new IllegalArgumentException(String.format(
                     "Cannot get courses for role %s", roleType.name()));
         }
 
         var types = roleType == null ? List.of(RoleType.STUDENT, RoleType.INSTRUCTOR) : List.of(roleType);
+        courseInternalService.throwIfMissingCourse(courseId);
 
-        return userToCourseInternalService.getAllByCourseId(id)
+        return userToCourseInternalService.getAllByCourseId(courseId)
                 .stream()
                 .filter(userToCourse -> types.contains(userToCourse.getUser().getRole()))
                 .map(userToCourseMapper::toUserToCourseInfoDto)
                 .collect(Collectors.toList());
     }
 
-    public UserToCourseDto enroll(Long courseId, Long userId) {
+    public UserToCourseDto assignUserToCourse(Long courseId, Long userId) {
+        userInternalService.throwIfMissingUser(userId);
+        courseInternalService.throwIfMissingCourse(courseId);
+
         var userToCourse = courseInternalService.enroll(courseId, userId);
         return userToCourseMapper.toDto(userToCourse);
     }
 
-    public List<CourseDto> getUsersCourses(String login, Boolean isFinished) {
-        var courses = courseInternalService.getUsersCourses(login, isFinished);
+    public List<CourseDto> getAllUsersCourses(String login, Boolean isActive) {
+        userInternalService.throwIfMissingUser(login);
+
+        var courses = courseInternalService.getAllUsersCourses(login, isActive);
         return courses.stream()
                 .map(courseMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    public UserToCourseDto getUsersCourseInfo(Long id, String login) {
-        var userId = userInternalService.getByLogin(login).orElseThrow(IllegalArgumentException::new).getId();
+    public UserToCourseDto getUsersCourseInfo(Long courseId, String login) {
+        var userId = userInternalService.getByLogin(login)
+                .getId();
 
-        var userToCourse = userToCourseInternalService.getByUserIdAndCourseId(userId, id)
-                .orElseThrow(() -> new IllegalArgumentException("User doesn't have this course"));
+        var userToCourse = userToCourseInternalService.getByUserIdAndCourseId(userId, courseId);
         return userToCourseMapper.toDto(userToCourse);
     }
 
-    public UserToCourseDto getUsersCourseInfo(Long id, Long userId) {
-        userInternalService.get(userId)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("User %d doesn't exist", userId)));
+    public UserToCourseDto getUsersCourseInfo(Long courseId, Long userId) {
+        userInternalService.throwIfMissingUser(userId);
+        courseInternalService.throwIfMissingCourse(courseId);
 
-        var userToCourse = userToCourseInternalService.getByUserIdAndCourseId(userId, id)
-                .orElseThrow(() -> new IllegalArgumentException("User doesn't have this course"));
+        var userToCourse = userToCourseInternalService.getByUserIdAndCourseId(userId, courseId);
         return userToCourseMapper.toDto(userToCourse);
     }
 
     public UserToCourseDto updateUserToCourse(Long courseId, Long userId, UserToCourseDtoUpdate dto) {
+        userInternalService.throwIfMissingUser(userId);
+        courseInternalService.throwIfMissingCourse(courseId);
+
         var entity = userToCourseMapper.fromDtoUpdate(dto);
         entity = userToCourseInternalService.update(userId, courseId, entity);
         return userToCourseMapper.toDto(entity);
     }
 
-    public CourseDto finish(Long id) {
-        courseInternalService.get(id)
-                .orElseThrow(() -> new IllegalArgumentException(String.format("Course %d doesn't exist", id)));
-        var entity = courseInternalService.finish(id);
+    public CourseDto finish(Long courseId) {
+        var entity = courseInternalService.finish(courseId);
         return courseMapper.toDto(entity);
     }
 
     public UserDto getCourseOwner(Long courseId) {
+        courseInternalService.throwIfMissingCourse(courseId);
+
         var owner = courseInternalService.getCourseOwner(courseId);
         return userMapper.toDto(owner);
     }
 
     public void removeUserFromCourse(Long courseId, Long userId) {
+        courseInternalService.throwIfMissingCourse(courseId);
+        userInternalService.throwIfMissingUser(userId);
+
         userToCourseInternalService.removeUserFromCourse(courseId, userId);
     }
 
@@ -154,6 +169,7 @@ public class CourseService {
     }
 
     public List<EnrollRequestDto> getAllEnrollRequests(Long courseId, Boolean isActive) {
+        courseInternalService.throwIfMissingCourse(courseId);
         return courseInternalService.getAllEnrollRequestsForCourse(courseId, isActive)
                 .stream()
                 .map(enrollRequestMapper::toDto)
@@ -166,7 +182,14 @@ public class CourseService {
     }
 
     public EnrollRequestDto getUsersLastEnrollRequest(Long userId, Long courseId) {
+        courseInternalService.throwIfMissingCourse(courseId);
+        userInternalService.throwIfMissingUser(userId);
+
         var entity = courseInternalService.getUsersLastEnrollRequest(userId, courseId);
+        if (isNull(entity)) {
+            return null;
+        }
+
         return enrollRequestMapper.toDto(entity);
     }
 }

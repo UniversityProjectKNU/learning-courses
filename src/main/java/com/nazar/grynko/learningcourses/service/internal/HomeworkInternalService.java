@@ -1,6 +1,7 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
 import com.nazar.grynko.learningcourses.dto.hoeworkfile.FileDto;
+import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.model.HomeworkFile;
 import com.nazar.grynko.learningcourses.model.UserToLesson;
 import com.nazar.grynko.learningcourses.repository.HomeworkFileRepository;
@@ -13,6 +14,9 @@ public class HomeworkInternalService {
 
     private final S3FileService s3FileService;
     private final HomeworkFileRepository homeworkFileRepository;
+
+    private static final String FILE_ID_MISSING_PATTER = "Homework file %d doesn't exist";
+    private static final String FILE_UTL_MISSING_PATTER = "Homework file  of user %d and lesson %d doesn't exist";
 
     public HomeworkInternalService(S3FileService s3FileService,
                                    HomeworkFileRepository homeworkFileRepository) {
@@ -29,7 +33,7 @@ public class HomeworkInternalService {
      * @return entity with meta information about file and its userToLesson
      */
     public HomeworkFile uploadFile(MultipartFile multipartFile, UserToLesson userToLesson) {
-        var homework = homeworkFileRepository.get(userToLesson);
+        var homework = homeworkFileRepository.getByUserToLesson(userToLesson);
         HomeworkFile homeworkFile;
 
         if (homework.isPresent()) {
@@ -52,16 +56,12 @@ public class HomeworkInternalService {
     }
 
     public FileDto downloadFile(UserToLesson userToLesson) {
-        var homework = homeworkFileRepository.get(userToLesson)
-                .orElseThrow(IllegalArgumentException::new);
-
+        var homework = getFileByUserToLesson(userToLesson);
         return downloadInternal(homework);
     }
 
     public FileDto downloadFile(Long fileId) {
-        var homework = homeworkFileRepository.findById(fileId)
-                .orElseThrow(IllegalArgumentException::new);
-
+        var homework = getFileById(fileId);
         return downloadInternal(homework);
     }
 
@@ -75,7 +75,7 @@ public class HomeworkInternalService {
     }
 
     public void deleteFile(UserToLesson userToLesson) {
-        var homework = homeworkFileRepository.get(userToLesson).orElseThrow(IllegalArgumentException::new);
+        var homework = getFileByUserToLesson(userToLesson);
         s3FileService.deleteFromS3(homework.getS3Name());
         deleteFromDatabase(homework);
     }
@@ -85,11 +85,21 @@ public class HomeworkInternalService {
     }
 
     public HomeworkFile getFile(UserToLesson userToLesson) {
-        return homeworkFileRepository.get(userToLesson).orElse(null);
+        return homeworkFileRepository.getByUserToLesson(userToLesson).orElse(null);
     }
 
-    public HomeworkFile getFile(Long id) {
-        return homeworkFileRepository.findById(id).orElse(null);
+    public HomeworkFile getFile(Long fileId) {
+        return homeworkFileRepository.findById(fileId).orElse(null);
+    }
+
+    private HomeworkFile getFileById(Long fileId) {
+        return homeworkFileRepository.findById(fileId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(FILE_ID_MISSING_PATTER, fileId)));
+    }
+
+    private HomeworkFile getFileByUserToLesson(UserToLesson utl) {
+        return homeworkFileRepository.getByUserToLesson(utl)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(FILE_UTL_MISSING_PATTER, utl.getUser().getId(), utl.getLesson().getId())));
     }
 
 }

@@ -5,6 +5,9 @@ import com.nazar.grynko.learningcourses.dto.security.SignUpDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDtoCreate;
 import com.nazar.grynko.learningcourses.dto.user.UserSecurityDto;
+import com.nazar.grynko.learningcourses.exception.BadSignInException;
+import com.nazar.grynko.learningcourses.exception.BadSignUpException;
+import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.mapper.UserMapper;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.security.JwtProvider;
@@ -12,8 +15,8 @@ import com.nazar.grynko.learningcourses.security.JwtUserDetailsService;
 import com.nazar.grynko.learningcourses.security.MyUserDetails;
 import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +38,8 @@ public class SecurityService {
     private final UserInternalService userInternalService;
     private final UserMapper userMapper;
 
+    private static final String USER_WITH_LOGIN_EXISTS_PATTERN = "User with login %s already exists";
+
     public SecurityService(JwtUserDetailsService jwtUserDetailsService,
                            JwtProvider jwtProvider,
                            PasswordEncoder passwordEncoder,
@@ -48,10 +53,16 @@ public class SecurityService {
     }
 
     public UserSecurityDto signIn(SignInDto signInDto) {
-        var userDetails = (MyUserDetails) jwtUserDetailsService.loadUserByUsername(signInDto.getLogin());
+        MyUserDetails userDetails;
+
+        try {
+            userDetails = (MyUserDetails) jwtUserDetailsService.loadUserByUsername(signInDto.getLogin());
+        } catch (EntityNotFoundException | UsernameNotFoundException e) {
+            throw new BadSignInException("Login doesn't exist", e);
+        }
 
         if (!passwordEncoder.matches(signInDto.getPassword(), userDetails.getPassword())) {
-            throw new BadCredentialsException("Password is incorrect");
+            throw new BadSignInException("Password is incorrect");
         }
 
         var roleValue = userDetails.getAuthorities().stream()
@@ -68,7 +79,7 @@ public class SecurityService {
 
     public UserDto signUp(SignUpDto dto) {
         if (userInternalService.existsUser(dto.getLogin())) {
-            throw new IllegalArgumentException(String.format("User with login %s already exists", dto.getLogin()));
+            throw new BadSignUpException(String.format(USER_WITH_LOGIN_EXISTS_PATTERN, dto.getLogin()));
         }
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));
 
@@ -82,7 +93,7 @@ public class SecurityService {
 
     public UserDto createUser(UserDtoCreate dto) {
         if (userInternalService.existsUser(dto.getLogin())) {
-            throw new IllegalArgumentException(String.format("User with login %s already exists", dto.getLogin()));
+            throw new BadSignUpException(String.format(USER_WITH_LOGIN_EXISTS_PATTERN, dto.getLogin()));
         }
 
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));

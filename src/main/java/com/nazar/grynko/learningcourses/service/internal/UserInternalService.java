@@ -1,6 +1,6 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
-import com.nazar.grynko.learningcourses.exception.InvalidPathException;
+import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.model.User;
 import com.nazar.grynko.learningcourses.repository.UserRepository;
@@ -8,13 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserInternalService {
 
     private final UserToCourseInternalService userToCourseInternalService;
     private final UserRepository userRepository;
+
+    private static final String USER_ID_MISSING_PATTERN = "User %d doesn't exist";
+    private static final String USER_LOGIN_MISSING_PATTERN = "User %s doesn't exist";
 
     @Autowired
     public UserInternalService(UserToCourseInternalService userToCourseInternalService,
@@ -23,28 +25,29 @@ public class UserInternalService {
         this.userRepository = userRepository;
     }
 
-    public Optional<User> get(Long id) {
-        return userRepository.findById(id);
+    public User get(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(USER_ID_MISSING_PATTERN, userId)));
     }
 
     public List<User> getAll() {
         return userRepository.findAll();
     }
 
-    public Optional<User> getByLogin(String login) {
-        return userRepository.findByLogin(login);
+    public User getByLogin(String login) {
+        return userRepository.findByLogin(login)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(USER_LOGIN_MISSING_PATTERN, login)));
     }
 
-    public void delete(Long id) {
-        User dbUser = userRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new);
+    public void delete(Long userId) {
+        User dbUser = get(userId);
         userRepository.delete(dbUser);
     }
 
     public User update(User user) {
-        User dbUser = userRepository.findById(user.getId())
-                .orElseThrow(IllegalArgumentException::new);
+        User dbUser = get(user.getId());
         fillNullFields(dbUser, user);
+
         return userRepository.save(user);
     }
 
@@ -71,7 +74,6 @@ public class UserInternalService {
         }
 
         User user = get(userId)
-                .orElseThrow(InvalidPathException::new)
                 .setRole(role);
         user = update(user);
 
@@ -86,5 +88,14 @@ public class UserInternalService {
                 .count();
 
         return activeCoursesAmount > 0;
+    }
+
+    public void throwIfMissingUser(Long userId) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(USER_ID_MISSING_PATTERN, userId)));
+    }
+    public void throwIfMissingUser(String login) {
+        userRepository.findByLogin(login)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(USER_LOGIN_MISSING_PATTERN, login)));
     }
 }

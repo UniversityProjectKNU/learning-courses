@@ -8,7 +8,6 @@ import com.nazar.grynko.learningcourses.service.internal.ChapterTemplateInternal
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -23,9 +22,9 @@ public class ChapterTemplateService {
         this.chapterTemplateMapper = chapterTemplateMapper;
     }
 
-    public Optional<ChapterTemplateDto> get(Long chapterTemplateId) {
-        return chapterTemplateInternalService.get(chapterTemplateId)
-                .flatMap(val -> Optional.of(chapterTemplateMapper.toDto(val)));
+    public ChapterTemplateDto get(Long chapterTemplateId) {
+        var entity = chapterTemplateInternalService.get(chapterTemplateId);
+        return chapterTemplateMapper.toDto(entity);
     }
 
     public void delete(Long chapterTemplateId) {
@@ -39,14 +38,17 @@ public class ChapterTemplateService {
     }
 
     public ChapterTemplateDto update(ChapterTemplateDtoUpdate dto, Long chapterTemplateId) {
-        var chapterTemplate = chapterTemplateMapper.fromDtoUpdate(dto).setId(chapterTemplateId);
+        var chapterTemplate = chapterTemplateMapper.fromDtoUpdate(dto)
+                .setId(chapterTemplateId);
         chapterTemplate = chapterTemplateInternalService.update(chapterTemplate);
         return chapterTemplateMapper.toDto(chapterTemplate);
     }
 
     public List<ChapterTemplateDto> getAllInCourseTemplate(Long courseTemplateId) {
         var chapterTemplates = chapterTemplateInternalService.getAllInCourseTemplate(courseTemplateId);
-        return chapterTemplates.stream().map(chapterTemplateMapper::toDto).collect(Collectors.toList());
+        return chapterTemplates.stream()
+                .map(chapterTemplateMapper::toDto)
+                .collect(Collectors.toList());
     }
 
 }

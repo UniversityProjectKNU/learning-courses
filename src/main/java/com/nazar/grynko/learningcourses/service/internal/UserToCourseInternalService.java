@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
+import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.model.UserToCourse;
 import com.nazar.grynko.learningcourses.model.UserToLesson;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -22,6 +22,8 @@ public class UserToCourseInternalService {
     private final UserToLessonRepository userToLessonRepository;
     private final LessonRepository lessonRepository;
     private final CourseOwnerRepository courseOwnerRepository;
+
+    private static final String USER_MISSING_COURSE_PATTERN = "User %d doesn't have this course %d";
 
     public UserToCourseInternalService(UserToCourseRepository userToCourseRepository,
                                        UserToLessonRepository userToLessonRepository,
@@ -45,18 +47,23 @@ public class UserToCourseInternalService {
         return userToCourseRepository.getAllByCourseId(courseId);
     }
 
-    public Optional<UserToCourse> getByUserIdAndCourseId(Long userId, Long courseId) {
-        return userToCourseRepository.getByUserIdAndCourseId(userId, courseId);
+    public UserToCourse getByUserIdAndCourseId(Long userId, Long courseId) {
+        return userToCourseRepository.getByUserIdAndCourseId(userId, courseId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(USER_MISSING_COURSE_PATTERN, userId, courseId)));
     }
 
-    public Optional<UserToCourse> getByUserLoginAndCourseId(String login, Long courseId) {
-        return userToCourseRepository.getByUserLoginAndCourseId(login, courseId);
+    public boolean existsByUserIdAndCourseId(Long userId, Long courseId) {
+        return userToCourseRepository.getByUserIdAndCourseId(userId, courseId).isPresent();
+    }
+
+    public boolean existsByLoginAndCourseId(String login, Long courseId) {
+        return userToCourseRepository.getByUserLoginAndCourseId(login, courseId).isPresent();
     }
 
     public UserToCourse update(Long userId, Long courseId, UserToCourse entity) {
-        var dbEntity = userToCourseRepository.getByUserIdAndCourseId(userId, courseId)
-                .orElseThrow(IllegalArgumentException::new);
+        var dbEntity = getByUserIdAndCourseId(userId, courseId);
         fillNullFields(dbEntity, entity);
+
         return userToCourseRepository.save(entity);
     }
 
@@ -69,6 +76,7 @@ public class UserToCourseInternalService {
         if (destination.getFinalFeedback() == null) destination.setFinalFeedback(source.getFinalFeedback());
     }
 
+    //todo
     public void finish(Long courseId) {
         var usersToLessons = userToLessonRepository.getAllByCourseId(courseId)
                 .stream()
@@ -104,12 +112,11 @@ public class UserToCourseInternalService {
 
     @Transactional
     public void removeUserFromCourse(Long courseId, Long userId) {
-        userToCourseRepository.getByUserIdAndCourseId(userId, courseId)
-                .orElseThrow(() -> new IllegalArgumentException("There is no user with such course."));
+        getByUserIdAndCourseId(userId, courseId);
 
         var courseOwner = courseOwnerRepository.getCourseOwnerByCourseId(courseId);
         if (courseOwner.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("Cannot remove course owner from their course.");
+            throw new IllegalStateException("Cannot remove course owner from their course");
         }
 
         userToCourseRepository.deleteByCourseIdAndUserId(courseId, userId);

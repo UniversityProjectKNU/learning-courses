@@ -8,6 +8,9 @@ import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDto;
 import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDtoUpdate;
 import com.nazar.grynko.learningcourses.service.LessonService;
 import com.nazar.grynko.learningcourses.service.UserToLessonService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +20,8 @@ import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.util.List;
+
+import static com.nazar.grynko.learningcourses.controller.enums.ResponseCode.*;
 
 @RestController
 @RequestMapping("learning-courses/api/v1/lessons")
@@ -31,29 +36,59 @@ public class LessonController {
         this.userToLessonService = userToLessonService;
     }
 
+    @Operation(summary = "Get a lesson",
+            description = "Get a lesson by its id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = _200, description = "Found the lesson"),
+            @ApiResponse(responseCode = _404, description = "Lesson not found")
+    })
     @GetMapping("/lesson")
     ResponseEntity<LessonDto> one(@RequestParam Long lessonId) {
         return ResponseEntity.ok(lessonService.get(lessonId));
     }
 
+    @Operation(summary = "Get lesson's all student-lesson performance",
+            description = "Get a list of all student-lessons performance records for a specific lesson. List of student-lesson performance is retrieved by lesson id. Usually is used to displace in drop-down list")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = _200, description = "Found all student-lesson performance for the lesson"),
+            @ApiResponse(responseCode = _404, description = "Lesson not found")
+    })
     @GetMapping("/lesson/users")
     ResponseEntity<List<UserToLessonDto>> getAllUsersLessonsInfo(@RequestParam Long lessonId) {
         return ResponseEntity.ok(lessonService.getAllUserToLessonInfoForLesson(lessonId));
     }
 
+    @Operation(summary = "Get a specific student-lesson performance",
+            description = "Get a specific student-lesson performance of a lesson")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = _200, description = "Found student-course performance"),
+            @ApiResponse(responseCode = _404, description = "Lesson not found / Student not found / No such Student with Lesson")
+    })
     @GetMapping("/lesson/users/user")
-    ResponseEntity<UserToLessonDto> getUsersLessonInfo(@RequestParam Long lessonId,
+    ResponseEntity<UserToLessonDto> getUserToLessonInfo(@RequestParam Long lessonId,
                                                        @RequestParam Long userId) {
         return ResponseEntity.ok(lessonService.getUsersLessonInfo(lessonId, userId));
     }
 
+    @Operation(summary = "Update student-lesson performance",
+            description = "Update student-lesson performance of a lesson. Usually to assign a mark")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = _200, description = "Updated student-lesson performance"),
+            @ApiResponse(responseCode = _404, description = "Lesson not found / Student not found / No such Student with Lesson")
+    })
     @PutMapping("/lesson/users/user")
-    ResponseEntity<UserToLessonDto> updateUsersLessonInfo(@RequestParam Long lessonId,
+    ResponseEntity<UserToLessonDto> updateUserToLessonInfo(@RequestParam Long lessonId,
                                                           @RequestParam Long userId,
                                                           @Valid @RequestBody UserToLessonDtoUpdate userToLessonDtoUpdate) {
         return ResponseEntity.ok(lessonService.updateUserToLesson(lessonId, userId, userToLessonDtoUpdate));
     }
 
+    @Operation(summary = "Delete a lesson",
+            description = "Delete a lesson by its id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = _200, description = "Lesson deleted"),
+            @ApiResponse(responseCode = _404, description = "Lesson not found")
+    })
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @DeleteMapping("/lesson")
     void delete(@RequestParam Long lessonId) {
@@ -66,6 +101,12 @@ public class LessonController {
         return ResponseEntity.ok(lessonService.save(lessonDto, chapterId));
     }*/
 
+    @Operation(summary = "Update a lesson",
+            description = "Update lesson's data")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = _200, description = "Lesson updated"),
+            @ApiResponse(responseCode = _404, description = "Lesson not found")
+    })
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/lesson")
     ResponseEntity<LessonDto> update(@RequestParam Long lessonId,
@@ -73,18 +114,38 @@ public class LessonController {
         return ResponseEntity.ok(lessonService.update(lessonDto, lessonId));
     }
 
+    @Operation(summary = "Finish a lesson",
+            description = "Finish the lesson. When lesson is finished nobody can send attach files to lesson or rate it")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = _200, description = "Lesson finished"),
+            @ApiResponse(responseCode = _400, description = "Lesson is already finished"),
+            @ApiResponse(responseCode = _404, description = "Lesson not found")
+    })
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/lesson/finish")
     ResponseEntity<LessonDto> finishLesson(@RequestParam Long lessonId) {
         return ResponseEntity.ok(lessonService.finish(lessonId));
     }
 
+    @Operation(summary = "Get a student's homework meta information",
+            description = "Get a student's homework meta information by its id")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = _200, description = "Found the homework or null"),
+            @ApiResponse(responseCode = _404, description = "Lesson not found / Student not found")
+    })
     @GetMapping("/lesson/files/file/info")
     public ResponseEntity<HomeworkFileDto> getHomeworkInfo(@RequestParam Long lessonId,
                                                            @RequestParam Long userId) {
         return ResponseEntity.ok(userToLessonService.getFileInfo(lessonId, userId));
     }
 
+    @Operation(summary = "Upload a student's homework to lesson",
+            description = "Upload a student's homework to lesson")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = _200, description = "Homework uploaded"),
+            @ApiResponse(responseCode = _400, description = "Lesson is already finished"),
+            @ApiResponse(responseCode = _404, description = "Lesson not found / Student not found / No such Student with Lesson")
+    })
     @PostMapping("/lesson/files")
     public ResponseEntity<HomeworkFileDto> upload(@RequestParam Long lessonId,
                                                   @RequestBody MultipartFile file,
@@ -92,6 +153,12 @@ public class LessonController {
         return ResponseEntity.ok(userToLessonService.uploadFile(lessonId, principal.getName(), file));
     }
 
+    @Operation(summary = "Download a student's homework",
+            description = "Download a student's homework. Lesson can be finished")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = _200, description = "Homework downloaded"),
+            @ApiResponse(responseCode = _404, description = "Lesson not found / Student not found / No such Student with Lesson")
+    })
     @GetMapping("/lesson/files/file")
     public ResponseEntity<ByteArrayResource> download(@RequestParam Long lessonId,
                                                       @RequestParam Long userId) {
@@ -117,7 +184,14 @@ public class LessonController {
         return ResponseEntity.ok(new SimpleDto<>("Ok"));
     }*/
 
-    //@RolesAllowed({"ADMIN", "INSTRUCTOR"})
+    @Operation(summary = "Delete a student's homework",
+            description = "Delete a student's homework. Cannot be deleted from finished lesson")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = _200, description = "Homework deleted"),
+            @ApiResponse(responseCode = _400, description = "Lesson is already finished"),
+            @ApiResponse(responseCode = _404, description = "Lesson not found / Student not found / No such Student with Lesson")
+    })
+    //TODO @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @DeleteMapping("/lesson/files/file")
     public ResponseEntity<SimpleDto<String>> delete(@RequestParam Long lessonId,
                                                     @RequestParam Long userId) {

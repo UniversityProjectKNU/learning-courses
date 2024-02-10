@@ -1,6 +1,5 @@
 package com.nazar.grynko.learningcourses.dto.user;
 
-import com.nazar.grynko.learningcourses.dto.role.RoleDto;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,13 +1,12 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
-import com.nazar.grynko.learningcourses.exception.InvalidPathException;
+import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.model.ChapterTemplate;
 import com.nazar.grynko.learningcourses.repository.ChapterTemplateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 import static java.util.Objects.isNull;
 
@@ -17,6 +16,8 @@ public class ChapterTemplateInternalService {
     private final ChapterTemplateRepository chapterTemplateRepository;
     private final CourseTemplateInternalService courseTemplateInternalService;
 
+    private static final String CHAPTER_TEMPLATE_MISSING_PATTERN = "Chapter template %d doesn't exist";
+
     @Autowired
     public ChapterTemplateInternalService(ChapterTemplateRepository chapterTemplateRepository,
                                           CourseTemplateInternalService courseTemplateInternalService) {
@@ -24,41 +25,38 @@ public class ChapterTemplateInternalService {
         this.courseTemplateInternalService = courseTemplateInternalService;
     }
 
-    public Optional<ChapterTemplate> get(Long id) {
-        return chapterTemplateRepository.findById(id);
+    public ChapterTemplate get(Long chapterTemplateId) {
+        return chapterTemplateRepository.findById(chapterTemplateId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(CHAPTER_TEMPLATE_MISSING_PATTERN, chapterTemplateId)));
     }
 
     public void delete(Long chapterTemplateId) {
-        var entity = chapterTemplateRepository.findById(chapterTemplateId)
-                .orElseThrow(IllegalArgumentException::new);
+        var entity = get(chapterTemplateId);
         chapterTemplateRepository.delete(entity);
     }
 
     public ChapterTemplate save(ChapterTemplate entity, Long courseTemplateId) {
-        var courseTemplate = courseTemplateInternalService.get(courseTemplateId)
-                .orElseThrow(InvalidPathException::new);
+        var courseTemplate = courseTemplateInternalService.get(courseTemplateId);
         entity.setCourseTemplate(courseTemplate);
 
         return chapterTemplateRepository.save(entity);
     }
 
     public ChapterTemplate update(ChapterTemplate entity) {
-        var dbChapterTemplate = chapterTemplateRepository.findById(entity.getId())
-                .orElseThrow(IllegalArgumentException::new);
+        var dbChapterTemplate = get(entity.getId());
         fillNullFields(dbChapterTemplate, entity);
+
         return chapterTemplateRepository.save(entity);
     }
 
     public List<ChapterTemplate> getAllInCourseTemplate(Long courseTemplateId) {
-        courseTemplateInternalService.get(courseTemplateId)
-                .orElseThrow(() -> new IllegalArgumentException("No course template with id: " + courseTemplateId));
+        courseTemplateInternalService.throwIfMissingCourseTemplate(courseTemplateId);
         return chapterTemplateRepository.getChapterTemplatesByCourseTemplateId(courseTemplateId);
     }
 
-    public boolean hasWithCourseTemplate(Long chapterTemplateId, Long courseTemplateId) {
-        var optional = chapterTemplateRepository
-                .getChapterTemplateByIdAndCourseTemplateId(chapterTemplateId, courseTemplateId);
-        return optional.isPresent();
+    public void throwIfMissingChapterTemplate(Long chapterTemplateId) {
+        chapterTemplateRepository.findById(chapterTemplateId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(CHAPTER_TEMPLATE_MISSING_PATTERN, chapterTemplateId)));
     }
 
     private void fillNullFields(ChapterTemplate source, ChapterTemplate destination) {

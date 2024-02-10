@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
+import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.mapper.CourseMapper;
 import com.nazar.grynko.learningcourses.model.*;
 import com.nazar.grynko.learningcourses.repository.CourseOwnerRepository;
@@ -10,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -30,6 +30,9 @@ public class CourseInternalService {
     private final CourseRepository courseRepository;
     private final CourseOwnerRepository courseOwnerRepository;
     private final EnrollRequestRepository enrollRequestRepository;
+
+    private static final String COURSE_MISSING_PATTERN = "Course %d doesn't exist";
+    private static final String ENROLL_REQUEST_MISSING_PATTERN = "Enroll request %d doesn't exist";
 
     @Value("${max.courses.number.at.time}")
     private Integer MAX_COURSES_NUMBER;
@@ -60,31 +63,30 @@ public class CourseInternalService {
         this.enrollRequestRepository = enrollRequestRepository;
     }
 
-    public Optional<Course> get(Long id) {
-        return courseRepository.findById(id);
+    public Course get(Long courseId) {
+        return courseRepository.findById(courseId)
+                .orElseThrow(() -> new IllegalArgumentException(String.format(COURSE_MISSING_PATTERN, courseId)));
     }
 
     public List<Course> getAll() {
         return courseRepository.findAll();
     }
 
-    public void delete(Long id) {
-        var course = courseRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new);
+    public void delete(Long courseId) {
+        var course = get(courseId);
         courseRepository.delete(course);
     }
 
-    @Transactional
+    @Transactional //todo
     public Course create(Long courseTemplateId, String login) {
         if (!isValidAmountOfLessons(courseTemplateId)) {
             throw new IllegalStateException(String.format(
                     "Course must contain at least %d lessons", MIN_LESSONS_NUMBER));
         }
 
-        var template = courseTemplateInternalService.get(courseTemplateId)
-                .orElseThrow(IllegalArgumentException::new);
+        var template = courseTemplateInternalService.get(courseTemplateId);
 
-        var user = userInternalService.getByLogin(login).orElseThrow(IllegalArgumentException::new);
+        var user = userInternalService.getByLogin(login);
         var course = courseMapper.fromTemplate(template)
                 .setId(null)
                 .setIsFinished(false);
@@ -110,9 +112,9 @@ public class CourseInternalService {
 
     @Transactional
     public Course finish(Long id) {
-        var entity = get(id).orElseThrow(IllegalArgumentException::new);
+        var entity = get(id);
         if (entity.getIsFinished()) {
-            throw new IllegalStateException("Course was already finished");
+            throw new IllegalStateException("Course is already finished");
         }
 
         entity.setIsFinished(true);
@@ -126,33 +128,27 @@ public class CourseInternalService {
         return entity;
     }
 
-/*    public Course save(Course entity) {
-        return courseRepository.save(entity);
-    }*/
-
     public Course update(Course course) {
-        var dbCourse = courseRepository.findById(course.getId())
-                .orElseThrow(IllegalArgumentException::new);
+        var dbCourse = get(course.getId());
         fillNullFields(dbCourse, course);
+
         return courseRepository.save(course);
     }
 
     @Transactional
     public UserToCourse enroll(Long courseId, Long userId) {
-        var user = userInternalService.get(userId).orElseThrow(
-                () -> new IllegalArgumentException("User doesn't exist"));
+        var user = userInternalService.get(userId);
 
         if (user.getRole().equals(RoleType.ADMIN)) {
-            throw new IllegalArgumentException("You cannot enroll ADMIN to course");
+            throw new IllegalStateException("You cannot enroll ADMIN to course");
         }
 
-        userToCourseInternalService.getByUserIdAndCourseId(userId, courseId).ifPresent(utc -> {
-            throw new IllegalArgumentException(String.format(
+        if (userToCourseInternalService.existsByUserIdAndCourseId(userId, courseId)) {
+            throw new IllegalStateException(String.format(
                     "User (%s) %d was already assign to the course %d", user.getRole().name(), userId, courseId));
-        });
+        }
 
-        var course = get(courseId).orElseThrow(
-                () -> new IllegalArgumentException("Course doesn't exist"));
+        var course = get(courseId);
 
         var entity = new UserToCourse()
                 .setUser(user)
@@ -187,14 +183,15 @@ public class CourseInternalService {
         return lessonsTemplates.size() >= MIN_LESSONS_NUMBER;
     }
 
-    public List<Course> getUsersCourses(String login, Boolean isFinished) {
-        var userId = userInternalService.getByLogin(login).orElseThrow(IllegalArgumentException::new).getId();
+    public List<Course> getAllUsersCourses(String login, Boolean isActive) {
+        var userId = userInternalService.getByLogin(login)
+                .getId();
         var courses = userToCourseInternalService.getAllByUserId(userId)
                 .stream()
                 .map(UserToCourse::getCourse);
 
-        if (isFinished != null) {
-            courses = courses.filter(c -> c.getIsFinished() == isFinished);
+        if (isActive != null) {
+            courses = courses.filter(c -> c.getIsFinished() != isActive);
         }
 
         return courses.collect(Collectors.toList());
@@ -202,6 +199,11 @@ public class CourseInternalService {
 
     public User getCourseOwner(Long courseId) {
         return courseOwnerRepository.getCourseOwnerByCourseId(courseId).getUser();
+    }
+
+    public void throwIfMissingCourse(Long courseId) {
+        courseRepository.findById(courseId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(COURSE_MISSING_PATTERN, courseId)));
     }
 
     private void fillNullFields(Course source, Course destination) {
@@ -212,19 +214,17 @@ public class CourseInternalService {
     }
 
     public EnrollRequest sendEnrollRequest(Long courseId, String login) {
-        userToCourseInternalService.getByUserLoginAndCourseId(login, courseId).ifPresent(
-                (userToCourse) -> {
-                    throw new IllegalArgumentException("User is already enrolled");
-                });
+        if (userToCourseInternalService.existsByLoginAndCourseId(login, courseId)) {
+            throw new IllegalArgumentException("User is already enrolled");
+        }
 
         var enrollRequest = enrollRequestRepository.getByCourseIdAndUserLoginAndIsActiveTrue(courseId, login);
         if (nonNull(enrollRequest)) {
-            throw new IllegalArgumentException("User already has active request");
+            throw new IllegalArgumentException(String.format("User already has an active request: %d", enrollRequest.getId()));
         }
 
-
-        var user = userInternalService.getByLogin(login).orElseThrow(IllegalArgumentException::new);
-        var course = get(courseId).orElseThrow(IllegalArgumentException::new);
+        var user = userInternalService.getByLogin(login);
+        var course = get(courseId);
 
         enrollRequest = new EnrollRequest()
                 .setUser(user)
@@ -243,8 +243,7 @@ public class CourseInternalService {
     }
 
     public UserToCourse approveEnrollRequest(Long enrollRequestId, Boolean isApproved) {
-        var enrollRequest = enrollRequestRepository.findById(enrollRequestId)
-                .orElseThrow(() -> new IllegalArgumentException("No such enroll request."));
+        var enrollRequest = getEnrollRequest(enrollRequestId);
 
         enrollRequest.setIsActive(false)
                 .setIsApproved(isApproved);
@@ -260,5 +259,10 @@ public class CourseInternalService {
 
     public EnrollRequest getUsersLastEnrollRequest(Long userId, Long courseId) {
         return enrollRequestRepository.getLastByCourseIdAndUserId(courseId, userId);
+    }
+
+    private EnrollRequest getEnrollRequest(Long enrollRequestId) {
+        return enrollRequestRepository.findById(enrollRequestId)
+                .orElseThrow(() -> new EntityNotFoundException(String.format(ENROLL_REQUEST_MISSING_PATTERN, enrollRequestId)));
     }
 }

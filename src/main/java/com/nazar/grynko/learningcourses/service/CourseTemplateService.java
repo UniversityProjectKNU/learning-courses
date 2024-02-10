@@ -10,7 +10,6 @@ import com.nazar.grynko.learningcourses.service.internal.CourseTemplateInternalS
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -29,9 +28,9 @@ public class CourseTemplateService {
         this.userMapper = userMapper;
     }
 
-    public Optional<CourseTemplateDto> get(Long id) {
-        return courseTemplateInternalService.get(id)
-                .flatMap(val -> Optional.of(courseTemplateMapper.toDto(val)));
+    public CourseTemplateDto get(Long courseTemplateId) {
+        var courseTemplate = courseTemplateInternalService.get(courseTemplateId);
+        return courseTemplateMapper.toDto(courseTemplate);
     }
 
     public List<CourseTemplateDto> getAll() {
@@ -41,8 +40,8 @@ public class CourseTemplateService {
                 .collect(Collectors.toList());
     }
 
-    public void delete(Long id) {
-        courseTemplateInternalService.delete(id);
+    public void delete(Long courseTemplateId) {
+        courseTemplateInternalService.delete(courseTemplateId);
     }
 
     public CourseTemplateDto save(CourseTemplateDtoSave dto) {
@@ -52,7 +51,8 @@ public class CourseTemplateService {
     }
 
     public CourseTemplateDto update(CourseTemplateDtoUpdate dto, Long courseTemplateId) {
-        var entity = courseTemplateMapper.fromDtoUpdate(dto).setId(courseTemplateId);
+        var entity = courseTemplateMapper.fromDtoUpdate(dto)
+                .setId(courseTemplateId);
         entity = courseTemplateInternalService.update(entity);
         return courseTemplateMapper.toDto(entity);
     }
