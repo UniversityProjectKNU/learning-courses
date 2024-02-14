@@ -90,13 +90,13 @@ public class CourseController {
             @ApiResponse(responseCode = _200, description = "Course deleted"),
             @ApiResponse(responseCode = _404, description = "Course not found")
     })
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @DeleteMapping("/course")
     void delete(@RequestParam Long courseId) {
         courseService.delete(courseId);
     }
 
-    /*@RolesAllowed({"INSTRUCTOR", "ADMIN"})
+    /*@RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @PostMapping
     ResponseEntity<CourseDto> save(@RequestBody CourseDtoSave courseDto, Principal principal) {
         return ResponseEntity.ok(courseService.save(courseDto*//*, principal.getName()*//*));
@@ -108,7 +108,7 @@ public class CourseController {
             @ApiResponse(responseCode = _200, description = "Course updated"),
             @ApiResponse(responseCode = _404, description = "Course not found")
     })
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @PutMapping("/course")
     ResponseEntity<CourseDto> update(@RequestParam Long courseId,
                                      @Valid @RequestBody CourseDtoUpdate courseDto) {
@@ -122,7 +122,7 @@ public class CourseController {
             @ApiResponse(responseCode = _400, description = "Course is already finished"),
             @ApiResponse(responseCode = _404, description = "Course not found")
     })
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @PutMapping("/course/finish")
     ResponseEntity<CourseDto> finishCourse(@RequestParam Long courseId) {
         return ResponseEntity.ok(courseService.finish(courseId));
@@ -147,7 +147,7 @@ public class CourseController {
             @ApiResponse(responseCode = _200, description = "Found all the enroll requests of the course"),
             @ApiResponse(responseCode = _404, description = "Course not found")
     })
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @GetMapping("/course/enrolls")
     ResponseEntity<?> getAllEnrollRequests(@RequestParam Long courseId,
                                            @RequestParam(required = false) Boolean isActive) {
@@ -161,7 +161,7 @@ public class CourseController {
             @ApiResponse(responseCode = _400, description = "You cannot enroll ADMIN / User already is enrolled to this course / Student has maximum amount of active courses"),
             @ApiResponse(responseCode = _404, description = "Course not found")
     })
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @PutMapping("/course/enrolls/enroll")
     ResponseEntity<?> approveEnrollRequest(@RequestParam Long enrollRequestId,
                                            @RequestParam Boolean isApproved) {
@@ -175,7 +175,7 @@ public class CourseController {
             @ApiResponse(responseCode = _400, description = "You cannot enroll ADMIN / User already is enrolled to this course / Student has maximum amount of active courses"),
             @ApiResponse(responseCode = _404, description = "Course not found / User not found")
     })
-    //TODO @RolesAllowed("ADMIN")
+    @RolesAllowed("ADMIN")
     @PostMapping("/course/users/enrolls")
     ResponseEntity<UserToCourseDto> assignUserToCourse(@RequestParam Long courseId,
                                                        @RequestParam Long userId) {
@@ -188,7 +188,7 @@ public class CourseController {
             @ApiResponse(responseCode = _200, description = "Enroll request is returned if exist, otherwise null"),
             @ApiResponse(responseCode = _404, description = "Course not found / User not found")
     })
-    @RolesAllowed({"STUDENT", "INSTRUCTOR"})
+    @RolesAllowed({"ADMIN", "INSTRUCTOR", "STUDENT"})
     @GetMapping("/course/users/enrolls/enroll")
     ResponseEntity<?> getUsersLastEnrollRequestForCourse(@RequestParam Long userId,
                                                          @RequestParam Long courseId) {
@@ -229,7 +229,7 @@ public class CourseController {
             @ApiResponse(responseCode = _200, description = "Updated user-course performance"),
             @ApiResponse(responseCode = _404, description = "Course not found / User not found")
     })
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @PutMapping("/course/users/user")
     ResponseEntity<UserToCourseDto> updateUserCoursePerformanceInfo(@RequestParam Long courseId,
                                                                     @RequestParam Long userId,
@@ -244,7 +244,7 @@ public class CourseController {
             @ApiResponse(responseCode = _400, description = "Cannot remove course owner"),
             @ApiResponse(responseCode = _404, description = "Course not found / User not found")
     })
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @DeleteMapping("/course/users/user")
     ResponseEntity<?> removeUserFromCourse(@RequestParam Long courseId,
                                            @RequestParam Long userId) {

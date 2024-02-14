@@ -21,7 +21,7 @@ import static com.nazar.grynko.learningcourses.controller.enums.ResponseCode._40
 
 @RestController
 @RequestMapping("learning-courses/api/v1/templates/chapters")
-@RolesAllowed({"INSTRUCTOR", "ADMIN"})
+@RolesAllowed({"ADMIN", "INSTRUCTOR"})
 public class ChapterTemplateController {
 
     private final ChapterTemplateService chapterTemplateService;

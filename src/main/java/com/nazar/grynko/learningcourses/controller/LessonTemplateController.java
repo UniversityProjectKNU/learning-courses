@@ -19,7 +19,7 @@ import static com.nazar.grynko.learningcourses.controller.enums.ResponseCode._40
 
 @RestController
 @RequestMapping("learning-courses/api/v1/templates/lessons")
-@RolesAllowed({"INSTRUCTOR", "ADMIN"})
+@RolesAllowed({"ADMIN", "INSTRUCTOR"})
 public class LessonTemplateController {
 
     private final LessonTemplateService lessonTemplateService;

@@ -66,7 +66,7 @@ public class LessonController {
     })
     @GetMapping("/lesson/users/user")
     ResponseEntity<UserToLessonDto> getUserToLessonInfo(@RequestParam Long lessonId,
-                                                       @RequestParam Long userId) {
+                                                        @RequestParam Long userId) {
         return ResponseEntity.ok(lessonService.getUsersLessonInfo(lessonId, userId));
     }
 
@@ -76,10 +76,11 @@ public class LessonController {
             @ApiResponse(responseCode = _200, description = "Updated student-lesson performance"),
             @ApiResponse(responseCode = _404, description = "Lesson not found / Student not found / No such Student with Lesson")
     })
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @PutMapping("/lesson/users/user")
     ResponseEntity<UserToLessonDto> updateUserToLessonInfo(@RequestParam Long lessonId,
-                                                          @RequestParam Long userId,
-                                                          @Valid @RequestBody UserToLessonDtoUpdate userToLessonDtoUpdate) {
+                                                           @RequestParam Long userId,
+                                                           @Valid @RequestBody UserToLessonDtoUpdate userToLessonDtoUpdate) {
         return ResponseEntity.ok(lessonService.updateUserToLesson(lessonId, userId, userToLessonDtoUpdate));
     }
 
@@ -89,13 +90,13 @@ public class LessonController {
             @ApiResponse(responseCode = _200, description = "Lesson deleted"),
             @ApiResponse(responseCode = _404, description = "Lesson not found")
     })
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @DeleteMapping("/lesson")
     void delete(@RequestParam Long lessonId) {
         lessonService.delete(lessonId);
     }
 
-/*    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
+/*    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @PostMapping
     ResponseEntity<LessonDto> save(@RequestParam Long chapterId, @RequestBody LessonDtoSave lessonDto) {
         return ResponseEntity.ok(lessonService.save(lessonDto, chapterId));
@@ -107,7 +108,7 @@ public class LessonController {
             @ApiResponse(responseCode = _200, description = "Lesson updated"),
             @ApiResponse(responseCode = _404, description = "Lesson not found")
     })
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @PutMapping("/lesson")
     ResponseEntity<LessonDto> update(@RequestParam Long lessonId,
                                      @Valid @RequestBody LessonDtoUpdate lessonDto) {
@@ -121,7 +122,7 @@ public class LessonController {
             @ApiResponse(responseCode = _400, description = "Lesson is already finished"),
             @ApiResponse(responseCode = _404, description = "Lesson not found")
     })
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @PutMapping("/lesson/finish")
     ResponseEntity<LessonDto> finishLesson(@RequestParam Long lessonId) {
         return ResponseEntity.ok(lessonService.finish(lessonId));
@@ -191,7 +192,6 @@ public class LessonController {
             @ApiResponse(responseCode = _400, description = "Lesson is already finished"),
             @ApiResponse(responseCode = _404, description = "Lesson not found / Student not found / No such Student with Lesson")
     })
-    //TODO @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @DeleteMapping("/lesson/files/file")
     public ResponseEntity<SimpleDto<String>> delete(@RequestParam Long lessonId,
                                                     @RequestParam Long userId) {

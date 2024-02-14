@@ -71,13 +71,13 @@ public class ChapterController {
             @ApiResponse(responseCode = _200, description = "Chapter deleted"),
             @ApiResponse(responseCode = _404, description = "Chapter not found")
     })
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @DeleteMapping("/chapter")
     void delete(@RequestParam Long chapterId) {
         chapterService.delete(chapterId);
     }
 
-/*    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
+/*    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @PostMapping
     ResponseEntity<ChapterDto> save(@RequestParam Long courseId, @RequestBody ChapterDtoSave chapterDto) {
         return ResponseEntity.ok(chapterService.save(chapterDto, courseId));
@@ -89,7 +89,7 @@ public class ChapterController {
             @ApiResponse(responseCode = _200, description = "Chapter updated"),
             @ApiResponse(responseCode = _404, description = "Chapter not found")
     })
-    @RolesAllowed({"INSTRUCTOR", "ADMIN"})
+    @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @PutMapping("/chapter")
     ResponseEntity<ChapterDto> update(@RequestParam Long chapterId,
                                       @Valid @RequestBody ChapterDtoUpdate chapterDto) {
