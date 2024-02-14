@@ -13,7 +13,6 @@ import com.nazar.grynko.learningcourses.service.LessonTemplateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +33,6 @@ public class CourseTemplateController {
     private final LessonTemplateService lessonTemplateService;
     private final CourseService courseService;
 
-    @Autowired
     public CourseTemplateController(CourseTemplateService courseTemplateService,
                                     ChapterTemplateService chapterTemplateService,
                                     LessonTemplateService lessonTemplateService,
@@ -131,17 +129,6 @@ public class CourseTemplateController {
     @PostMapping("/course/create-instance")
     ResponseEntity<CourseDto> createInstance(@RequestParam Long courseTemplateId, Principal principal) {
         return ResponseEntity.ok(courseService.create(courseTemplateId, principal.getName()));
-    }
-
-    @Operation(summary = "Get course template owner",
-            description = "Get an instructor which has created this course template")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = _200, description = "Owner and course template exist"),
-            @ApiResponse(responseCode = _404, description = "Course template not found")
-    }) //TODO WTF remove. CourseTemplate doesn't have an owner. Delete table, service, controller
-    @GetMapping("/course/users/owner")
-    ResponseEntity<?> getCourseTemplateOwner(@RequestParam Long courseTemplateId) {
-        return ResponseEntity.ok(courseTemplateService.getCourseTemplateOwner(courseTemplateId));
     }
 
 }

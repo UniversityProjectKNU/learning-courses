@@ -3,9 +3,7 @@ package com.nazar.grynko.learningcourses.service;
 import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDto;
 import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDtoSave;
 import com.nazar.grynko.learningcourses.dto.coursetemplate.CourseTemplateDtoUpdate;
-import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.mapper.CourseTemplateMapper;
-import com.nazar.grynko.learningcourses.mapper.UserMapper;
 import com.nazar.grynko.learningcourses.service.internal.CourseTemplateInternalService;
 import org.springframework.stereotype.Component;
 
@@ -17,15 +15,12 @@ public class CourseTemplateService {
 
     private final CourseTemplateInternalService courseTemplateInternalService;
     private final CourseTemplateMapper courseTemplateMapper;
-    private final UserMapper userMapper;
 
 
     public CourseTemplateService(CourseTemplateInternalService courseTemplateInternalService,
-                                 CourseTemplateMapper courseTemplateMapper,
-                                 UserMapper userMapper) {
+                                 CourseTemplateMapper courseTemplateMapper) {
         this.courseTemplateInternalService = courseTemplateInternalService;
         this.courseTemplateMapper = courseTemplateMapper;
-        this.userMapper = userMapper;
     }
 
     public CourseTemplateDto get(Long courseTemplateId) {
@@ -57,8 +52,4 @@ public class CourseTemplateService {
         return courseTemplateMapper.toDto(entity);
     }
 
-    public UserDto getCourseTemplateOwner(Long courseTemplateId) {
-        var owner = courseTemplateInternalService.getCourseTemplateOwner(courseTemplateId);
-        return userMapper.toDto(owner);
-    }
 }

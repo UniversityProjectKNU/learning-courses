@@ -1,0 +1,1 @@
+DROP TABLE learning_courses.course_template_owners;

@@ -2,8 +2,6 @@ package com.nazar.grynko.learningcourses.service.internal;
 
 import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.model.CourseTemplate;
-import com.nazar.grynko.learningcourses.model.User;
-import com.nazar.grynko.learningcourses.repository.CourseTemplateOwnerRepository;
 import com.nazar.grynko.learningcourses.repository.CourseTemplateRepository;
 import org.springframework.stereotype.Service;
 
@@ -15,14 +13,11 @@ import static java.util.Objects.isNull;
 public class CourseTemplateInternalService {
 
     private final CourseTemplateRepository courseTemplateRepository;
-    private final CourseTemplateOwnerRepository courseTemplateOwnerRepository;
 
     private static final String COURSE_TEMPLATE_MISSING_PATTERN = "Course template %d doesn't exist";
 
-    public CourseTemplateInternalService(CourseTemplateRepository courseTemplateRepository,
-                                         CourseTemplateOwnerRepository courseTemplateOwnerRepository) {
+    public CourseTemplateInternalService(CourseTemplateRepository courseTemplateRepository) {
         this.courseTemplateRepository = courseTemplateRepository;
-        this.courseTemplateOwnerRepository = courseTemplateOwnerRepository;
     }
 
     public CourseTemplate get(Long courseTemplateId) {
@@ -48,11 +43,6 @@ public class CourseTemplateInternalService {
         fillNullFields(dbCourseTemplate, entity);
 
         return courseTemplateRepository.save(entity);
-    }
-
-    public User getCourseTemplateOwner(Long courseTemplateId) {
-        throwIfMissingCourseTemplate(courseTemplateId);
-        return courseTemplateOwnerRepository.getCourseTemplateOwnerByCourseTemplateId(courseTemplateId).getUser();
     }
 
     private void fillNullFields(CourseTemplate source, CourseTemplate destination) {
