@@ -19,7 +19,7 @@ import java.io.Serializable;
 public class ChapterDtoUpdate implements Serializable {
 
     @NotNull
-    @Size(min = 4, max = 128)
+    @Size(min = 4, max = 512)
     private String title;
 
     @NotNull

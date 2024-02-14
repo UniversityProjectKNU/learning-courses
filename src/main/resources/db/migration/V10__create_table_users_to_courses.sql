@@ -5,7 +5,7 @@ CREATE TABLE `learning_courses`.`users_to_courses`
     `course_id`      BIGINT                NOT NULL,
     `mark`           FLOAT                 NOT NULL DEFAULT 0,
     `is_passed`      BOOLEAN               NOT NULL DEFAULT FALSE,
-    `final_feedback` VARCHAR(256),
+    `final_feedback` VARCHAR(2048),
 
     PRIMARY KEY (`id`),
 

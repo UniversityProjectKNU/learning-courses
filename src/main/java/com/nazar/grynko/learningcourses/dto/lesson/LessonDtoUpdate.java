@@ -20,7 +20,7 @@ import javax.validation.constraints.Size;
 public class LessonDtoUpdate {
 
     @NotNull
-    @Size(min = 4, max = 128)
+    @Size(min = 4, max = 512)
     private String title;
 
     @NotNull

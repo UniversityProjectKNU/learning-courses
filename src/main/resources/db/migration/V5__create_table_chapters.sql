@@ -2,8 +2,8 @@ CREATE TABLE `learning_courses`.`chapters`
 (
     `id`          BIGINT UNIQUE AUTO_INCREMENT NOT NULL,
     `course_id`   BIGINT                       NOT NULL,
-    `title`       VARCHAR(256)                 NOT NULL,
-    `description` VARCHAR(256)                 NOT NULL,
+    `title`       VARCHAR(512)                 NOT NULL,
+    `description` VARCHAR(2048)                NOT NULL,
     `number`      INT                          NOT NULL,
     `is_finished` BOOLEAN                      NOT NULL DEFAULT FALSE,
 

@@ -2,7 +2,7 @@ CREATE TABLE `learning_courses`.`homework_files`
 (
     `id`                BIGINT AUTO_INCREMENT UNIQUE NOT NULL,
     `user_to_lesson_id` BIGINT                       NOT NULL,
-    `title`             VARCHAR(256)                 NOT NULL,
+    `title`             VARCHAR(512)                 NOT NULL,
     `size`              BIGINT                       NOT NULL DEFAULT 0,
 
     PRIMARY KEY (`id`),
