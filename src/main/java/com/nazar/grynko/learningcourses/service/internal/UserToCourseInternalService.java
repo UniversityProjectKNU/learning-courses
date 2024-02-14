@@ -67,6 +67,10 @@ public class UserToCourseInternalService {
         return userToCourseRepository.save(entity);
     }
 
+    public long getNumberOfUserToCourse(Long userId) {
+        return userToCourseRepository.getNumberOfUserToCourse(userId);
+    }
+
     private void fillNullFields(UserToCourse source, UserToCourse destination) {
         if (destination.getId() == null) destination.setId(source.getId());
         if (destination.getCourse() == null) destination.setCourse(source.getCourse());
@@ -76,7 +80,6 @@ public class UserToCourseInternalService {
         if (destination.getFinalFeedback() == null) destination.setFinalFeedback(source.getFinalFeedback());
     }
 
-    //todo
     public void finish(Long courseId) {
         var usersToLessons = userToLessonRepository.getAllByCourseId(courseId)
                 .stream()
@@ -96,9 +99,9 @@ public class UserToCourseInternalService {
                     .map(UserToLesson::getMark)
                     .reduce(0, Integer::sum);
 
-            var passedAll = lessons.stream().map(UserToLesson::getIsPassed).reduce(true, (a, b) -> a && b);
-
-            int n = lessons.size();
+            var passedAll = lessons.stream()
+                    .map(UserToLesson::getIsPassed)
+                    .reduce(true, (a, b) -> a && b);
 
             var mark = sum * 1f; //(sum * 1f / n);
 

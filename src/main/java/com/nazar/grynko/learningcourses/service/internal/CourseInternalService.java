@@ -33,6 +33,7 @@ public class CourseInternalService {
 
     private static final String COURSE_MISSING_PATTERN = "Course %d doesn't exist";
     private static final String ENROLL_REQUEST_MISSING_PATTERN = "Enroll request %d doesn't exist";
+    private static final String STUDENT_MAX_AMOUNT_OF_ACTIVE_PATTERN = "Student %d already has max amount of active courses (%d)";
 
     @Value("${max.courses.number.at.time}")
     private Integer MAX_COURSES_NUMBER;
@@ -77,7 +78,7 @@ public class CourseInternalService {
         courseRepository.delete(course);
     }
 
-    @Transactional //todo
+    @Transactional
     public Course create(Long courseTemplateId, String login) {
         if (!isValidAmountOfLessons(courseTemplateId)) {
             throw new IllegalStateException(String.format(
@@ -110,7 +111,7 @@ public class CourseInternalService {
         return course;
     }
 
-    @Transactional
+    @Transactional //todo check if it works fine
     public Course finish(Long id) {
         var entity = get(id);
         if (entity.getIsFinished()) {
@@ -120,10 +121,11 @@ public class CourseInternalService {
         entity.setIsFinished(true);
         courseRepository.save(entity);
 
+        //todo does it works fine because we save it implicitly in db
+        userToLessonInternalService.setIsPassedForLessonsInCourse(id);
+
         chapterInternalService.finish(id);
         userToCourseInternalService.finish(id);
-
-        userToLessonInternalService.setIsPassedForLessonsInCourse(id);
 
         return entity;
     }
@@ -159,7 +161,7 @@ public class CourseInternalService {
         if (user.getRole().equals(RoleType.STUDENT)) {
             if (!isValidAmountOfCourses(user)) {
                 throw new IllegalStateException(
-                        String.format("User %d already has max amount of courses (%d)", user.getId(), MAX_COURSES_NUMBER));
+                        String.format(STUDENT_MAX_AMOUNT_OF_ACTIVE_PATTERN, user.getId(), MAX_COURSES_NUMBER));
             }
 
             entity = userToCourseInternalService.save(entity);
@@ -173,14 +175,14 @@ public class CourseInternalService {
     private boolean isValidAmountOfCourses(User user) {
         var courses = userToCourseInternalService.getAllByUserId(user.getId());
         var activeCoursesAmount = (int) courses.stream()
-                .filter(e -> !e.getIsPassed())
+                .filter(e -> !e.getCourse().getIsFinished())
                 .count();
         return activeCoursesAmount < MAX_COURSES_NUMBER;
     }
 
     private boolean isValidAmountOfLessons(Long courseTemplateId) {
-        var lessonsTemplates = lessonTemplateInternalService.getAllInCourseTemplate(courseTemplateId);
-        return lessonsTemplates.size() >= MIN_LESSONS_NUMBER;
+        var lessonsTemplates = lessonTemplateInternalService.getNumberOfLessonsForCourseTemplate(courseTemplateId);
+        return lessonsTemplates >= MIN_LESSONS_NUMBER;
     }
 
     public List<Course> getAllUsersCourses(String login, Boolean isActive) {
@@ -215,15 +217,21 @@ public class CourseInternalService {
 
     public EnrollRequest sendEnrollRequest(Long courseId, String login) {
         if (userToCourseInternalService.existsByLoginAndCourseId(login, courseId)) {
-            throw new IllegalArgumentException("User is already enrolled");
+            throw new IllegalStateException("User is already enrolled");
         }
 
         var enrollRequest = enrollRequestRepository.getByCourseIdAndUserLoginAndIsActiveTrue(courseId, login);
         if (nonNull(enrollRequest)) {
-            throw new IllegalArgumentException(String.format("User already has an active request: %d", enrollRequest.getId()));
+            throw new IllegalStateException(String.format("User already has an active request: %d", enrollRequest.getId()));
         }
 
         var user = userInternalService.getByLogin(login);
+
+        if (user.getRole().equals(RoleType.STUDENT) && !isValidAmountOfCourses(user)) {
+            throw new IllegalStateException(
+                    String.format(STUDENT_MAX_AMOUNT_OF_ACTIVE_PATTERN, user.getId(), MAX_COURSES_NUMBER));
+        }
+
         var course = get(courseId);
 
         enrollRequest = new EnrollRequest()

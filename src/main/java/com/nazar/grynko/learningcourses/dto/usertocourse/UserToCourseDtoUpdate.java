@@ -6,8 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Getter
@@ -17,10 +17,8 @@ import java.io.Serializable;
 @Accessors(chain = true)
 public class UserToCourseDtoUpdate implements Serializable {
 
-    @Min(0)
-    @Max(10_000_000)
-    private Float mark;
-
+    @NotNull
+    @Size(min = 4, max = 2048)
     private String finalFeedback;
 
 }

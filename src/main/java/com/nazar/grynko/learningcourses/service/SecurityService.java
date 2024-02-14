@@ -94,6 +94,8 @@ public class SecurityService {
     public UserDto createUser(UserDtoCreate dto) {
         if (userInternalService.existsUser(dto.getLogin())) {
             throw new BadSignUpException(String.format(USER_WITH_LOGIN_EXISTS_PATTERN, dto.getLogin()));
+        } else if (dto.getRole().equals(RoleType.ADMIN)) {
+            throw new IllegalStateException("ADMIN should be created explicitly, not through the API");
         }
 
         dto.setPassword(passwordEncoder.encode(dto.getPassword()));

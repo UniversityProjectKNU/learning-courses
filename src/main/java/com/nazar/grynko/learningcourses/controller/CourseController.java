@@ -132,7 +132,7 @@ public class CourseController {
             description = "Student or instructor, which is not enrolled in the course, can send request to join it")
     @ApiResponses(value = {
             @ApiResponse(responseCode = _200, description = "Course updated"),
-            @ApiResponse(responseCode = _400, description = "User already enrolled / User already has an active request"),
+            @ApiResponse(responseCode = _400, description = "User already enrolled / User already has an active request / Student has maximum amount of active courses"),
             @ApiResponse(responseCode = _404, description = "Course not found / User not found")
     })
     @RolesAllowed({"STUDENT", "INSTRUCTOR"})
@@ -155,22 +155,24 @@ public class CourseController {
     }
 
     @Operation(summary = "Approve enroll request",
-            description = "Approve enroll request by its id and flag is it approved or denied")
+            description = "Approve enroll request by its id and flag is it approved or denied. If user's role is STUDENT, then we create one userToCourse and many userToLesson entities. Else if it is INSTRUCTOR, then we create only one userToCourse entity")
     @ApiResponses(value = {
             @ApiResponse(responseCode = _200, description = "Approved/denied enroll request"),
+            @ApiResponse(responseCode = _400, description = "You cannot enroll ADMIN / User already is enrolled to this course / Student has maximum amount of active courses"),
             @ApiResponse(responseCode = _404, description = "Course not found")
     })
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/course/enrolls/enroll")
     ResponseEntity<?> approveEnrollRequest(@RequestParam Long enrollRequestId,
-                                              @RequestParam Boolean isApproved) {
+                                           @RequestParam Boolean isApproved) {
         return ResponseEntity.ok(courseService.approveEnrollRequest(enrollRequestId, isApproved));
     }
 
     @Operation(summary = "Assign user to course without approval",
-            description = "Admin role method to assign a user to a specific course directly without enroll process")
+            description = "Admin role method to assign a user to a specific course directly without enroll process. If user's role is STUDENT, then we create one userToCourse and many userToLesson entities. Else if it is INSTRUCTOR, then we create only one userToCourse entity")
     @ApiResponses(value = {
             @ApiResponse(responseCode = _200, description = "User assigned"),
+            @ApiResponse(responseCode = _400, description = "You cannot enroll ADMIN / User already is enrolled to this course / Student has maximum amount of active courses"),
             @ApiResponse(responseCode = _404, description = "Course not found / User not found")
     })
     //TODO @RolesAllowed("ADMIN")
@@ -217,12 +219,12 @@ public class CourseController {
     @RolesAllowed({"ADMIN", "INSTRUCTOR"})
     @GetMapping("/course/users/user")
     ResponseEntity<UserToCourseDto> getUserCoursePerformanceInfo(@RequestParam Long courseId,
-                                                       @RequestParam Long userId) {
+                                                                 @RequestParam Long userId) {
         return ResponseEntity.ok(courseService.getUsersCourseInfo(courseId, userId));
     }
 
     @Operation(summary = "Update user-course performance",
-            description = "Update user-course performance of a course. Usually to assign a mark or provide final feedback")
+            description = "Update user-course performance of a course. Usually to provide final feedback")
     @ApiResponses(value = {
             @ApiResponse(responseCode = _200, description = "Updated user-course performance"),
             @ApiResponse(responseCode = _404, description = "Course not found / User not found")
@@ -230,13 +232,13 @@ public class CourseController {
     @RolesAllowed({"INSTRUCTOR", "ADMIN"})
     @PutMapping("/course/users/user")
     ResponseEntity<UserToCourseDto> updateUserCoursePerformanceInfo(@RequestParam Long courseId,
-                                                          @RequestParam Long userId,
-                                                          @Valid @RequestBody UserToCourseDtoUpdate userToCourseDto) {
+                                                                    @RequestParam Long userId,
+                                                                    @Valid @RequestBody UserToCourseDtoUpdate userToCourseDto) {
         return ResponseEntity.ok(courseService.updateUserToCourse(courseId, userId, userToCourseDto));
     }
 
     @Operation(summary = "Remove user from course",
-            description = "Remove user from course except course creator. If user is remove all their course related data is deleted as well")
+            description = "Remove user from course, except course creator. If user is remove all their course related data is deleted as well")
     @ApiResponses(value = {
             @ApiResponse(responseCode = _200, description = "User removed from course"),
             @ApiResponse(responseCode = _400, description = "Cannot remove course owner"),

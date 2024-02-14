@@ -4,7 +4,6 @@ import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.model.User;
 import com.nazar.grynko.learningcourses.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +17,6 @@ public class UserInternalService {
     private static final String USER_ID_MISSING_PATTERN = "User %d doesn't exist";
     private static final String USER_LOGIN_MISSING_PATTERN = "User %s doesn't exist";
 
-    @Autowired
     public UserInternalService(UserToCourseInternalService userToCourseInternalService,
                                UserRepository userRepository) {
         this.userToCourseInternalService = userToCourseInternalService;
@@ -39,8 +37,23 @@ public class UserInternalService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format(USER_LOGIN_MISSING_PATTERN, login)));
     }
 
+    //todo if student is deleted should we delete their files in S3?
+    /*todo improve deleting for instructors throw either deeper logic (what if they have an active course and they are the only instructor / course has an another instructor;
+          what would be with feedbacks), or with blocking users logic (that way we can persist instructor but remove an access to the applicaiton)
+    */
     public void delete(Long userId) {
         User dbUser = get(userId);
+        var role = dbUser.getRole();
+
+        if (role.equals(RoleType.ADMIN)) {
+            throw new IllegalStateException("ADMIN user cannot be deleted");
+        } else if (role.equals(RoleType.INSTRUCTOR)) {
+            var numberOfUserToCourse = userToCourseInternalService.getNumberOfUserToCourse(userId);
+            if (numberOfUserToCourse > 0) {
+                throw new IllegalStateException("INSTRUCTOR user cannot be deleted if they have already an course interaction");
+            }
+        }
+
         userRepository.delete(dbUser);
     }
 

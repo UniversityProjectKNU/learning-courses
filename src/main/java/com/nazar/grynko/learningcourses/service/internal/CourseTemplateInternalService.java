@@ -5,7 +5,6 @@ import com.nazar.grynko.learningcourses.model.CourseTemplate;
 import com.nazar.grynko.learningcourses.model.User;
 import com.nazar.grynko.learningcourses.repository.CourseTemplateOwnerRepository;
 import com.nazar.grynko.learningcourses.repository.CourseTemplateRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,7 +19,6 @@ public class CourseTemplateInternalService {
 
     private static final String COURSE_TEMPLATE_MISSING_PATTERN = "Course template %d doesn't exist";
 
-    @Autowired
     public CourseTemplateInternalService(CourseTemplateRepository courseTemplateRepository,
                                          CourseTemplateOwnerRepository courseTemplateOwnerRepository) {
         this.courseTemplateRepository = courseTemplateRepository;

@@ -18,4 +18,6 @@ public interface LessonTemplateRepository extends JpaRepository<LessonTemplate, 
     @Query("select l from LessonTemplate l where l.chapterTemplate.courseTemplate.id = ?1")
     List<LessonTemplate> getAllInCourse(Long courseId);
 
+    @Query("select count(lt) from LessonTemplate lt where lt.chapterTemplate.courseTemplate.id = :courseTemplateId")
+    long getNumberOfLessonsForCourseTemplate(Long courseTemplateId);
 }

@@ -57,7 +57,8 @@ public class UserController {
     @Operation(summary = "Create new user",
             description = "Ability of the administrator to create new user with any role")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = _200, description = "Found the user"),
+            @ApiResponse(responseCode = _200, description = "Created a user"),
+            @ApiResponse(responseCode = _400, description = "Admin cannot be created"),
             @ApiResponse(responseCode = _401, description = "User or password is incorrect / User already exists")
     })
     @PostMapping
@@ -66,9 +67,10 @@ public class UserController {
     }
 
     @Operation(summary = "Delete a user",
-            description = "Delete a user by its id")
+            description = "Delete a user by its id. But you cannot delete Admin or Instructor with at least one any UserToCourse")
     @ApiResponses(value = {
             @ApiResponse(responseCode = _200, description = "User deleted"),
+            @ApiResponse(responseCode = _400, description = "Admin cannot be deleted / Instructor cannot be deleted if they have at least one any UserToCourse"),
             @ApiResponse(responseCode = _404, description = "User not found")
     })
     @DeleteMapping("/user")

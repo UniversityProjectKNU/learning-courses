@@ -57,6 +57,11 @@ public class LessonTemplateInternalService {
         return lessonTemplateRepository.getAllInCourse(courseTemplateId);
     }
 
+    public long getNumberOfLessonsForCourseTemplate(Long courseTemplateId) {
+        return lessonTemplateRepository.getNumberOfLessonsForCourseTemplate(courseTemplateId);
+
+    }
+
     public void throwIfMissingLessonTemplate(Long lessonTemplateId) {
         lessonTemplateRepository.findById(lessonTemplateId)
                 .orElseThrow(() -> new EntityNotFoundException(String.format(LESSON_TEMPLATE_MISSING_PATTERN, lessonTemplateId)));

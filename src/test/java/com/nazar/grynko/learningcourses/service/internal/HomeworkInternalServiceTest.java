@@ -37,7 +37,7 @@ public class HomeworkInternalServiceTest {
                 .setTitle(multipartFile.getOriginalFilename())
                 .setSize(multipartFile.getSize());
 
-        when(homeworkFileRepository.get(any())).thenReturn(Optional.empty());
+        when(homeworkFileRepository.getByUserToLesson(any())).thenReturn(Optional.empty());
         when(s3FileService.uploadToS3(any())).thenReturn(s3Name);
         when(homeworkFileRepository.save(any())).thenReturn(homeworkFile);
 
@@ -60,7 +60,7 @@ public class HomeworkInternalServiceTest {
                 .setTitle(multipartFile.getOriginalFilename())
                 .setSize(multipartFile.getSize());
 
-        when(homeworkFileRepository.get(any())).thenReturn(Optional.empty());
+        when(homeworkFileRepository.getByUserToLesson(any())).thenReturn(Optional.empty());
         when(s3FileService.uploadToS3(any())).thenReturn(s3Name);
         when(homeworkFileRepository.save(any())).thenReturn(homeworkFile);
 
@@ -79,7 +79,7 @@ public class HomeworkInternalServiceTest {
         var fileDto = mockFileDto()
                 .setTitle(homeworkFile.getTitle());
 
-        when(homeworkFileRepository.get(any())).thenReturn(Optional.of(homeworkFile));
+        when(homeworkFileRepository.getByUserToLesson(any())).thenReturn(Optional.of(homeworkFile));
         when(s3FileService.download(any())).thenReturn(fileDto.getData());
 
         // ACT
@@ -95,7 +95,7 @@ public class HomeworkInternalServiceTest {
     @Test
     void downloadFileByUserToLesson_error_noSuchFile() {
         // PREPARE
-        when(homeworkFileRepository.get(any())).thenReturn(Optional.empty());
+        when(homeworkFileRepository.getByUserToLesson(any())).thenReturn(Optional.empty());
 
         // ACT + VERIFY
         assertThrows(IllegalArgumentException.class, () -> sut.downloadFile(mockUsersToLesson()));
@@ -135,13 +135,13 @@ public class HomeworkInternalServiceTest {
         // PREPARE
         var homeworkFile = mockHomeWorkFile();
 
-        when(homeworkFileRepository.get(any())).thenReturn(Optional.of(homeworkFile));
+        when(homeworkFileRepository.getByUserToLesson(any())).thenReturn(Optional.of(homeworkFile));
 
         // ACT
         sut.deleteFile(mockUsersToLesson());
 
         // VERIFY
-        verify(homeworkFileRepository, times(1)).get(any());
+        verify(homeworkFileRepository, times(1)).getByUserToLesson(any());
         verify(s3FileService, times(1)).deleteFromS3(any());
         verify(homeworkFileRepository, times(1)).delete(any());
     }
@@ -149,7 +149,7 @@ public class HomeworkInternalServiceTest {
     @Test
     void deleteFile_error_noSuchFile() {
         // PREPARE
-        when(homeworkFileRepository.get(any())).thenThrow(new IllegalArgumentException());
+        when(homeworkFileRepository.getByUserToLesson(any())).thenThrow(new IllegalArgumentException());
 
         // ACT + VERIFY
         assertThrows(IllegalArgumentException.class, () -> sut.deleteFile(mockUsersToLesson()));
@@ -160,7 +160,7 @@ public class HomeworkInternalServiceTest {
         // PREPARE
         var homeworkFile = mockHomeWorkFile();
 
-        when(homeworkFileRepository.get(any())).thenReturn(Optional.of(homeworkFile));
+        when(homeworkFileRepository.getByUserToLesson(any())).thenReturn(Optional.of(homeworkFile));
 
         // ACT
         var actual = sut.getFile(mockUsersToLesson());
@@ -172,7 +172,7 @@ public class HomeworkInternalServiceTest {
     @Test
     void getFileByUserToLesson_error_noSuchFile() {
         // PREPARE
-        when(homeworkFileRepository.get(any())).thenThrow(new IllegalArgumentException());
+        when(homeworkFileRepository.getByUserToLesson(any())).thenThrow(new IllegalArgumentException());
 
         // ACT + VERIFY
         assertThrows(IllegalArgumentException.class, () -> sut.getFile(mockUsersToLesson()));

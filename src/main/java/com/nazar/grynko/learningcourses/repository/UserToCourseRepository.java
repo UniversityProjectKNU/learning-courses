@@ -3,6 +3,7 @@ package com.nazar.grynko.learningcourses.repository;
 import com.nazar.grynko.learningcourses.model.UserToCourse;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,4 +22,7 @@ public interface UserToCourseRepository extends JpaRepository<UserToCourse, Long
     void deleteByCourseIdAndUserId(Long courseId, Long userId);
 
     Optional<UserToCourse> getByUserLoginAndCourseId(String login, Long courseId);
+
+    @Query(value = "select count(utc) from UserToCourse utc where utc.user.id = :userId")
+    long getNumberOfUserToCourse(Long userId);
 }

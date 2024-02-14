@@ -127,6 +127,7 @@ public class CourseTemplateController {
             @ApiResponse(responseCode = _200, description = "New course created"),
             @ApiResponse(responseCode = _400, description = "Course template is invalid")
     })
+    @RolesAllowed("INSTRUCTOR")
     @PostMapping("/course/create-instance")
     ResponseEntity<CourseDto> createInstance(@RequestParam Long courseTemplateId, Principal principal) {
         return ResponseEntity.ok(courseService.create(courseTemplateId, principal.getName()));
@@ -137,7 +138,7 @@ public class CourseTemplateController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = _200, description = "Owner and course template exist"),
             @ApiResponse(responseCode = _404, description = "Course template not found")
-    })
+    }) //TODO WTF remove. CourseTemplate doesn't have an owner. Delete table, service, controller
     @GetMapping("/course/users/owner")
     ResponseEntity<?> getCourseTemplateOwner(@RequestParam Long courseTemplateId) {
         return ResponseEntity.ok(courseTemplateService.getCourseTemplateOwner(courseTemplateId));

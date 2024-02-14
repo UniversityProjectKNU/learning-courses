@@ -47,6 +47,12 @@ public class GlobalExceptionHandler { //todo logging
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(IllegalStateException.class)
+    public ExceptionCause<?> handleIllegalStateException(IllegalStateException ex) {
+        return new ExceptionCause<>(ex.getClass().getName(), ex.getMessage(), "");
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(Exception.class)
     public ExceptionCause<?> handleAnyException(Exception ex) {
         return new ExceptionCause<>(ex.getClass().getName(), "Unknown exception happened", "");
