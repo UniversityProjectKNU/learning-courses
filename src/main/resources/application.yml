@@ -1,0 +1,63 @@
+spring:
+
+  sql:
+    init:
+      mode: never
+
+  jpa:
+    show-sql: false
+    open-in-view: false
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: none
+
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:learning_courses}
+    username: ${MYSQL_ROOT_USER:root}
+    password: ${MYSQL_ROOT_PASSWORD:root}
+
+  flyway:
+    enabled: true
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/${MYSQL_DATABASE:learning_courses}
+    user: ${MYSQL_ROOT_USER:root}
+    password: ${MYSQL_ROOT_PASSWORD:root}
+    locations: classpath:/db/migration
+
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2MB
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+security:
+  key: ${JWT_SECRET_KEY}
+  authorization:
+    header: Authorization
+  authorities:
+    key: roles
+  token:
+    prefix: Bearer
+    validity: 432000
+
+cloud:
+  aws:
+    stack:
+      auto: false
+    credentials:
+      access-key: ${AWS_CREDENTIALS_ACCESS_KEY}
+      secret-key: ${AWS_CREDENTIALS_SECRET_KEY}
+    bucket:
+      region: us-east-1
+      name: nazar-grynko-learning-courses
+
+max:
+  courses:
+    number:
+      at:
+        time: 5
+min:
+  lessons:
+    number:
+      in:
+        course: 2
