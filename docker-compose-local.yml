@@ -1,0 +1,43 @@
+version: "3"
+volumes:
+  mysqldb_volume:
+services:
+  learning-courses:
+    image: learning-courses:0.0.1-SNAPSHOT
+    container_name: learning-courses
+    ports:
+      - "8080:8080"
+    env_file:
+      - app-env-local
+    depends_on:
+      - mysqldb
+
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    environment:
+#      MYSQL_DATABASE: ${MYSQL_DATABASE}
+#      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+#      MYSQL_USER: ${MYSQL_ROOT_USER}
+#      MYSQL_PORT: ${MYSQL_PORT}
+#      MYSQL_HOST: ${MYSQL_HOST}
+#      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+#      AWS_CREDENTIALS_SECRET_KEY: ${AWS_CREDENTIALS_SECRET_KEY}
+#      AWS_CREDENTIALS_ACCESS_KEY: ${AWS_CREDENTIALS_ACCESS_KEY}
+
+  mysqldb:
+    image: mysql:8.0.31
+    container_name: mysqldb
+    ports:
+      - "3306:3306"
+    env_file:
+      - db-env-local
+    volumes:
+      - mysqldb_volume:/var/lib/mysql
+
+#    environment:
+#      MYSQL_DATABASE: ${MYSQL_DATABASE}
+#      MYSQL_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+#      MYSQL_ROOT_PASSWORD: #${MYSQL_ROOT_PASSWORD}
+#      MYSQL_USER: ${MYSQL_ROOT_USER}
+
