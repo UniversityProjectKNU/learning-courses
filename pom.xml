@@ -133,7 +133,7 @@
 				<filtering>true</filtering>
 			</resource>
 		</resources>
-		<finalName>learning-courses</finalName>
+		<finalName>learning-courses:test</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
