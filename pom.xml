@@ -8,15 +8,18 @@
 		<version>2.7.8-SNAPSHOT</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
+
 	<groupId>com.nazar.grynko</groupId>
 	<artifactId>learning-courses</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>learning-courses</name>
 	<description>This is my study project for Middle Promotion and Performance Review in Sombra.</description>
+
 	<properties>
 		<java.version>11</java.version>
 		<mysql-connector.version>8.0.31</mysql-connector.version>
 	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -124,6 +127,13 @@
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+		<finalName>learning-courses</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
@@ -139,6 +149,7 @@
 			</plugin>
 		</plugins>
 	</build>
+
 	<repositories>
 		<repository>
 			<id>spring-milestones</id>
@@ -175,5 +186,23 @@
 			</releases>
 		</pluginRepository>
 	</pluginRepositories>
+
+	<profiles>
+		<profile>
+			<id>cloud</id>
+			<properties>
+				<springProfileActive>cloud</springProfileActive>
+			</properties>
+		</profile>
+		<profile>
+			<id>dev</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<springProfileActive>dev</springProfileActive>
+			</properties>
+		</profile>
+	</profiles>
 
 </project>
