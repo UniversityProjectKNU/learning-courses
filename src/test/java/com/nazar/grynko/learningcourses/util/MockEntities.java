@@ -125,4 +125,11 @@ public interface MockEntities {
                 .setMark(10);
     }
 
+    static Course mockCourse() {
+        return new Course()
+                .setId(1L)
+                .setTitle("testTitle")
+                .setDescription("testDescription")
+                .setIsFinished(false);
+    }
 }
