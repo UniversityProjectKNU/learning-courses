@@ -8,5 +8,5 @@ phases:
 
 artifacts:
   files:
-    -target/learning-courses.jar
+    - target/learning-courses.jar
   discard-paths: yes
