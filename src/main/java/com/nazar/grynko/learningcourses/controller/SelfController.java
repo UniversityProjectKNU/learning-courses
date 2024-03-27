@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import java.security.Principal;
 
@@ -16,6 +17,7 @@ import static com.nazar.grynko.learningcourses.controller.enums.ResponseCode._20
 import static com.nazar.grynko.learningcourses.controller.enums.ResponseCode._404;
 
 @RestController
+@RolesAllowed({"ADMIN", "INSTRUCTOR", "STUDENT"})
 @RequestMapping("learning-courses/api/v1/self")
 public class SelfController {
 

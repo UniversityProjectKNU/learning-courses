@@ -26,6 +26,7 @@ import java.util.List;
 import static com.nazar.grynko.learningcourses.controller.enums.ResponseCode.*;
 
 @RestController
+@RolesAllowed({"ADMIN", "INSTRUCTOR", "STUDENT"})
 @RequestMapping("learning-courses/api/v1/courses")
 public class CourseController {
 

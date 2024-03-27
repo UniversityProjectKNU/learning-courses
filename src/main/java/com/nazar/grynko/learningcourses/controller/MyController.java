@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.security.RolesAllowed;
 import java.security.Principal;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import static com.nazar.grynko.learningcourses.controller.enums.ResponseCode._20
 import static com.nazar.grynko.learningcourses.controller.enums.ResponseCode._404;
 
 @RestController
+@RolesAllowed({"INSTRUCTOR", "STUDENT"})
 @RequestMapping("learning-courses/api/v1/my")
 public class MyController {
 
