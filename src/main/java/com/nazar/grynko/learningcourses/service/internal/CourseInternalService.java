@@ -36,9 +36,9 @@ public class CourseInternalService {
     private static final String STUDENT_MAX_AMOUNT_OF_ACTIVE_PATTERN = "Student %d already has max amount of active courses (%d)";
 
     @Value("${max.courses.number.at.time}")
-    private Integer MAX_COURSES_NUMBER;
+    private Integer MAX_COURSES_NUMBER = 5;
     @Value("${min.lessons.number.in.course}")
-    private Integer MIN_LESSONS_NUMBER;
+    private Integer MIN_LESSONS_NUMBER = 2;
 
     public CourseInternalService(CourseRepository courseRepository,
                                  CourseTemplateInternalService courseTemplateInternalService,
@@ -66,7 +66,7 @@ public class CourseInternalService {
 
     public Course get(Long courseId) {
         return courseRepository.findById(courseId)
-                .orElseThrow(() -> new IllegalArgumentException(String.format(COURSE_MISSING_PATTERN, courseId)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format(COURSE_MISSING_PATTERN, courseId)));
     }
 
     public List<Course> getAll() {
@@ -111,7 +111,7 @@ public class CourseInternalService {
         return course;
     }
 
-    @Transactional //todo check if it works fine
+    @Transactional
     public Course finish(Long id) {
         var entity = get(id);
         if (entity.getIsFinished()) {
@@ -121,7 +121,6 @@ public class CourseInternalService {
         entity.setIsFinished(true);
         courseRepository.save(entity);
 
-        //todo does it works fine because we save it implicitly in db
         userToLessonInternalService.setIsPassedForLessonsInCourse(id);
 
         chapterInternalService.finish(id);
@@ -262,7 +261,7 @@ public class CourseInternalService {
             return null;
         }
 
-        return enroll(enrollRequest.getCourse().getId(), enrollRequest.getUser().getId());
+        return enroll(enrollRequest.getCourse().getId(), enrollRequest.getUser().getId()); //todo
     }
 
     public EnrollRequest getUsersLastEnrollRequest(Long userId, Long courseId) {

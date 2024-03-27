@@ -5,7 +5,6 @@ import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.model.UserToCourse;
 import com.nazar.grynko.learningcourses.model.UserToLesson;
 import com.nazar.grynko.learningcourses.repository.CourseOwnerRepository;
-import com.nazar.grynko.learningcourses.repository.LessonRepository;
 import com.nazar.grynko.learningcourses.repository.UserToCourseRepository;
 import com.nazar.grynko.learningcourses.repository.UserToLessonRepository;
 import org.springframework.stereotype.Service;
@@ -20,18 +19,15 @@ public class UserToCourseInternalService {
 
     private final UserToCourseRepository userToCourseRepository;
     private final UserToLessonRepository userToLessonRepository;
-    private final LessonRepository lessonRepository;
     private final CourseOwnerRepository courseOwnerRepository;
 
     private static final String USER_MISSING_COURSE_PATTERN = "User %d doesn't have this course %d";
 
     public UserToCourseInternalService(UserToCourseRepository userToCourseRepository,
                                        UserToLessonRepository userToLessonRepository,
-                                       LessonRepository lessonRepository,
                                        CourseOwnerRepository courseOwnerRepository) {
         this.userToCourseRepository = userToCourseRepository;
         this.userToLessonRepository = userToLessonRepository;
-        this.lessonRepository = lessonRepository;
         this.courseOwnerRepository = courseOwnerRepository;
     }
 
@@ -91,7 +87,6 @@ public class UserToCourseInternalService {
                 .filter(e -> e.getUser().getRole().equals(RoleType.STUDENT))
                 .collect(Collectors.toMap(UserToCourse::getUser, Function.identity()));
 
-        var successMark = lessonRepository.getSuccessMarkForCourse(courseId);
         for (var user : usersToLessons.keySet()) {
             var lessons = usersToLessons.get(user);
 
@@ -103,11 +98,9 @@ public class UserToCourseInternalService {
                     .map(UserToLesson::getIsPassed)
                     .reduce(true, (a, b) -> a && b);
 
-            var mark = sum * 1f; //(sum * 1f / n);
-
             var userToCourse = usersToCourses.get(user);
-            userToCourse.setMark(mark)
-                    .setIsPassed(passedAll && Double.compare(mark, successMark) >= 0);
+            userToCourse.setMark(sum * 1f)
+                    .setIsPassed(passedAll);
         }
 
         userToCourseRepository.saveAll(usersToCourses.values());
