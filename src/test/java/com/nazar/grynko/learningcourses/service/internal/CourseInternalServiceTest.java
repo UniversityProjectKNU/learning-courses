@@ -347,7 +347,6 @@ public class CourseInternalServiceTest {
         Long courseId = 1L;
         Long userId = 1L;
         RoleType role = RoleType.STUDENT;
-        int expectedActiveCourses = 3;
 
         // MOCKING
         when(userInternalService.get(userId)).thenReturn(new User().setId(userId).setRole(role));
@@ -418,7 +417,6 @@ public class CourseInternalServiceTest {
         Long courseId = 1L;
         Long userId = 1L;
         RoleType role = RoleType.STUDENT;
-        int expectedActiveCourses = 10;
 
         // MOCKING
         when(userInternalService.get(userId)).thenReturn(new User().setId(userId).setRole(role));
@@ -588,7 +586,7 @@ public class CourseInternalServiceTest {
         when(courseRepository.findById(courseId)).thenReturn(Optional.of(new Course().setId(courseId)));
 
         // ACT
-        EnrollRequest actualEnrollRequest = sut.sendEnrollRequest(courseId, login);
+        sut.sendEnrollRequest(courseId, login);
 
         // VERIFY
         verify(userToCourseInternalService).existsByLoginAndCourseId(login, courseId);
@@ -605,7 +603,6 @@ public class CourseInternalServiceTest {
         Long courseId = 1L;
         String login = "test_user";
         RoleType role = RoleType.STUDENT;
-        int expectedActiveCourses = 3;
 
         // MOCKING
         when(userToCourseInternalService.existsByLoginAndCourseId(login, courseId)).thenReturn(false);
@@ -622,7 +619,7 @@ public class CourseInternalServiceTest {
         when(enrollRequestRepository.save(any(EnrollRequest.class))).thenAnswer(i -> i.getArguments()[0]);
 
         // ACT
-        EnrollRequest actualEnrollRequest = sut.sendEnrollRequest(courseId, login);
+        sut.sendEnrollRequest(courseId, login);
 
         // VERIFY
         verify(userToCourseInternalService).existsByLoginAndCourseId(login, courseId);
@@ -675,7 +672,6 @@ public class CourseInternalServiceTest {
         Long courseId = 1L;
         String login = "test_user";
         RoleType role = RoleType.STUDENT;
-        int expectedActiveCourses = 10;
 
         // MOCKING
         when(userToCourseInternalService.existsByLoginAndCourseId(login, courseId)).thenReturn(false);

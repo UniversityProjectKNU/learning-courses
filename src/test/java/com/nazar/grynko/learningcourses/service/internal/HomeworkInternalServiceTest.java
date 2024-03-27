@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
+import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.repository.HomeworkFileRepository;
 import com.nazar.grynko.learningcourses.service.S3FileService;
 import org.junit.jupiter.api.Test;
@@ -98,7 +99,7 @@ public class HomeworkInternalServiceTest {
         when(homeworkFileRepository.getByUserToLesson(any())).thenReturn(Optional.empty());
 
         // ACT + VERIFY
-        assertThrows(IllegalArgumentException.class, () -> sut.downloadFile(mockUsersToLesson()));
+        assertThrows(EntityNotFoundException.class, () -> sut.downloadFile(mockUsersToLesson()));
     }
 
     @Test
@@ -127,7 +128,7 @@ public class HomeworkInternalServiceTest {
         when(homeworkFileRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // ACT + VERIFY
-        assertThrows(IllegalArgumentException.class, () -> sut.downloadFile(1L));
+        assertThrows(EntityNotFoundException.class, () -> sut.downloadFile(1L));
     }
 
     @Test
