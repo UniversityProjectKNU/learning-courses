@@ -18,12 +18,14 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.List;
 
 import static com.nazar.grynko.learningcourses.controller.enums.ResponseCode.*;
 
-@RestController
+@RestController //todo default roles
 @RequestMapping("learning-courses/api/v1/lessons")
 public class LessonController {
 
@@ -166,11 +168,13 @@ public class LessonController {
         var fileDto = userToLessonService.downloadFile(lessonId, userId);
         var data = fileDto.getData();
 
+        var headerTitle = URLEncoder.encode(fileDto.getTitle(), StandardCharsets.UTF_8);
+
         return ResponseEntity
                 .ok()
                 .contentLength(data.length)
                 .header("Content-type", "application/octet-stream")
-                .header("Content-disposition", "attachment; filename=\"" + fileDto.getTitle() + "\"")
+                .header("Content-disposition", "attachment; filename=\"" + headerTitle + "\"")
                 .body(new ByteArrayResource(data));
     }
 

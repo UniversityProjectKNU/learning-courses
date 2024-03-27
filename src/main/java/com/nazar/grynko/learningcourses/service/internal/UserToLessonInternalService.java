@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.Objects.isNull;
+
 @Service
 public class UserToLessonInternalService {
 
@@ -56,6 +58,10 @@ public class UserToLessonInternalService {
     }
 
     public HomeworkFile uploadFile(Long lessonId, String login, MultipartFile file) {
+        if (isNull(file)) {
+            throw new IllegalStateException("File was not provided`");
+        }
+
         var lesson = lessonRepository.findById(lessonId).orElseThrow(EntityNotFoundException::new); //todo refactor these methods
         if (lesson.getIsFinished()) {
             throw new IllegalStateException("You cannot upload file in finished lesson");
