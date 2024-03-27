@@ -53,8 +53,8 @@ cloud:
       access-key: ${AWS_CREDENTIALS_ACCESS_KEY}
       secret-key: ${AWS_CREDENTIALS_SECRET_KEY}
     bucket:
-      region: us-east-1
-      name: nazar-grynko-learning-courses
+      region: ${BUCKET_REGION}
+      name: ${BUCKET_NAME}
 
 max:
   courses:
