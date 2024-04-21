@@ -4,6 +4,7 @@ import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.mapper.LessonMapper;
 import com.nazar.grynko.learningcourses.model.*;
 import com.nazar.grynko.learningcourses.repository.LessonRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,6 +19,9 @@ public class LessonInternalService {
     private final UserToLessonInternalService userToLessonInternalService;
 
     private static final String LESSON_MISSING_PATTERN = "Lesson %d doesn't exist";
+    private static final String LESSONS_CANNOT_BE_DELETED_PATTERN = "Lesson %d cannot be deleted, since lessons amount cannot be less than %d";
+    @Value("${min.lessons.number.in.course}")
+    private Integer MIN_LESSONS_NUMBER = 2;
 
     public LessonInternalService(LessonRepository lessonRepository,
                                  LessonTemplateInternalService lessonTemplateInternalService,
@@ -38,8 +42,15 @@ public class LessonInternalService {
         return lessonRepository.getAllByChapterId(chapterId);
     }
 
-    public void delete(Long id) {
-        var entity = get(id);
+    public void delete(Long lessonId) {
+        var entity = get(lessonId);
+
+        var course = entity.getChapter().getCourse();
+        var lessonsAmount = getNumberOfLessonsInCourse(course.getId());
+        if (!isValidAmountOfLessons(lessonsAmount - 1)) {
+            throw new IllegalStateException(String.format(LESSONS_CANNOT_BE_DELETED_PATTERN, lessonId, MIN_LESSONS_NUMBER));
+        }
+
         lessonRepository.delete(entity);
     }
 
@@ -114,6 +125,14 @@ public class LessonInternalService {
         return lessonRepository.getAllInCourse(courseId);
     }
 
+    public Long getNumberOfLessonsInCourse(Long courseId) {
+        return lessonRepository.getNumberOfLessonsInCourse(courseId);
+    }
+
+    public Long getNumberOfLessonsInChapter(Long chapterId) {
+        return lessonRepository.getNumberOfLessonsInChapter(chapterId);
+    }
+
     public List<UserToLesson> enroll(User user, Long courseId) {
         var lessons = getAllInCourse(courseId);
 
@@ -133,6 +152,10 @@ public class LessonInternalService {
                 .setIsPassed(false);
 
         return userToLessonInternalService.save(entity);
+    }
+
+    public boolean isValidAmountOfLessons(Long lessonsAmount) {
+        return lessonsAmount >= MIN_LESSONS_NUMBER;
     }
 
 }

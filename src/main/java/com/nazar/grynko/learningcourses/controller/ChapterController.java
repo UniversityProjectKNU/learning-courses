@@ -16,8 +16,7 @@ import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import java.util.List;
 
-import static com.nazar.grynko.learningcourses.controller.enums.ResponseCode._200;
-import static com.nazar.grynko.learningcourses.controller.enums.ResponseCode._404;
+import static com.nazar.grynko.learningcourses.controller.enums.ResponseCode.*;
 
 @RestController
 @RolesAllowed({"ADMIN", "INSTRUCTOR", "STUDENT"})
@@ -70,6 +69,7 @@ public class ChapterController {
             description = "Delete a chapter by its id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = _200, description = "Chapter deleted"),
+            @ApiResponse(responseCode = _400, description = "Cannot delete chapter due to lessons amount threshold"),
             @ApiResponse(responseCode = _404, description = "Chapter not found")
     })
     @RolesAllowed({"ADMIN", "INSTRUCTOR"})

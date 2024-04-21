@@ -80,7 +80,7 @@ public class CourseInternalService {
 
     @Transactional
     public Course create(Long courseTemplateId, String login) {
-        if (!isValidAmountOfLessons(courseTemplateId)) {
+        if (!isValidAmountOfLessonsInCourseTemplate(courseTemplateId)) {
             throw new IllegalStateException(String.format(
                     "Course must contain at least %d lessons", MIN_LESSONS_NUMBER));
         }
@@ -179,7 +179,7 @@ public class CourseInternalService {
         return activeCoursesAmount < MAX_COURSES_NUMBER;
     }
 
-    private boolean isValidAmountOfLessons(Long courseTemplateId) {
+    private boolean isValidAmountOfLessonsInCourseTemplate(Long courseTemplateId) {
         var lessonsTemplates = lessonTemplateInternalService.getNumberOfLessonsForCourseTemplate(courseTemplateId);
         return lessonsTemplates >= MIN_LESSONS_NUMBER;
     }

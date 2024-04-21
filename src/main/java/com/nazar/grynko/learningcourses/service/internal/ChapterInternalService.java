@@ -7,6 +7,7 @@ import com.nazar.grynko.learningcourses.model.ChapterTemplate;
 import com.nazar.grynko.learningcourses.model.Course;
 import com.nazar.grynko.learningcourses.repository.ChapterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -22,6 +23,9 @@ public class ChapterInternalService {
     private final ChapterMapper chapterMapper;
 
     private static final String CHAPTER_MISSING_PATTERN = "Chapter %d doesn't exist";
+    private static final String CHAPTER_CANNOT_BE_DELETED_PATTERN = "Chapter %d cannot be deleted, since lessons amount cannot be less than %d";
+    @Value("${min.lessons.number.in.course}")
+    private Integer MIN_LESSONS_NUMBER = 2;
 
     @Autowired
     public ChapterInternalService(ChapterRepository chapterRepository,
@@ -45,6 +49,14 @@ public class ChapterInternalService {
 
     public void delete(Long chapterId) {
         var entity = get(chapterId);
+
+        var course = entity.getCourse();
+        var courseLessonsAmount = lessonInternalService.getNumberOfLessonsInCourse(course.getId());
+        var chapterLessonAmount = lessonInternalService.getNumberOfLessonsInChapter(chapterId);
+        if (!lessonInternalService.isValidAmountOfLessons(courseLessonsAmount - chapterLessonAmount)) {
+            throw new IllegalStateException(String.format(CHAPTER_CANNOT_BE_DELETED_PATTERN, chapterId, MIN_LESSONS_NUMBER));
+        }
+
         chapterRepository.delete(entity);
     }
 

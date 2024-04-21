@@ -91,6 +91,7 @@ public class LessonController {
             description = "Delete a lesson by its id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = _200, description = "Lesson deleted"),
+            @ApiResponse(responseCode = _400, description = "Cannot delete lesson due to lessons amount threshold"),
             @ApiResponse(responseCode = _404, description = "Lesson not found")
     })
     @RolesAllowed({"ADMIN", "INSTRUCTOR"})
