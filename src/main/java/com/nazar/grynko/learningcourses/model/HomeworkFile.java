@@ -1,13 +1,12 @@
 package com.nazar.grynko.learningcourses.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import javax.persistence.*;
 
 @Getter
 @Setter
@@ -15,14 +14,14 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Accessors(chain = true)
 @Entity
-@Table(name="homework_files")
+@Table(name = "homework_files")
 public class HomeworkFile {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="s3_name", nullable = false)
+    @Column(name = "s3_name", nullable = false)
     private String s3Name;
     @Column(nullable = false)
     private String title;

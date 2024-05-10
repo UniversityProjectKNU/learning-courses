@@ -14,14 +14,14 @@ import com.nazar.grynko.learningcourses.security.JwtProvider;
 import com.nazar.grynko.learningcourses.security.JwtUserDetailsService;
 import com.nazar.grynko.learningcourses.security.MyUserDetails;
 import com.nazar.grynko.learningcourses.service.internal.UserInternalService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.nonNull;
@@ -110,7 +110,7 @@ public class SecurityService {
         var cookies = req.getCookies();
 
         if (nonNull(cookies)) {
-            for (var c: cookies) {
+            for (var c : cookies) {
                 if (AUTHORIZATION_HEADER.equals(c.getName())) {
                     c.setValue("");
                     c.setMaxAge(0);

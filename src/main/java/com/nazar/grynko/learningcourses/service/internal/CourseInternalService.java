@@ -6,10 +6,10 @@ import com.nazar.grynko.learningcourses.model.*;
 import com.nazar.grynko.learningcourses.repository.CourseOwnerRepository;
 import com.nazar.grynko.learningcourses.repository.CourseRepository;
 import com.nazar.grynko.learningcourses.repository.EnrollRequestRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 

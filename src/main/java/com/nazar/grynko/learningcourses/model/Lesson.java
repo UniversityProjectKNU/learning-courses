@@ -1,13 +1,12 @@
 package com.nazar.grynko.learningcourses.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-
-import javax.persistence.*;
 
 @Getter
 @Setter
@@ -15,7 +14,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Accessors(chain = true)
 @Entity
-@Table(name="lessons")
+@Table(name = "lessons")
 public class Lesson {
 
     @Id

@@ -7,9 +7,9 @@ import com.nazar.grynko.learningcourses.model.UserToLesson;
 import com.nazar.grynko.learningcourses.repository.CourseOwnerRepository;
 import com.nazar.grynko.learningcourses.repository.UserToCourseRepository;
 import com.nazar.grynko.learningcourses.repository.UserToLessonRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;

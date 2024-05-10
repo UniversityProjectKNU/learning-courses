@@ -7,12 +7,11 @@ import com.nazar.grynko.learningcourses.service.LessonTemplateService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.annotation.security.RolesAllowed;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import javax.annotation.security.RolesAllowed;
-import javax.validation.Valid;
 
 import static com.nazar.grynko.learningcourses.controller.enums.ResponseCode._200;
 import static com.nazar.grynko.learningcourses.controller.enums.ResponseCode._404;
