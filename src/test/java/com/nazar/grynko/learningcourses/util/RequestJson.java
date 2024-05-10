@@ -2,6 +2,8 @@ package com.nazar.grynko.learningcourses.util;
 
 public interface RequestJson {
 
+    String EMPTY_BODY = "{}";
+
     String LESSON_CORRECT = """
                 {
                     "title": "Learn Python in 30 Days",
@@ -21,6 +23,22 @@ public interface RequestJson {
                 "isFinished": false,
                 "maxMark": -1,
                 "successMark": "1000000"
+            }
+            """;
+
+    String SIGN_IN = """
+            {
+                "login": "test.user@gmail.com",
+                "password": "test.password"
+            }
+            """;
+
+    String SIGN_UP = """
+            {
+                "login": "test.user@gmail.com",
+                "password": "test.password",
+                "firstName": "Nazar",
+                "lastName": "Grynko"
             }
             """;
 

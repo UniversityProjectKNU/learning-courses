@@ -35,7 +35,7 @@ public class SecurityController {
             description = "Sign in into the application. Provide login as email and password. Get a JWT token in the reponse")
     @ApiResponses(value = {
             @ApiResponse(responseCode = _200, description = "Signed in"),
-            @ApiResponse(responseCode = _401, description = "User or password is incorrect")
+            @ApiResponse(responseCode = _401, description = "Login or password is incorrect")
     })
     @PostMapping("/sign-in")
     public ResponseEntity<UserSecurityDto> signIn(@Valid @RequestBody SignInDto signInDto) {

@@ -3,8 +3,6 @@ package com.nazar.grynko.learningcourses.util;
 import com.nazar.grynko.learningcourses.dto.hoeworkfile.FileDto;
 import com.nazar.grynko.learningcourses.dto.hoeworkfile.HomeworkFileDto;
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDto;
-import com.nazar.grynko.learningcourses.dto.security.SignInDto;
-import com.nazar.grynko.learningcourses.dto.security.SignUpDto;
 import com.nazar.grynko.learningcourses.dto.user.UserDto;
 import com.nazar.grynko.learningcourses.dto.user.UserSecurityDto;
 import com.nazar.grynko.learningcourses.dto.usertolesson.UserToLessonDto;
@@ -37,23 +35,9 @@ public interface MockEntities {
     // MOCK_DTO
     ///////////////////////////////////////////////////
 
-    static SignInDto mockSignInDto() {
-        return new SignInDto()
-                .setLogin("test.user@gmail.com")
-                .setPassword("test.password");
-    }
-
-    static SignUpDto mockSignUpDto() {
-        return new SignUpDto()
-                .setLogin("test.user@gmail.com")
-                .setPassword("test.password")
-                .setFirstName("testFirstName")
-                .setLastName("testLastName");
-    }
-
     static UserSecurityDto mockUserSecurityDto() {
         return new UserSecurityDto()
-                .setId(100L)
+                .setId(1L)
                 .setRole(RoleType.STUDENT)
                 .setLogin("test.user@gmail.com")
                 .setToken("token");
@@ -61,25 +45,14 @@ public interface MockEntities {
 
     static UserDto mockUserDto() {
         return new UserDto()
-                .setId(100L)
+                .setId(1L)
                 .setRole(RoleType.STUDENT)
                 .setLogin("test.user@gmail.com")
-                .setFirstName("testFirstName")
-                .setLastName("testLastName");
+                .setFirstName("Nazar")
+                .setLastName("Grynko");
     }
 
     static LessonDto mockLessonCorrectDto() {
-        return new LessonDto()
-                .setId(1L)
-                .setChapterId(2L)
-                .setCourseId(3L)
-                .setIsFinished(false)
-                .setNumber("5")
-                .setMaxMark(20)
-                .setSuccessMark(10);
-    }
-
-    static LessonDto mockLessonInvalidDto() {
         return new LessonDto()
                 .setId(1L)
                 .setChapterId(2L)

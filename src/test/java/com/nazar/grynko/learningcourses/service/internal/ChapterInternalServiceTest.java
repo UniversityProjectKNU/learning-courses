@@ -68,17 +68,26 @@ public class ChapterInternalServiceTest {
     @Test
     public void shouldDeleteCourseWhenExists() {
         // PREPARE
-        Long courseId = 1L;
+        Long chapterId = 1L;
+        var course = new Course()
+                .setId(1L);
+
+        var chapter = new Chapter()
+                .setId(chapterId)
+                .setCourse(course);
 
         // MOCKING
-        when(chapterRepository.findById(courseId)).thenReturn(Optional.of(new Chapter()));
+        when(chapterRepository.findById(chapterId)).thenReturn(Optional.of(chapter));
+        when(lessonInternalService.getNumberOfLessonsInCourse(course.getId())).thenReturn(6L);
+        when(lessonInternalService.getNumberOfLessonsInChapter(chapterId)).thenReturn(3L);
+        when(lessonInternalService.isValidAmountOfLessons(3L)).thenReturn(true);
         doNothing().when(chapterRepository).delete(any(Chapter.class));
 
         // ACT
-        sut.delete(courseId);
+        sut.delete(chapterId);
 
         // VERIFY
-        verify(chapterRepository).findById(courseId);
+        verify(chapterRepository).findById(chapterId);
         verify(chapterRepository).delete(any(Chapter.class));
     }
 

@@ -22,8 +22,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.stream.Collectors;
-
 import static java.util.Objects.nonNull;
 
 @Service
@@ -67,8 +65,8 @@ public class SecurityService {
 
         var roleValue = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.toList())
-                .get(0);
+                .toList()
+                .getFirst();
 
         return new UserSecurityDto()
                 .setId(userDetails.getId())

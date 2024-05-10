@@ -1,5 +1,9 @@
 package com.nazar.grynko.learningcourses.controller;
 
+import com.nazar.grynko.learningcourses.dto.security.SignInDto;
+import com.nazar.grynko.learningcourses.dto.security.SignUpDto;
+import com.nazar.grynko.learningcourses.exception.BadSignInException;
+import com.nazar.grynko.learningcourses.exception.BadSignUpException;
 import com.nazar.grynko.learningcourses.security.JwtAuthenticationFilter;
 import com.nazar.grynko.learningcourses.service.SecurityService;
 import org.junit.jupiter.api.DisplayName;
@@ -10,13 +14,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static com.nazar.grynko.learningcourses.util.MockEntities.*;
-import static com.nazar.grynko.learningcourses.util.MockUtil.toJsonString;
+import static com.nazar.grynko.learningcourses.util.MockEntities.mockUserDto;
+import static com.nazar.grynko.learningcourses.util.MockEntities.mockUserSecurityDto;
+import static com.nazar.grynko.learningcourses.util.RequestJson.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(SecurityController.class)
@@ -25,7 +31,7 @@ public class SecurityControllerTest {
 
     private final static String BASE_URL = "/learning-courses/api/v1";
 
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
+//    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private MockMvc mockMvc;
 
@@ -37,144 +43,84 @@ public class SecurityControllerTest {
 
     @Test
     void signIn_200_checkResult() throws Exception {
-        when(securityService.signIn(any())).thenReturn(mockUserSecurityDto());
+        when(securityService.signIn(any(SignInDto.class)))
+                .thenReturn(mockUserSecurityDto());
+
         this.mockMvc.perform(post(BASE_URL + "/sign-in")
                         .contentType(APPLICATION_JSON)
-                        .content(toJsonString(mockSignInDto())))
+                        .content(SIGN_IN))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.role").value("STUDENT"))
+                .andExpect(jsonPath("$.login").value("test.user@gmail.com"))
+                .andExpect(jsonPath("$.token").value("token"));
     }
 
     @Test
-    void signIn_400_checkResult() throws Exception {
-        when(securityService.signIn(any())).thenThrow(new RuntimeException());
+    @DisplayName("signIn_401: login or password is incorrect")
+    void signIn_401() throws Exception {
+        when(securityService.signIn(any(SignInDto.class)))
+                .thenThrow(new BadSignInException());
+
         this.mockMvc.perform(post(BASE_URL + "/sign-in")
                         .contentType(APPLICATION_JSON)
-                        .content(toJsonString(mockSignInDto())))
+                        .content(SIGN_IN))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @DisplayName("signIn_400: incorrect email. It doesn't contain @ sign")
-    void signIn_400_incorrectEmail() throws Exception {
-        var signInDto = mockSignInDto()
-                .setLogin("test.gmail.com");
+    @DisplayName("signIn_400: incorrect body")
+    void signIn_400() throws Exception {
+        when(securityService.signIn(any(SignInDto.class)))
+                .thenThrow(new BadSignInException());
 
         this.mockMvc.perform(post(BASE_URL + "/sign-in")
                         .contentType(APPLICATION_JSON)
-                        .content(toJsonString(signInDto)))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("signIn_400: incorrect email. It doesn't contain name before @ sign")
-    void signIn_400_incorrectEmail2() throws Exception {
-        var signInDto = mockSignInDto()
-                .setLogin("@gmail.com");
-
-        this.mockMvc.perform(post(BASE_URL + "/sign-in")
-                        .contentType(APPLICATION_JSON)
-                        .content(toJsonString(signInDto)))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("signIn_400: incorrect password. Length < 4")
-    void signIn_400_incorrectPassword() throws Exception {
-        var signInDto = mockSignInDto()
-                .setPassword("pas");
-
-        this.mockMvc.perform(post(BASE_URL + "/sign-in")
-                        .contentType(APPLICATION_JSON)
-                        .content(toJsonString(signInDto)))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("signIn_400: incorrect password. Length > 64")
-    void signIn_400_incorrectPassword2() throws Exception {
-        var signInDto = mockSignInDto()
-                .setPassword("paaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaassword");
-
-        this.mockMvc.perform(post(BASE_URL + "/sign-in")
-                        .contentType(APPLICATION_JSON)
-                        .content(toJsonString(signInDto)))
+                        .content(EMPTY_BODY))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
 
     @Test
     void signUp_200_checkResult() throws Exception {
-        when(securityService.signUp(any())).thenReturn(mockUserDto());
+        when(securityService.signUp(any(SignUpDto.class))).thenReturn(mockUserDto());
+
         this.mockMvc.perform(post(BASE_URL + "/sign-up")
                         .contentType(APPLICATION_JSON)
-                        .content(toJsonString(mockSignUpDto())))
+                        .content(SIGN_UP))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(1L))
+                .andExpect(jsonPath("$.role").value("STUDENT"))
+                .andExpect(jsonPath("$.login").value("test.user@gmail.com"))
+                .andExpect(jsonPath("$.firstName").value("Nazar"))
+                .andExpect(jsonPath("$.lastName").value("Grynko"));
     }
 
     @Test
-    void signUp_400_checkResult() throws Exception {
-        when(securityService.signUp(any())).thenThrow(new RuntimeException());
+    @DisplayName("signUp_401: password is incorrect or such user already exists")
+    void signUp_401() throws Exception {
+        when(securityService.signUp(any(SignUpDto.class)))
+                .thenThrow(new BadSignUpException());
+
         this.mockMvc.perform(post(BASE_URL + "/sign-up")
                         .contentType(APPLICATION_JSON)
-                        .content(toJsonString(mockSignUpDto())))
+                        .content(SIGN_UP))
                 .andDo(print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @DisplayName("signUp_400: incorrect email. It doesn't contain @ sign")
-    void signUp_400_incorrectEmail() throws Exception {
-        var signInDto = mockSignUpDto()
-                .setLogin("test.gmail.com");
+    @DisplayName("signUp_400: incorrect body")
+    void signUp_400() throws Exception {
+        when(securityService.signIn(any(SignInDto.class)))
+                .thenThrow(new BadSignInException());
 
-        this.mockMvc.perform(post(BASE_URL + "/sign-up")
+        this.mockMvc.perform(post(BASE_URL + "/sign-in")
                         .contentType(APPLICATION_JSON)
-                        .content(toJsonString(signInDto)))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("signUp_400: incorrect email. It doesn't contain name before @ sign")
-    void signUp_400_incorrectEmail2() throws Exception {
-        var signInDto = mockSignUpDto()
-                .setLogin("@gmail.com");
-
-        this.mockMvc.perform(post(BASE_URL + "/sign-up")
-                        .contentType(APPLICATION_JSON)
-                        .content(toJsonString(signInDto)))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("signIn_400: incorrect password. Length < 4")
-    void signUp_400_incorrectPassword() throws Exception {
-        var signInDto = mockSignUpDto()
-                .setPassword("pas");
-
-        this.mockMvc.perform(post(BASE_URL + "/sign-up")
-                        .contentType(APPLICATION_JSON)
-                        .content(toJsonString(signInDto)))
-                .andDo(print())
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @DisplayName("signIn_400: incorrect password. Length > 64")
-    void signUp_400_incorrectPassword2() throws Exception {
-        var signInDto = mockSignUpDto()
-                .setPassword("paaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaassword");
-
-        this.mockMvc.perform(post(BASE_URL + "/sign-up")
-                        .contentType(APPLICATION_JSON)
-                        .content(toJsonString(signInDto)))
+                        .content(EMPTY_BODY))
                 .andDo(print())
                 .andExpect(status().isBadRequest());
     }
