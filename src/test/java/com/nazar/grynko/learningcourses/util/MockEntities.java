@@ -68,29 +68,51 @@ public interface MockEntities {
                 .setLastName("testLastName");
     }
 
-    static LessonDto mockLessonDto() {
+    static LessonDto mockLessonCorrectDto() {
         return new LessonDto()
-                .setId(100L)
-                .setChapterId(100L)
-                .setCourseId(100L)
+                .setId(1L)
+                .setChapterId(2L)
+                .setCourseId(3L)
                 .setIsFinished(false)
-                .setNumber("100")
+                .setNumber("5")
+                .setMaxMark(20)
+                .setSuccessMark(10);
+    }
+
+    static LessonDto mockLessonInvalidDto() {
+        return new LessonDto()
+                .setId(1L)
+                .setChapterId(2L)
+                .setCourseId(3L)
+                .setIsFinished(false)
+                .setNumber("5")
+                .setMaxMark(20)
+                .setSuccessMark(10);
+    }
+
+    static LessonDto mockLessonFinishedDto() {
+        return new LessonDto()
+                .setId(2L)
+                .setChapterId(3L)
+                .setCourseId(4L)
+                .setIsFinished(true)
+                .setNumber("6")
                 .setMaxMark(20)
                 .setSuccessMark(10);
     }
 
     static UserToLessonDto mockUsersToLessonDto() {
         return new UserToLessonDto()
-                .setId(100L)
-                .setUserId(100L)
-                .setLessonId(100L)
+                .setId(1L)
+                .setUserId(2L)
+                .setLessonId(3L)
                 .setIsPassed(false)
                 .setMark(10);
     }
 
     static HomeworkFileDto mockHomeworkFileDto() {
         return new HomeworkFileDto()
-                .setId(100L)
+                .setId(1L)
                 .setSize(100L)
                 .setS3Name("test.s3Name")
                 .setTitle("testTitle");
