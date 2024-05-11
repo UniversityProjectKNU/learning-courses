@@ -1,7 +1,7 @@
 package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.dto.lesson.LessonDtoUpdate;
-import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
+import com.nazar.grynko.learningcourses.exception.domain.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.security.JwtAuthenticationFilter;
 import com.nazar.grynko.learningcourses.service.LessonService;
 import com.nazar.grynko.learningcourses.service.UserToLessonService;

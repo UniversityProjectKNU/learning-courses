@@ -1,4 +1,4 @@
-package com.nazar.grynko.learningcourses.exception;
+package com.nazar.grynko.learningcourses.exception.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

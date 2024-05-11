@@ -2,8 +2,8 @@ package com.nazar.grynko.learningcourses.controller;
 
 import com.nazar.grynko.learningcourses.dto.security.SignInDto;
 import com.nazar.grynko.learningcourses.dto.security.SignUpDto;
-import com.nazar.grynko.learningcourses.exception.BadSignInException;
-import com.nazar.grynko.learningcourses.exception.BadSignUpException;
+import com.nazar.grynko.learningcourses.exception.domain.BadSignInException;
+import com.nazar.grynko.learningcourses.exception.domain.BadSignUpException;
 import com.nazar.grynko.learningcourses.security.JwtAuthenticationFilter;
 import com.nazar.grynko.learningcourses.service.SecurityService;
 import org.junit.jupiter.api.DisplayName;

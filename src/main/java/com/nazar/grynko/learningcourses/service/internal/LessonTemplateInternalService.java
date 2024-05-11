@@ -1,6 +1,6 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
-import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
+import com.nazar.grynko.learningcourses.exception.domain.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.model.ChapterTemplate;
 import com.nazar.grynko.learningcourses.model.LessonTemplate;
 import com.nazar.grynko.learningcourses.repository.LessonTemplateRepository;

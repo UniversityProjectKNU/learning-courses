@@ -1,6 +1,6 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
-import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
+import com.nazar.grynko.learningcourses.exception.domain.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.repository.HomeworkFileRepository;
 import com.nazar.grynko.learningcourses.service.S3FileService;
 import org.junit.jupiter.api.Test;

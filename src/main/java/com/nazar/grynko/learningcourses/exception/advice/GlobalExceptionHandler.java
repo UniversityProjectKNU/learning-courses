@@ -1,9 +1,9 @@
 package com.nazar.grynko.learningcourses.exception.advice;
 
-import com.nazar.grynko.learningcourses.exception.BadSignInException;
-import com.nazar.grynko.learningcourses.exception.BadSignUpException;
-import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
-import com.nazar.grynko.learningcourses.exception.ExceptionCause;
+import com.nazar.grynko.learningcourses.exception.domain.BadSignInException;
+import com.nazar.grynko.learningcourses.exception.domain.BadSignUpException;
+import com.nazar.grynko.learningcourses.exception.domain.EntityNotFoundException;
+import com.nazar.grynko.learningcourses.exception.domain.ExceptionCause;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;

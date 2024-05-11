@@ -1,6 +1,6 @@
 package com.nazar.grynko.learningcourses.service.internal;
 
-import com.nazar.grynko.learningcourses.exception.EntityNotFoundException;
+import com.nazar.grynko.learningcourses.exception.domain.EntityNotFoundException;
 import com.nazar.grynko.learningcourses.model.CourseTemplate;
 import com.nazar.grynko.learningcourses.repository.CourseTemplateRepository;
 import org.springframework.stereotype.Service;
