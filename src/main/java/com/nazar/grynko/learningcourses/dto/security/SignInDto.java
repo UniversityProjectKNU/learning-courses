@@ -16,7 +16,6 @@ public class SignInDto {
 
     @NotBlank
     @Email
-    @Size(max = 128)
     private String login;
 
     @NotBlank
