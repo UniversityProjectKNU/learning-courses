@@ -1,5 +1,7 @@
 package com.nazar.grynko.learningcourses.security;
 
+import com.nazar.grynko.learningcourses.exception.domain.EntityNotFoundException;
+import com.nazar.grynko.learningcourses.exception.domain.InvalidJwtTokenException;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -45,13 +47,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 var userDetails = (MyUserDetails) jwtUserDetailsService.loadUserByUsername(login);
 
                 if (!jwtProvider.validateToken(jwtToken, userDetails)) {
-                    throw new JwtException(String.format("Token %s is invalid", jwtToken));
+                    throw new JwtException(String.format("Token '%s' is invalid", jwtToken));
                 }
 
                 var authentication = jwtProvider.getAuthenticationToken(jwtToken, userDetails);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             } catch (JwtException e) {
-                throw new IllegalStateException(String.format("Token %s cannot be trusted. Message: " + e.getMessage(), jwtToken));
+                throw new InvalidJwtTokenException(String.format("Token '%s' cannot be trusted. Message: " + e.getMessage(), jwtToken), e);
+            } catch (EntityNotFoundException e) {
+                throw new InvalidJwtTokenException("User with provided login doesn't exist.", e);
             }
         }
 

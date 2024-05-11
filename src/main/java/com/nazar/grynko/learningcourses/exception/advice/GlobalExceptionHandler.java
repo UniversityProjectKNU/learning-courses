@@ -1,9 +1,6 @@
 package com.nazar.grynko.learningcourses.exception.advice;
 
-import com.nazar.grynko.learningcourses.exception.domain.BadSignInException;
-import com.nazar.grynko.learningcourses.exception.domain.BadSignUpException;
-import com.nazar.grynko.learningcourses.exception.domain.EntityNotFoundException;
-import com.nazar.grynko.learningcourses.exception.domain.ExceptionCause;
+import com.nazar.grynko.learningcourses.exception.domain.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -15,11 +12,13 @@ import java.util.HashMap;
 
 @RestControllerAdvice
 @Slf4j
-public class GlobalExceptionHandler { //todo logging
+public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ExceptionCause<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        log.error(ex.getMessage());
+
         var errorMap = new HashMap<String, String>();
         ex.getBindingResult()
                 .getFieldErrors()
@@ -31,30 +30,48 @@ public class GlobalExceptionHandler { //todo logging
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(EntityNotFoundException.class)
     public ExceptionCause<?> handleEntityNotFoundException(EntityNotFoundException ex) {
+        log.error(ex.getMessage());
+
         return new ExceptionCause<>(ex.getClass().getName(), ex.getMessage(), "");
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(BadSignInException.class)
     public ExceptionCause<?> handleBadSignInException(BadSignInException ex) {
+        log.error(ex.getMessage());
+
         return new ExceptionCause<>(ex.getClass().getName(), ex.getMessage(), "");
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(BadSignUpException.class)
     public ExceptionCause<?> handleBadSignUpException(BadSignUpException ex) {
+        log.error(ex.getMessage());
+
         return new ExceptionCause<>(ex.getClass().getName(), ex.getMessage(), "");
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalStateException.class)
     public ExceptionCause<?> handleIllegalStateException(IllegalStateException ex) {
+        log.error(ex.getMessage());
+
+        return new ExceptionCause<>(ex.getClass().getName(), ex.getMessage(), "");
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(InvalidJwtTokenException.class)
+    public ExceptionCause<?> handleInvalidJwtTokenException(InvalidJwtTokenException ex) {
+        log.error(ex.getMessage());
+
         return new ExceptionCause<>(ex.getClass().getName(), ex.getMessage(), "");
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(Exception.class)
     public ExceptionCause<?> handleAnyException(Exception ex) {
+        log.error(ex.getMessage());
+
         return new ExceptionCause<>(ex.getClass().getName(), "Unknown exception happened", "");
     }
 
