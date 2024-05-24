@@ -19,7 +19,7 @@ public class ChapterDto implements Serializable {
     private Long id;
     private String title;
     private String description;
-    private String number;
+    private Integer number;
     @JsonProperty("isFinished")
     private Boolean isFinished;
     private Long courseId;

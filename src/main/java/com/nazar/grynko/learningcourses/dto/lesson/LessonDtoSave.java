@@ -23,7 +23,7 @@ public class LessonDtoSave implements Serializable {
     @NotNull
     @Size(min = 4, max = 2048)
     private String description;
-    private String number;
+    private Integer number;
     private Integer maxMark;
     private Integer successMark;
 

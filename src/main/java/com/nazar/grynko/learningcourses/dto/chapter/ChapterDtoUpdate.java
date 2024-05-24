@@ -27,7 +27,7 @@ public class ChapterDtoUpdate implements Serializable {
     private String description;
 
     @NotNull
-    private String number;
+    private Integer number;
 
     @NotNull
     @JsonProperty("isFinished")
