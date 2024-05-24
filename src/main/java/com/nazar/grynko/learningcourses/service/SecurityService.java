@@ -66,7 +66,7 @@ public class SecurityService {
         var roleValue = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList()
-                .getFirst();
+                .get(0);
 
         return new UserSecurityDto()
                 .setId(userDetails.getId())

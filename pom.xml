@@ -17,7 +17,7 @@
 	<description>This is my study project for Middle Promotion and Performance Review in Sombra.</description>
 
 	<properties>
-		<java.version>21</java.version>
+		<java.version>17</java.version>
 		<mysql-connector.version>8.0.31</mysql-connector.version>
 	</properties>
 
