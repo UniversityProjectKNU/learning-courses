@@ -58,7 +58,7 @@ public interface MockEntities {
                 .setChapterId(2L)
                 .setCourseId(3L)
                 .setIsFinished(false)
-                .setNumber("5")
+                .setNumber(5)
                 .setMaxMark(20)
                 .setSuccessMark(10);
     }
@@ -69,7 +69,7 @@ public interface MockEntities {
                 .setChapterId(3L)
                 .setCourseId(4L)
                 .setIsFinished(true)
-                .setNumber("6")
+                .setNumber(6)
                 .setMaxMark(20)
                 .setSuccessMark(10);
     }
