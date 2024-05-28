@@ -47,7 +47,8 @@ public class SecurityConfiguration {
     private String[] permittedEndpoints() {
         return new String[]{
                 "/learning-courses/api/v1/sign-in",
-                "/learning-courses/api/v1/sign-up"
+                "/learning-courses/api/v1/sign-up",
+                "/swagger-ui/**"
         };
     }
 

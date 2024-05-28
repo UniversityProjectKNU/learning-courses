@@ -31,7 +31,6 @@ public class SecurityControllerTest {
 
     private final static String BASE_URL = "/learning-courses/api/v1";
 
-//    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
     @Autowired
     private MockMvc mockMvc;
 
