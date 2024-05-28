@@ -1,0 +1,22 @@
+spring:
+  jpa:
+    show-sql: false
+    open-in-view: false
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: none
+
+cloud:
+  aws:
+    stack:
+      auto: false
+    credentials:
+      access-key: "test"
+      secret-key: "test"
+    bucket:
+      region: "test"
+      name: "test"
+
+
+security:
+  key: "test"
