@@ -48,17 +48,22 @@ public class SecurityConfiguration {
         return new String[]{
                 "/learning-courses/api/v1/sign-in",
                 "/learning-courses/api/v1/sign-up",
-                "/swagger-ui/**"
-        };
-    }
-
-    private String[] authorizedEndpoints() {
-        return new String[]{
+                "/swagger-ui/**",
                 "/learning-courses/api/v1/courses-templates/**",
                 "/learning-courses/api/v1/courses/**",
                 "/learning-courses/api/v1/users/**",
                 "/learning-courses/api/v1/self/**",
                 "/learning-courses/api/v1/my-courses/**",
+        };
+    }
+
+    private String[] authorizedEndpoints() {
+        return new String[]{
+//                "/learning-courses/api/v1/courses-templates/**",
+//                "/learning-courses/api/v1/courses/**",
+//                "/learning-courses/api/v1/users/**",
+//                "/learning-courses/api/v1/self/**",
+//                "/learning-courses/api/v1/my-courses/**",
         };
     }
 
