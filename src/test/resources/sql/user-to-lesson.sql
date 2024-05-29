@@ -5,16 +5,18 @@ VALUES
     (3, 'user1@gmail.com', 'password', 'Alex', 'Bilokrynytskyi', 'STUDENT'),
     (4, 'user2@gmail.com', 'password', 'Pavlo', 'Kilko', 'STUDENT'),
     (5, 'user3@gmail.com', 'password', 'Maria', 'Kukharchuk', 'STUDENT');
-##############################
-##############################
-##############################
-##############################
+
+
+
+
 INSERT INTO `courses` (`id`, `title`, `description`, `is_finished`)
 VALUES
     (1, 'Course title 1', 'Course description 1', FALSE),
     (2, 'Course title 2', 'Course description 2', FALSE);
-##############################
-##############################
+
+
+
+
 INSERT INTO `chapters` (`id`, `course_id`, `title`, `description`, `number`, `is_finished`)
 VALUES
     (1, 1, 'Chapter title 1', 'Chapter description 1', 1, FALSE),
@@ -24,8 +26,10 @@ VALUES
 
     (4, 2, 'Chapter title 4', 'Chapter description 1', 1, FALSE),
     (5, 2, 'Chapter title 5', 'Chapter description 2', 2, FALSE);
-##############################
-##############################
+
+
+
+
 INSERT INTO `lessons` (`id`, `chapter_id`, `title`, `description`, `max_mark`, `success_mark`, `number`, `is_finished`)
 VALUES
     (1, 1, 'Lesson title 1', 'Lesson description 1', 10, 7, 1, FALSE),
@@ -50,10 +54,10 @@ VALUES
     (15, 5, 'Lesson title 15', 'Lesson description 15', 10, 7, 2, FALSE),
     (16, 5, 'Lesson title 16', 'Lesson description 16', 15, 10, 3, FALSE),
     (17, 5, 'Lesson title 17', 'Lesson description 17', 15, 10, 4, FALSE);
-##############################
-##############################
-##############################
-##############################
+
+
+
+
 INSERT INTO `users_to_courses` (`id`, `user_id`, `course_id`, `mark`, `is_passed`)
 VALUES
     (1, 1, 1, 0, FALSE),
@@ -61,8 +65,10 @@ VALUES
     (3, 2, 2, 0, FALSE),
     (4, 3, 1, 0, FALSE),
     (5, 4, 1, 0, FALSE);
-##############################
-##############################
+
+
+
+
 INSERT INTO `users_to_lessons`  (`id`, `user_id`, `lesson_id`, `mark`, `is_passed`)
 VALUES
     (1, 3, 1, 10, TRUE),
