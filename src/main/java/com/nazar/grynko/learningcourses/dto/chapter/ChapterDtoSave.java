@@ -24,6 +24,7 @@ public class ChapterDtoSave implements Serializable {
     @NotNull
     @Size(min = 4, max = 512)
     private String description;
-    private String number;
+    @NotNull
+    private Integer number;
 
 }

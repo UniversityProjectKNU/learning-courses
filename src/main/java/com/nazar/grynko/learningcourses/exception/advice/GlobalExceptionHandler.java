@@ -67,7 +67,7 @@ public class GlobalExceptionHandler {
         return new ExceptionCause<>(ex.getClass().getName(), ex.getMessage(), "");
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ExceptionCause<?> handleAnyException(Exception ex) {
         log.error(ex.getMessage());

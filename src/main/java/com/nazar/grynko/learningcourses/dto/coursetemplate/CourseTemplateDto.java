@@ -14,7 +14,7 @@ import lombok.experimental.Accessors;
 public class CourseTemplateDto {
 
     private Long id;
-    private Integer title;
+    private String title;
     private String description;
 
 }

@@ -38,7 +38,8 @@ public class SecurityConfiguration {
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(permittedEndpoints()).permitAll()
-                        .requestMatchers(authorizedEndpoints()).authenticated()) //todo replace with anyRequest().authenticated()
+                        .anyRequest().authenticated()/*
+                        .requestMatchers(authorizedEndpoints()).authenticated()*/) //todo replace with anyRequest().authenticated()
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(filterChainExceptionHandler, LogoutFilter.class)
                 .build();
@@ -48,22 +49,17 @@ public class SecurityConfiguration {
         return new String[]{
                 "/learning-courses/api/v1/sign-in",
                 "/learning-courses/api/v1/sign-up",
-                "/swagger-ui/**",
-                "/learning-courses/api/v1/courses-templates/**",
-                "/learning-courses/api/v1/courses/**",
-                "/learning-courses/api/v1/users/**",
-                "/learning-courses/api/v1/self/**",
-                "/learning-courses/api/v1/my-courses/**",
+                "/swagger-ui/**"
         };
     }
 
     private String[] authorizedEndpoints() {
         return new String[]{
-//                "/learning-courses/api/v1/courses-templates/**",
-//                "/learning-courses/api/v1/courses/**",
-//                "/learning-courses/api/v1/users/**",
-//                "/learning-courses/api/v1/self/**",
-//                "/learning-courses/api/v1/my-courses/**",
+                "/learning-courses/api/v1/templates/**",
+                "/learning-courses/api/v1/courses/**",
+                "/learning-courses/api/v1/users/**",
+                "/learning-courses/api/v1/self/**",
+                "/learning-courses/api/v1/my-courses/**",
         };
     }
 
