@@ -37,7 +37,7 @@ and the receipt of corresponding feedback from lecturers.
 - Send a request to join a course as a student.
 - View the list of courses they have participated/are participating in and their information.
 - Receive homework assignments.
-- Submit completed homework as files.
+- Submit completed homework as files (less than 1 MB).
 
 ## Technical Requirements
 
