@@ -58,12 +58,12 @@ public class LessonControllerTest {
     }
 
     @Test
-    void one_400_noSuchLesson() throws Exception {
-        when(lessonService.get(eq(-1L))).thenThrow(new IllegalArgumentException());
+    void one_404_noSuchLesson() throws Exception {
+        when(lessonService.get(eq(-1L))).thenThrow(new EntityNotFoundException());
         mockMvc.perform(get(BASE_URL + "/lesson")
 
                         .param("lessonId", String.valueOf(-1)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -77,13 +77,13 @@ public class LessonControllerTest {
     }
 
     @Test
-    void getAllUsersLessonsInfo_400_noSuchLesson() throws Exception {
+    void getAllUsersLessonsInfo_404_noSuchLesson() throws Exception {
         when(lessonService.getAllUserToLessonInfoForLesson(eq(-1L)))
-                .thenThrow(new IllegalArgumentException());
+                .thenThrow(new EntityNotFoundException());
 
         mockMvc.perform(get(BASE_URL + "/lesson/users")
                         .param("lessonId", String.valueOf(-1)))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -103,14 +103,14 @@ public class LessonControllerTest {
     }
 
     @Test
-    void getUsersLessonInfo_400_noSuchUserToLesson() throws Exception {
+    void getUsersLessonInfo_404_noSuchUserToLesson() throws Exception {
         when(lessonService.getUsersLessonInfo(eq(-1L), eq(-1L)))
-                .thenThrow(new IllegalArgumentException());
+                .thenThrow(new EntityNotFoundException());
 
         mockMvc.perform(get(BASE_URL + "/lesson/users/user")
                         .param("lessonId", "-1")
                         .param("userId", "-1"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -195,7 +195,7 @@ public class LessonControllerTest {
     }
 
     @Test
-    void finishLesson_200_noFileWasFound() throws Exception {
+    void finishLesson_404_noFileWasFound() throws Exception {
         when(lessonService.finish(any()))
                 .thenThrow(new EntityNotFoundException());
 
@@ -220,15 +220,15 @@ public class LessonControllerTest {
     }
 
     @Test
-    void upload_400_errorWithFile() throws Exception {
+    void upload_404_errorWithFile() throws Exception {
         when(userToLessonService.uploadFile(any(), any(), any()))
-                .thenThrow(new IllegalArgumentException());
+                .thenThrow(new EntityNotFoundException());
 
         mockMvc.perform(multipart(BASE_URL + "/lesson/files")
                         .file(mockMultipartFile())
                         .principal(mockPrincipal())
                         .param("lessonId", "-1"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -245,14 +245,14 @@ public class LessonControllerTest {
     }
 
     @Test
-    void download_400_errorWithFile() throws Exception {
+    void download_404_errorWithFile() throws Exception {
         when(userToLessonService.downloadFile(any(), any()))
-                .thenThrow(new IllegalArgumentException());
+                .thenThrow(new EntityNotFoundException());
 
         mockMvc.perform(get(BASE_URL + "/lesson/files/file")
                         .param("lessonId", "1")
                         .param("userId", "1"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
     @Test
@@ -264,12 +264,12 @@ public class LessonControllerTest {
     }
 
     @Test
-    void delete_400_errorWithFile() throws Exception {
-        doThrow(new RuntimeException()).when(userToLessonService).deleteFile(any(), anyLong());
+    void delete_404_errorWithFile() throws Exception {
+        doThrow(new EntityNotFoundException()).when(userToLessonService).deleteFile(any(), anyLong());
         mockMvc.perform(delete(BASE_URL + "/lesson/files/file")
                         .param("lessonId", "1")
                         .param("userId", "1"))
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isNotFound());
     }
 
 }
