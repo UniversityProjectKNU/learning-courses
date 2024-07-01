@@ -1,5 +1,6 @@
 package com.nazar.grynko.learningcourses.dto.user;
 
+import com.nazar.grynko.learningcourses.model.RoleType;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -15,9 +16,9 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class UserDtoUpdate {
 
-    /*@NotNull
+    @NotNull
     @Size(min = 4, max = 64)
-    private String password;*/
+    private String password;
 
     @NotNull
     @Size(min = 2, max = 128)
@@ -26,5 +27,7 @@ public class UserDtoUpdate {
     @NotNull
     @Size(min = 2, max = 128)
     private String lastName;
+
+    private RoleType role;
 
 }

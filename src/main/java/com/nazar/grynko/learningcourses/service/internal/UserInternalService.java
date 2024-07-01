@@ -4,6 +4,8 @@ import com.nazar.grynko.learningcourses.exception.domain.EntityNotFoundException
 import com.nazar.grynko.learningcourses.model.RoleType;
 import com.nazar.grynko.learningcourses.model.User;
 import com.nazar.grynko.learningcourses.repository.UserRepository;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,14 +15,17 @@ public class UserInternalService {
 
     private final UserToCourseInternalService userToCourseInternalService;
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     private static final String USER_ID_MISSING_PATTERN = "User %d doesn't exist";
     private static final String USER_LOGIN_MISSING_PATTERN = "User %s doesn't exist";
 
     public UserInternalService(UserToCourseInternalService userToCourseInternalService,
-                               UserRepository userRepository) {
+                               UserRepository userRepository,
+                               @Lazy PasswordEncoder passwordEncoder) {
         this.userToCourseInternalService = userToCourseInternalService;
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public User get(Long userId) {
@@ -60,6 +65,13 @@ public class UserInternalService {
     public User update(User user) {
         User dbUser = get(user.getId());
         fillNullFields(dbUser, user);
+
+        if (dbUser.getRole() != user.getRole()) {
+            updateRole(user.getRole(), user.getId());
+        }
+        if (!dbUser.getPassword().equals(user.getPassword())) {
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
 
         return userRepository.save(user);
     }

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
 
 @Component
 public class CourseService {
@@ -178,7 +179,7 @@ public class CourseService {
 
     public UserToCourseDto approveEnrollRequest(Long enrollRequestId, Boolean isApproved) {
         var entity = courseInternalService.approveEnrollRequest(enrollRequestId, isApproved);
-        return userToCourseMapper.toDto(entity);
+        return nonNull(entity) ? userToCourseMapper.toDto(entity) : null;
     }
 
     public EnrollRequestDto getUsersLastEnrollRequest(Long userId, Long courseId) {
@@ -186,10 +187,7 @@ public class CourseService {
         userInternalService.throwIfMissingUser(userId);
 
         var entity = courseInternalService.getUsersLastEnrollRequest(userId, courseId);
-        if (isNull(entity)) {
-            return null;
-        }
 
-        return enrollRequestMapper.toDto(entity);
+        return nonNull(entity) ? enrollRequestMapper.toDto(entity) : null;
     }
 }

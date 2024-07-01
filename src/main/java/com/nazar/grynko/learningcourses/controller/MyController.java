@@ -22,7 +22,7 @@ import static com.nazar.grynko.learningcourses.controller.enums.ResponseCode._20
 import static com.nazar.grynko.learningcourses.controller.enums.ResponseCode._404;
 
 @RestController
-@RolesAllowed({"INSTRUCTOR", "STUDENT"})
+@RolesAllowed({"ADMIN", "INSTRUCTOR", "STUDENT"})
 @RequestMapping("learning-courses/api/v1/my")
 public class MyController {
 

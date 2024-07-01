@@ -259,6 +259,7 @@ public class CourseController {
             @ApiResponse(responseCode = _200, description = "Owner found"),
             @ApiResponse(responseCode = _404, description = "Course not found")
     })
+    @RolesAllowed({"ADMIN", "INSTRUCTOR", "STUDENT"})
     @GetMapping("/course/users/owner")
     ResponseEntity<?> getCourseOwner(@RequestParam Long courseId) {
         return ResponseEntity.ok(courseService.getCourseOwner(courseId));

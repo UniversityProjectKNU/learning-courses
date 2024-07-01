@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 @RestControllerAdvice
@@ -18,6 +19,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ExceptionCause<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         log.error(ex.getMessage());
+        log.error(Arrays.toString(ex.getStackTrace()));
 
         var errorMap = new HashMap<String, String>();
         ex.getBindingResult()
@@ -31,6 +33,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     public ExceptionCause<?> handleEntityNotFoundException(EntityNotFoundException ex) {
         log.error(ex.getMessage());
+        log.error(Arrays.toString(ex.getStackTrace()));
 
         return new ExceptionCause<>(ex.getClass().getName(), ex.getMessage(), "");
     }
@@ -39,6 +42,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadSignInException.class)
     public ExceptionCause<?> handleBadSignInException(BadSignInException ex) {
         log.error(ex.getMessage());
+        log.error(Arrays.toString(ex.getStackTrace()));
 
         return new ExceptionCause<>(ex.getClass().getName(), ex.getMessage(), "");
     }
@@ -47,6 +51,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(BadSignUpException.class)
     public ExceptionCause<?> handleBadSignUpException(BadSignUpException ex) {
         log.error(ex.getMessage());
+        log.error(Arrays.toString(ex.getStackTrace()));
 
         return new ExceptionCause<>(ex.getClass().getName(), ex.getMessage(), "");
     }
@@ -55,6 +60,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalStateException.class)
     public ExceptionCause<?> handleIllegalStateException(IllegalStateException ex) {
         log.error(ex.getMessage());
+        log.error(Arrays.toString(ex.getStackTrace()));
 
         return new ExceptionCause<>(ex.getClass().getName(), ex.getMessage(), "");
     }
@@ -62,7 +68,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(InvalidJwtTokenException.class)
     public ExceptionCause<?> handleInvalidJwtTokenException(InvalidJwtTokenException ex) {
-        log.error(ex.getMessage());
+        log.error(ex.getMessage(), ex);
 
         return new ExceptionCause<>(ex.getClass().getName(), ex.getMessage(), "");
     }
@@ -70,7 +76,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public ExceptionCause<?> handleAnyException(Exception ex) {
-        log.error(ex.getMessage());
+        log.error(ex.getMessage(), ex);
 
         return new ExceptionCause<>(ex.getClass().getName(), "Unknown exception happened", "");
     }
