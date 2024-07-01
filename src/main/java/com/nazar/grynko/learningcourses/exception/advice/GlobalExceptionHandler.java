@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.Arrays;
 import java.util.HashMap;
 
 @RestControllerAdvice
@@ -18,8 +17,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ExceptionCause<?> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        log.error(ex.getMessage());
-        log.error(Arrays.toString(ex.getStackTrace()));
+        log.error(ex.getMessage(), ex);
 
         var errorMap = new HashMap<String, String>();
         ex.getBindingResult()
@@ -32,8 +30,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(EntityNotFoundException.class)
     public ExceptionCause<?> handleEntityNotFoundException(EntityNotFoundException ex) {
-        log.error(ex.getMessage());
-        log.error(Arrays.toString(ex.getStackTrace()));
+        log.error(ex.getMessage(), ex);
 
         return new ExceptionCause<>(ex.getClass().getName(), ex.getMessage(), "");
     }
@@ -41,8 +38,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(BadSignInException.class)
     public ExceptionCause<?> handleBadSignInException(BadSignInException ex) {
-        log.error(ex.getMessage());
-        log.error(Arrays.toString(ex.getStackTrace()));
+        log.error(ex.getMessage(), ex);
 
         return new ExceptionCause<>(ex.getClass().getName(), ex.getMessage(), "");
     }
@@ -50,8 +46,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(BadSignUpException.class)
     public ExceptionCause<?> handleBadSignUpException(BadSignUpException ex) {
-        log.error(ex.getMessage());
-        log.error(Arrays.toString(ex.getStackTrace()));
+        log.error(ex.getMessage(), ex);
 
         return new ExceptionCause<>(ex.getClass().getName(), ex.getMessage(), "");
     }
@@ -59,8 +54,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalStateException.class)
     public ExceptionCause<?> handleIllegalStateException(IllegalStateException ex) {
-        log.error(ex.getMessage());
-        log.error(Arrays.toString(ex.getStackTrace()));
+        log.error(ex.getMessage(), ex);
 
         return new ExceptionCause<>(ex.getClass().getName(), ex.getMessage(), "");
     }
