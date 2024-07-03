@@ -66,9 +66,6 @@ public class UserInternalService {
         User dbUser = get(user.getId());
         fillNullFields(dbUser, user);
 
-        if (dbUser.getRole() != user.getRole()) {
-            updateRole(user.getRole(), user.getId());
-        }
         if (!dbUser.getPassword().equals(user.getPassword())) {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }

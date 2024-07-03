@@ -16,7 +16,6 @@ import lombok.experimental.Accessors;
 @Accessors(chain = true)
 public class UserDtoUpdate {
 
-    @NotNull
     @Size(min = 4, max = 64)
     private String password;
 
